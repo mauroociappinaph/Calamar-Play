@@ -78,7 +78,7 @@ const ShopScreen: React.FC = () => {
                                  </div>
                                  <h3 className="text-lg md:text-xl font-bold mb-2">{item.name}</h3>
                                  <p className="text-gray-200 text-xs md:text-sm mb-4 h-10 md:h-12 flex items-center justify-center">{item.description}</p>
-                                 <button 
+                                 <button
                                     onClick={() => buyItem(item.id as any, item.cost)}
                                     disabled={!canAfford}
                                     className={`px-4 md:px-6 py-2 rounded font-bold w-full text-sm md:text-base ${canAfford ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:brightness-110 text-black' : 'bg-gray-700 cursor-not-allowed opacity-50'}`}
@@ -90,7 +90,7 @@ const ShopScreen: React.FC = () => {
                      })}
                  </div>
 
-                 <button 
+                 <button
                     onClick={closeShop}
                     className="flex items-center px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-green-500 to-teal-500 text-white font-bold text-lg md:text-xl rounded-full hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,255,255,0.4)]"
                  >
@@ -116,18 +116,18 @@ export const HUD: React.FC = () => {
           <div className="absolute inset-0 flex items-center justify-center z-[100] bg-blue-900/80 backdrop-blur-sm p-4 pointer-events-auto">
               {/* Card Container */}
               <div className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/20 animate-in zoom-in-95 duration-500 bg-black">
-                
+
                 {/* Logo Image Container */}
                 <div className="relative w-full aspect-video flex items-center justify-center bg-black">
-                     <img 
-                        src="./logo.jpg" 
-                        alt="El Calamar Loco" 
+                     <img
+                        src="./logo.jpg"
+                        alt="El Calamar Loco"
                         className="w-full h-full object-cover"
                      />
                 </div>
-                     
+
                 <div className="flex flex-col justify-end items-center p-6 bg-white text-center z-10">
-                    <button 
+                    <button
                         onClick={() => { audio.init(); startGame(); }}
                         className="w-full group relative px-6 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-black text-xl rounded-xl transition-all shadow-[0_4px_15px_rgba(255,100,0,0.4)] hover:scale-[1.02] overflow-hidden"
                     >
@@ -137,8 +137,12 @@ export const HUD: React.FC = () => {
                     </button>
 
                     <p className="text-gray-500 text-[10px] md:text-xs font-mono mt-3 tracking-wider">
-                        [ FLECHAS / DESLIZA PARA MOVERTE ]
+                        [ FLECHAS / TAP LADOS / SWIPE ]
                     </p>
+                    <div className="text-gray-400 text-[9px] mt-2 space-y-1">
+                        <p>📱 Tap izq/der = mover | Centro = saltar</p>
+                        <p>👆 Swipe arriba = saltar | Doble tap = escudo</p>
+                    </div>
                 </div>
               </div>
           </div>
@@ -150,7 +154,7 @@ export const HUD: React.FC = () => {
           <div className="absolute inset-0 bg-black/80 z-[100] text-white pointer-events-auto backdrop-blur-sm overflow-y-auto">
               <div className="flex flex-col items-center justify-center min-h-full py-8 px-4">
                 <h1 className="text-4xl md:text-6xl font-black text-white mb-6 drop-shadow-[0_0_10px_rgba(255,0,0,0.8)] font-cyber text-center">¡REVOLCÓN!</h1>
-                
+
                 <div className="grid grid-cols-1 gap-3 md:gap-4 text-center mb-8 w-full max-w-md">
                     <div className="bg-white/10 p-3 md:p-4 rounded-lg border border-white/10 flex items-center justify-between">
                         <div className="flex items-center text-yellow-400 text-sm md:text-base"><Trophy className="mr-2 w-4 h-4 md:w-5 md:h-5"/> NIVEL</div>
@@ -170,7 +174,7 @@ export const HUD: React.FC = () => {
                     </div>
                 </div>
 
-                <button 
+                <button
                   onClick={() => { audio.init(); restartGame(); }}
                   className="px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg md:text-xl rounded-full hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,255,255,0.4)]"
                 >
@@ -192,7 +196,7 @@ export const HUD: React.FC = () => {
                 <p className="text-white/80 text-sm md:text-2xl font-mono mb-8 tracking-widest text-center">
                     ERES EL REY DE LA PLAYA
                 </p>
-                
+
                 <div className="grid grid-cols-1 gap-4 text-center mb-8 w-full max-w-md">
                     <div className="bg-white/20 p-6 rounded-xl border border-white/30">
                         <div className="text-xs md:text-sm text-white mb-1 tracking-wider">PUNTUACIÓN FINAL</div>
@@ -200,7 +204,7 @@ export const HUD: React.FC = () => {
                     </div>
                 </div>
 
-                <button 
+                <button
                   onClick={() => { audio.init(); restartGame(); }}
                   className="px-8 md:px-12 py-4 md:py-5 bg-white text-pink-600 font-black text-lg md:text-xl rounded-full hover:scale-105 transition-all shadow-xl tracking-widest"
                 >
@@ -220,17 +224,17 @@ export const HUD: React.FC = () => {
                     {score.toLocaleString()}
                 </div>
             </div>
-            
+
             <div className="flex space-x-1 md:space-x-2">
                 {[...Array(maxLives)].map((_, i) => (
-                    <Heart 
-                        key={i} 
-                        className={`w-6 h-6 md:w-8 md:h-8 ${i < lives ? 'text-red-500 fill-red-500' : 'text-black/30 fill-black/30'} drop-shadow-sm`} 
+                    <Heart
+                        key={i}
+                        className={`w-6 h-6 md:w-8 md:h-8 ${i < lives ? 'text-red-500 fill-red-500' : 'text-black/30 fill-black/30'} drop-shadow-sm`}
                     />
                 ))}
             </div>
         </div>
-        
+
         {/* Level Indicator */}
         <div className="absolute top-5 left-1/2 transform -translate-x-1/2 text-sm md:text-lg text-white font-bold tracking-wider font-mono bg-black/20 px-4 py-1 rounded-full backdrop-blur-sm z-50">
             NIVEL {level} <span className="text-white/60 text-xs md:text-sm">/ 3</span>
@@ -250,7 +254,7 @@ export const HUD: React.FC = () => {
                 const color = GEMINI_COLORS[idx];
 
                 return (
-                    <div 
+                    <div
                         key={idx}
                         style={{
                             borderColor: isCollected ? color : 'rgba(255, 255, 255, 0.5)',

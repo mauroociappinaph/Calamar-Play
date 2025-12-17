@@ -30,50 +30,50 @@ export const Player: React.FC = () => {
   const bodyGroupRef = useRef<THREE.Group>(null);
   const shadowRef = useRef<THREE.Mesh>(null);
   const tentaclesRef = useRef<THREE.Group>(null);
-  
+
   const { status, laneCount, takeDamage, hasDoubleJump, activateImmortality, isImmortalityActive } = useStore();
-  
+
   const [lane, setLane] = React.useState(0);
   const targetX = useRef(0);
-  
+
   // Física
   const isJumping = useRef(false);
   const velocityY = useRef(0);
-  const jumpsPerformed = useRef(0); 
+  const jumpsPerformed = useRef(0);
   const isInvincible = useRef(false);
   const lastDamageTime = useRef(0);
 
   // --- MATERIALES (Paleta del Logo) ---
   const materials = useMemo(() => {
     return {
-      skin: new THREE.MeshStandardMaterial({ 
+      skin: new THREE.MeshStandardMaterial({
         color: '#8ab4f8', // Azul claro plástico
-        roughness: 0.1, 
+        roughness: 0.1,
         metalness: 0.2,
       }),
-      beanie: new THREE.MeshStandardMaterial({ 
+      beanie: new THREE.MeshStandardMaterial({
         color: '#bfdbfe', // Azul muy claro
-        roughness: 0.5, 
+        roughness: 0.5,
       }),
-      glasses: new THREE.MeshStandardMaterial({ 
+      glasses: new THREE.MeshStandardMaterial({
         color: '#1e3a8a', // Azul oscuro
         roughness: 0.1,
         metalness: 0.5,
       }),
-      ink: new THREE.MeshBasicMaterial({ 
+      ink: new THREE.MeshBasicMaterial({
         color: '#1e3a8a',
         transparent: true,
         opacity: 0.6
       }),
-      invincible: new THREE.MeshStandardMaterial({ 
-        color: '#ffd700', 
+      invincible: new THREE.MeshStandardMaterial({
+        color: '#ffd700',
         emissive: '#ffaa00',
-        roughness: 0.1, 
+        roughness: 0.1,
       }),
-      shadow: new THREE.MeshBasicMaterial({ 
-        color: '#000000', 
-        opacity: 0.3, 
-        transparent: true 
+      shadow: new THREE.MeshBasicMaterial({
+        color: '#000000',
+        opacity: 0.3,
+        transparent: true
       })
     };
   }, []);
@@ -89,11 +89,11 @@ export const Player: React.FC = () => {
     } else if (jumpsPerformed.current < maxJumps) {
         audio.playJump(true);
         jumpsPerformed.current += 1;
-        velocityY.current = 14; 
+        velocityY.current = 14;
     }
   };
 
-  // Controles
+  // Controles (Teclado + Táctil)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (status !== GameStatus.PLAYING) return;
@@ -105,6 +105,89 @@ export const Player: React.FC = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [status, laneCount, hasDoubleJump, activateImmortality]);
+
+  // Controles Táctiles para Móvil
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    const SWIPE_THRESHOLD = 30; // píxeles mínimos para swipe
+    const TAP_THRESHOLD = 200; // ms máximo para tap
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (status !== GameStatus.PLAYING) return;
+      const touch = e.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      touchStartTime = Date.now();
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (status !== GameStatus.PLAYING) return;
+      const touch = e.changedTouches[0];
+      const deltaX = touch.clientX - touchStartX;
+      const deltaY = touch.clientY - touchStartY;
+      const elapsed = Date.now() - touchStartTime;
+
+      const maxLane = Math.floor(laneCount / 2);
+
+      // Detectar swipe hacia arriba para saltar
+      if (deltaY < -SWIPE_THRESHOLD && Math.abs(deltaX) < Math.abs(deltaY)) {
+        triggerJump();
+        return;
+      }
+
+      // Detectar swipe horizontal para cambiar carril
+      if (Math.abs(deltaX) > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX < 0) {
+          setLane(l => Math.max(l - 1, -maxLane));
+        } else {
+          setLane(l => Math.min(l + 1, maxLane));
+        }
+        return;
+      }
+
+      // Tap rápido: lado izquierdo/derecho de pantalla para mover
+      if (elapsed < TAP_THRESHOLD && Math.abs(deltaX) < 20 && Math.abs(deltaY) < 20) {
+        const screenWidth = window.innerWidth;
+        const tapX = touch.clientX;
+
+        // División en 3 zonas: izquierda, centro, derecha
+        if (tapX < screenWidth * 0.33) {
+          // Tap izquierdo - mover a la izquierda
+          setLane(l => Math.max(l - 1, -maxLane));
+        } else if (tapX > screenWidth * 0.66) {
+          // Tap derecho - mover a la derecha
+          setLane(l => Math.min(l + 1, maxLane));
+        } else {
+          // Tap centro - saltar
+          triggerJump();
+        }
+      }
+    };
+
+    // Doble tap para habilidad especial
+    let lastTapTime = 0;
+    const handleDoubleTap = (e: TouchEvent) => {
+      if (status !== GameStatus.PLAYING) return;
+      const now = Date.now();
+      if (now - lastTapTime < 300) {
+        activateImmortality();
+      }
+      lastTapTime = now;
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('touchend', handleDoubleTap, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchend', handleDoubleTap);
+    };
   }, [status, laneCount, hasDoubleJump, activateImmortality]);
 
   // Bucle de Animación
@@ -129,7 +212,7 @@ export const Player: React.FC = () => {
 
     // 3. Animaciones de "Calamar"
     const time = state.clock.elapsedTime;
-    
+
     // Squash & Stretch
     const wobble = Math.sin(time * 10) * 0.05;
     bodyGroupRef.current.scale.set(1 + wobble, 1 - wobble, 1 + wobble);
@@ -176,7 +259,7 @@ export const Player: React.FC = () => {
   return (
     <group ref={groupRef}>
       <group ref={bodyGroupRef} position={[0, 0.8, 0]}>
-        
+
         {/* CUERPO */}
         <mesh geometry={BODY_GEO} material={activeSkin} castShadow />
 
@@ -204,10 +287,10 @@ export const Player: React.FC = () => {
           {[...Array(6)].map((_, i) => {
             const angle = (i / 6) * Math.PI * 2;
             return (
-              <mesh 
-                key={i} 
-                geometry={TENTACLE_GEO} 
-                material={activeSkin} 
+              <mesh
+                key={i}
+                geometry={TENTACLE_GEO}
+                material={activeSkin}
                 position={[Math.cos(angle) * 0.4, 0, Math.sin(angle) * 0.4]}
                 rotation={[0.5, angle, 0]}
               />
