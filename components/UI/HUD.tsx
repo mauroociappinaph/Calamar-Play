@@ -63,7 +63,7 @@ const ShopScreen: React.FC = () => {
              <div className="flex flex-col items-center justify-center min-h-full py-8 px-4">
                  <h2 className="text-3xl md:text-4xl font-black text-yellow-400 mb-2 font-cyber tracking-widest text-center">TIENDA PLAYERA</h2>
                  <div className="flex items-center text-white mb-6 md:mb-8">
-                     <span className="text-base md:text-lg mr-2">CONCHAS DISPONIBLES:</span>
+                     <span className="text-base md:text-lg mr-2">PERLAS DISPONIBLES:</span>
                      <span className="text-xl md:text-2xl font-bold">{score.toLocaleString()}</span>
                  </div>
 
