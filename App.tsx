@@ -89,6 +89,7 @@ function Scene() {
 }
 
 function App() {
+    console.log('App component rendering');
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden select-none">
       <HUD />
