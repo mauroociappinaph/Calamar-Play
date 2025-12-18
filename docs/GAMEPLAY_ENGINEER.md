@@ -78,31 +78,70 @@ function gameLoop(currentTime) {
 
 ## 4. Colisiones y física
 
-**Modelo actual (SUPUESTO por LevelManager colisión lógica):** AABB boxes simples sin physics engine dedicado. Colisiones discretas por frame sin continuous detection.
+**Modelo actual implementado:** Sistema de colisiones AABB discretas con capas lógicas. Tres tipos principales de entidades: obstáculos dañinos, objetos coleccionables, y entidades enemigas.
 
-**Auditoría de colisiones:**
-- **Broadphase:** Ninguno - colisiones lineales O(n²) por todos objetos activos
-- **Narrowphase:** AABB intersection simple, sin shape complexity
-- **Resolución:** Position correction básica, sin penetration resolution avanzado
+**Arquitectura de colisiones:**
+- **Broadphase:** Lineal O(n) por frame (aceptable para <50 entidades activas)
+- **Narrowphase:** AABB intersection con bounds personalizados por tipo de objeto
+- **Resolución:** Event-driven - dispara eventos sin modificar posiciones directamente
+- **Capas:** Lógica separada por tipo de objeto (obstacles, collectibles, enemies)
 
-**Problemas típicos:**
-- **Tunneling:** Objetos rápidos pasan a través de colliders en dt alto
-- **Jitter:** Correcciones múltiples causan vibración visual
-- **Colisiones fantasma:** Sin layer/mask system, todo colisiona con todo
+**Flujo de colisión (LevelManager):**
+```typescript
+// En fixedUpdateCallback
+for (const obj of currentObjects) {
+  if (obj.active && inZZone) {
+    if (obj.type === ObjectType.OBSTACLE || obj.type === ObjectType.ALIEN || obj.type === ObjectType.MISSILE) {
+      // Calcular bounds del objeto
+      let objBottom = obj.position[1] - 0.5;
+      let objTop = obj.position[1] + 0.5;
 
-**Propuestas:**
-- **Capas y masks:** Bitmask system (player=1, obstacles=2, collectibles=4)
-- **Continuous collision:** Raycast prediction para objetos rápidos
-- **Simplificación colliders:** Sphere vs complex meshes para performance
+      if (obj.type === ObjectType.OBSTACLE) {
+        objBottom = 0; // Ground level
+        objTop = OBSTACLE_HEIGHT; // ~1.6 units high
+      }
 
-**Tabla: Sistema/Entidad | Collider | Frecuencia | Riesgo | Cambio sugerido | Impacto | Esfuerzo**
+      // Verificar overlap con player bounds
+      const isHit = (playerBottom < objTop) && (playerTop > objBottom);
+      if (isHit) {
+        window.dispatchEvent(new Event('player-hit'));
+        obj.active = false; // Remove on hit
+      }
+    }
+  }
+}
+```
 
-| Sistema/Entidad | Collider | Frecuencia | Riesgo | Cambio sugerido | Impacto | Esfuerzo |
-|----------------|----------|------------|--------|-----------------|---------|----------|
-| Player vs obstáculos | AABB | 60fps | Tunneling alto | Continuous raycast | Elimina clipping | Alto |
-| Gemas coleccionables | Sphere | Eventual | Overlap misses | Trigger volumes | Más consistente | Medio |
-| Aliens disparadores | AABB | 60fps | False positives | Layered masks | Menos bugs | Bajo |
-| UI touch areas | Rect | Input | Scaling issues | Screen space colliders | Mejor mobile | Bajo |
+**Player event handling (Player.tsx):**
+```typescript
+useEffect(() => {
+  const onHit = () => {
+    if (isInvincible.current || isImmortalityActive) return;
+    takeDamage(); // Zustand action
+    isInvincible.current = true;
+    lastDamageTime.current = Date.now();
+    audio.playDamage();
+  };
+  window.addEventListener('player-hit', onHit);
+  return () => window.removeEventListener('player-hit', onHit);
+}, [takeDamage, isImmortalityActive]);
+```
+
+**Estado actual:**
+- ✅ **3 tipos de colisión implementados:** Obstáculos, aliens, missiles
+- ✅ **Event-driven architecture:** No modifica posiciones, dispara eventos
+- ✅ **Invincibilidad frames:** 1.5s de inmunidad visual después de daño
+- ✅ **Immortality power-up:** Protección total por 5 segundos
+- ✅ **Integration tests:** 5 tests verifican flujo completo de daño
+
+**Tabla: Sistema/Entidad | Collider | Frecuencia | Riesgo | Estado Actual | Testing |
+
+| Sistema/Entidad | Collider | Frecuencia | Riesgo | Estado Actual | Testing |
+|----------------|----------|------------|--------|----------------|---------|
+| Player vs obstáculos | AABB (ground to 1.6) | 60fps | Tunneling en dt alto | ✅ Event-driven, remove on hit | ✅ Integration test |
+| Player vs aliens | AABB (sphere-like) | 60fps | False positives | ✅ Event-driven, remove on hit | ✅ Integration test |
+| Player vs missiles | AABB (bubble-like) | 60fps | Fast projectiles | ✅ Event-driven, remove on hit | ✅ Integration test |
+| Player vs gemas/letras | Sphere overlap | Eventual | Misses por timing | ✅ Collect on overlap, audio feedback | ✅ Store tests |
 
 ## 5. Sincronización de estado y arquitectura de sistemas
 

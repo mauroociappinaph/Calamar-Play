@@ -55,8 +55,10 @@
     - [x] Documentar metodología de medición en `docs/QA_TEST_LEAD.md` `[ESTADO: ✅]`
 
 - **TASK-015: Analytics y Telemetría**
-    - [ ] Instrumentar eventos core (session, start, death) `[DEP: Ninguna]` `[ESTADO: 🔵]`
-    - [ ] Validar pipeline de datos en `docs/DATA_ANALYST_GAME_INSIGHTS.md` `[ESTADO: 🔵]`
+    - [x] Implementar sistema de analytics en `src/shared/analytics.ts` `[DEP: Ninguna]` `[ESTADO: ✅]`
+    - [x] Instrumentar eventos core (session, game_start, death, collect_item, shop_open, item_purchase) `[ESTADO: ✅]`
+    - [x] Actualizar documentación en `docs/DATA_ANALYST_GAME_INSIGHTS.md` `[ESTADO: ✅]`
+    - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 ---
 
