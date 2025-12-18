@@ -1,94 +1,123 @@
-# 🚀 Plan Maestro de Ejecución: Calamar Loco (Fase 1-3)
+# 🚀 Tablero de Ejecución Ágil: Calamar Loco (Sprint Board)
 
-> 📋 Este documento detalla la hoja de ruta técnica y documental para la implementación del proyecto, alineado con [TASK.MD](./TASK.MD) y la arquitectura en [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md).
+> � **Instrucciones de Uso:** Pegar este checklist en un Issue de GitHub, un Milestone de Project o en la sección de ejecución de `TASK.MD`. Marcar los checkboxes a medida que completes las subtareas. Úsalo como tablero vivo para el seguimiento diario del progreso.
+>
+> **Leyenda de Estado:**
+> - [ ] 🔵 **Pendiente**
+> - [~] 🟡 **En Progreso**
+> - [x] ✅ **Hecho**
 
 ---
 
 ## 🚀 FASE 1: FUNDACIÓN (Estabilización y Medición)
-*Foco: Lograr ≥ 55 FPS en móvil e infraestructura de datos. Ninguna feature de gameplay nueva hasta completar esto.*
+*Objetivo: ≥ 55 FPS en móvil e infraestructura de datos. 0 Balance de gameplay hasta estabilizar.*
 
 ### 🛠️ Core Engine & Performance (🔴 Alta Prioridad)
-- [ ] **TASK-018: Implementar Máquina de Estados (FSM)**
-    - [ ] Implementar `GameStatus` FSM en `store.ts` según `docs/STORE_API.md`.
-    - [ ] Validar transiciones (ej: no se puede entrar a `SHOP` desde `MENU`).
-    - [ ] Actualizar `docs/DOCS_AUDIT.md` matriz TASK-018.
-- [ ] **TASK-001: Implementar Object Pooling**
-    - [ ] Crear sistema de pool genérico para obstáculos y gemas.
-    - [ ] Refactorizar `LevelManager` para usar `acquire/release` en lugar de `instantiate/destroy`.
-    - [ ] Verificar reducción de GC Spikes en Chrome Profiler.
-- [ ] **TASK-020: Refactorizar Core Loop (Fixed Timestep)**
-    - [ ] Desacoplar lógica física de `useFrame` (render loop).
-    - [ ] Implementar acumulador de tiempo para actualizaciones constantes (60Hz).
-    - [ ] Validar en `docs/GAMEPLAY_ENGINEER.md`.
-- [ ] **TASK-005 & TASK-006: Optimización de Assets (LOD/Memoización)**
-    - [ ] Aplicar `useMemo` a todas las geometrías y materiales pesados.
-    - [ ] Implementar componentes LOD para modelos complejos según `docs/ART_DIRECTOR_TECH_ARTIST.md`.
-    - [ ] Validar contra los **Performance Budgets** de `docs/TECHNICAL_DIRECTOR.md`.
+
+- **TASK-018: Implementar Máquina de Estados (FSM)**
+    - [ ] Implementar lógica de `GameStatus` FSM en `store.ts` `[DEP: Ninguna]` `[ESTADO: 🔵]`
+    - [ ] Documentar estados y transiciones en `docs/STORE_API.md` `[ESTADO: 🔵]`
+    - [ ] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: 🔵]`
+
+- **TASK-001: Implementar Object Pooling**
+    - [ ] Crear sistema de Pool genérico en `src/shared/lib` `[DEP: Ninguna]` `[ESTADO: 🔵]`
+    - [ ] Refactorizar `LevelManager` para usar pooling en spawn de obstáculos/gemas `[ESTADO: 🔵]`
+    - [ ] Documentar arquitectura de pooling en `docs/GAMEPLAY_ENGINEER.md` `[ESTADO: 🔵]`
+    - [ ] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: 🔵]`
+
+- **TASK-020: Refactorizar Core Loop (Fixed Timestep)**
+    - [ ] Implementar acumulador de tiempo y loop de física estable `[DEP: TASK-001]` `[ESTADO: 🔵]`
+    - [ ] Documentar lógica de desacople en `docs/GAMEPLAY_ENGINEER.md` `[ESTADO: 🔵]`
+    - [ ] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: 🔵]`
+
+- **TASK-005 & TASK-006: Optimización de Assets (LOD/Memoización)**
+    - [ ] Aplicar `useMemo` a geometrías/materiales en componentes `World` `[DEP: Ninguna]` `[ESTADO: 🔵]`
+    - [ ] Implementar niveles de detalle (LOD) para modelos críticos `[ESTADO: 🔵]`
+    - [ ] Validar contra presupuestos en `docs/TECHNICAL_DIRECTOR.md` `[ESTADO: 🔵]`
+    - [ ] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: 🔵]`
 
 ### 🧪 Infraestructura de Calidad (🔴 Alta Prioridad)
-- [ ] **TASK-010: Infraestructura de Testing**
-    - [ ] Configurar `vitest` y `happy-dom`.
-    - [ ] Escribir tests unitarios para la lógica del `store.ts` (score, damage, status).
-- [ ] **TASK-016: Pipeline de CI/CD**
-    - [ ] Crear GitHub Action para `build`, `test` y `type-check`.
-    - [ ] Configurar despliegue automático a Vercel para ramas `feature/*` (Preview).
-- [ ] **TASK-011: Benchmarks Automatizados**
-    - [ ] Implementar script `test:perf` según la guía en `docs/QA_TEST_LEAD.md`.
-    - [ ] Integrar reporte de performance en los PRs de GitHub.
-- [ ] **TASK-015: Analytics y Telemetría**
-    - [ ] Integrar Plausible/Custom tracker.
-    - [ ] Instrumentar eventos: `session_start`, `game_over`, `level_up`.
-    - [ ] Validar en `docs/DATA_ANALYST_GAME_INSIGHTS.md`.
+
+- **TASK-010: Infraestructura de Testing (Vitest)**
+    - [ ] Configurar `vitest` y suite de tests unitarios inicial `[DEP: Ninguna]` `[ESTADO: 🔵]`
+    - [ ] Implementar tests para lógica de score y vida en `store.ts` `[ESTADO: 🔵]`
+    - [ ] Documentar estrategia en `docs/QA_TEST_LEAD.md` `[ESTADO: 🔵]`
+
+- **TASK-016: Pipeline de CI/CD (GitHub Actions)**
+    - [ ] Configurar workflow de Build, Test y Type-check `[DEP: TASK-010]` `[ESTADO: 🔵]`
+    - [ ] Documentar flujo de despliegue en `docs/BUILD_ENGINEER_DEVOPS_GAMES.md` `[ESTADO: 🔵]`
+
+- **TASK-011: Benchmarks Automatizados**
+    - [ ] Implementar script de extracción de métricas de performance `[DEP: TASK-016]` `[ESTADO: 🔵]`
+    - [ ] Documentar metodología de medición en `docs/QA_TEST_LEAD.md` `[ESTADO: 🔵]`
+
+- **TASK-015: Analytics y Telemetría**
+    - [ ] Instrumentar eventos core (session, start, death) `[DEP: Ninguna]` `[ESTADO: 🔵]`
+    - [ ] Validar pipeline de datos en `docs/DATA_ANALYST_GAME_INSIGHTS.md` `[ESTADO: 🔵]`
 
 ---
 
 ## 🎯 FASE 2: RETENCIÓN (Diversión y Equidad)
-*Foco: Mejorar el primer minuto de juego y reducir la frustración.*
+*Objetivo: Retención D1 > 40%. Hacer el juego "justo" y agradable.*
 
 ### 🎮 Gameplay Loops (🔴 Alta / 🟡 Media)
-- [ ] **TASK-017: Sistema de Checkpoints (🔴)**
-    - [ ] Implementar lógica de guardado de estado en puntos clave del nivel.
-    - [ ] UI: Mensaje visual "Checkpoint alcanzado".
-    - [ ] Validar lógica en `docs/LEAD_GAME_DESIGNER.md`.
-- [ ] **TASK-022: Onboarding y Mejoras de UX (🟡)**
-    - [ ] Implementar tooltips contextuales (tutorial dinámico).
-    - [ ] Aplicar rediseño de HUD (contraste y jerarquía) según `docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md`.
-- [ ] **TASK-002: Sistema de Audio Completo (🟡)**
-    - [ ] Implementar `AudioEngine` desacoplado según `docs/AUDIO_SPEC.md`.
-    - [ ] Agregar música adaptativa y lógica de "Audio Unlock".
-    - [ ] Actualizar `docs/DOCS_AUDIT.md` matriz TASK-002.
-- [ ] **TASK-019: Balance de Economía (🟡)**
-    - [ ] Ajustar multiplicadores de velocidad y costes de la tienda.
-    - [ ] Validar con datos de telemetría (depende de TASK-015).
+
+- **TASK-017: Sistema de Checkpoints (🔴)**
+    - [ ] Implementar lógica de guardado/carga de progreso en runtime `[DEP: TASK-018]` `[ESTADO: 🔵]`
+    - [ ] Crear UI de feedback "Checkpoint Alcanzado" `[ESTADO: 🔵]`
+    - [ ] Documentar mecánica en `docs/LEAD_GAME_DESIGNER.md` `[ESTADO: 🔵]`
+
+- **TASK-022: Onboarding Básico y Mejoras de UX (🟡)**
+    - [ ] Implementar sistema de tooltips contextuales dinámicos `[DEP: Ninguna]` `[ESTADO: 🔵]`
+    - [ ] Rediseñar jerarquía visual del HUD (outlines/glows) `[ESTADO: 🔵]`
+    - [ ] Documentar principios aplicados en `docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md` `[ESTADO: 🔵]`
+
+- **TASK-002: Sistema de Audio Completo (🟡)**
+    - [ ] Implementar `AudioEngine` y sistemas de crossfade `[DEP: Ninguna]` `[ESTADO: 🔵]`
+    - [ ] Integrar assets musicales y SFX tropicales `[ESTADO: 🔵]`
+    - [ ] Validar especificación en `docs/AUDIO_SPEC.md` `[ESTADO: 🔵]`
+
+- **TASK-019: Balance de Economía y Dificultad (🟡)**
+    - [ ] Ajustar curvas de velocidad y costes basándose en datos `[DEP: TASK-015]` `[ESTADO: 🔵]`
+    - [ ] Documentar tablas de balance en `docs/GAME_ECONOMY_DESIGNER.md` `[ESTADO: 🔵]`
 
 ---
 
 ## 🌟 FASE 3: EXPANSIÓN (Profundidad y Contenido)
-*Foco: Rejugabilidad y competitividad.*
+*Objetivo: Retención D7 > 15%. Rejugabilidad extrema.*
 
 ### ⚔️ Nuevas Mecánicas & IA (🟡 Media / 🟢 Baja)
-- [ ] **TASK-021: Sistema de Combate MVP (🟡)**
-    - [ ] Implementar mecánica de proyectiles y colisión con enemigos.
-    - [ ] UI: Indicador de munición en HUD.
-- [ ] **TASK-024: Integración de IA Ligera (🟡)**
-    - [ ] Implementar `AdaptiveAiManager.ts` con reglas heurísticas.
-    - [ ] (Opcional) Integrar modelo TensorFlow.js según `docs/AI_SPEC.md`.
-- [ ] **TASK-014: Leaderboard e Interacción Social (🟢)**
-    - [ ] Implementar ranking local persistente en `localStorage`.
-    - [ ] Agregar botón "Compartir Récord" según `docs/LEADERBOARD_SPEC.md`.
-- [ ] **TASK-008 & TASK-009: PWA y Optimization (🟡)**
-    - [ ] Configurar Manifest y Service Worker para modo offline.
-    - [ ] Code-splitting agresivo para bajar TTI < 3s.
+
+- **TASK-021: Sistema de Combate MVP (🟡)**
+    - [ ] Implementar lógica de disparo, munición y colisión con enemigos `[DEP: TASK-020]` `[ESTADO: 🔵]`
+    - [ ] Documentar sistema de combate en `docs/LEAD_GAME_DESIGNER.md` `[ESTADO: 🔵]`
+
+- **TASK-024: Integración de IA Ligera (🟡)**
+    - [ ] Implementar `AdaptiveAiManager.ts` con lógica DDA `[DEP: TASK-015, TASK-020]` `[ESTADO: 🔵]`
+    - [ ] Integrar feedback visual de IA en HUD `[ESTADO: 🔵]`
+    - [ ] Validar arquitectura en `docs/AI_SPEC.md` `[ESTADO: 🔵]`
+
+- **TASK-014: Leaderboard e Interacción Social (🟢)**
+    - [ ] Implementar ranking local y botón "Compartir Récord" `[DEP: Ninguna]` `[ESTADO: 🔵]`
+    - [ ] Documentar en `docs/LEADERBOARD_SPEC.md` `[ESTADO: 🔵]`
+
+- **TASK-008 & TASK-009: PWA y Optimization (🟡)**
+    - [ ] Configurar Manifest, Service Worker e iconos `[DEP: Ninguna]` `[ESTADO: 🔵]`
+    - [ ] Realizar optimización de Build final (Code splitting) `[ESTADO: 🔵]`
+    - [ ] Documentar en `docs/BUILD_ENGINEER_DEVOPS_GAMES.md` `[ESTADO: 🔵]`
 
 ---
 
 ## 🧹 Tareas Transversales (Ongoing)
-- [ ] **TASK-013: Guía de Contribución**
-    - [ ] Verificar integridad de `CONTRIBUTING.md`.
-- [ ] **TASK-023: Documentación Unificada**
-    - [ ] Correr script `.gemini/validate-links.js` semanalmente.
-    - [ ] Ejecutar prompt `.gemini/sync-docs.md` después de cada hito de Phase.
+
+- **TASK-013: Mantenimiento de Estándares**
+    - [ ] Auditar cumplimiento de `CONTRIBUTING.md` en nuevos PRs `[ESTADO: 🔵]`
+    - [ ] Ejecutar validación de links con script `.gemini/validate-links.js` `[ESTADO: 🔵]`
+
+- **TASK-023: Sincronización Documental**
+    - [ ] Ejecutar prompt `.gemini/sync-docs.md` tras completar cada Task principal `[ESTADO: 🔵]`
+    - [ ] Mantener `docs/DOCS_AUDIT.md` como fuente de confianza del estado de specs `[ESTADO: 🔵]`
 
 ---
-🔗 Referencia principal: [TASK.MD](./TASK.MD) | [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
-Última actualización: 17/12/2025
+🔗 Referencia: [TASK.MD](./TASK.MD) | [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) | [DOCS_AUDIT.md](./DOCS_AUDIT.md)
+Actualizado: 17/12/2025
