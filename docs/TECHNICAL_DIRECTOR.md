@@ -41,6 +41,22 @@
 - **Duplicación:** Lógica de movimiento duplicada entre componentes
 - **God objects:** Store.ts tiene 200+ líneas con responsabilidades mezcladas
 
+---
+
+## 2B. Especificación: GameStatus FSM (TASK-018)
+Para garantizar la integridad del flujo del juego, el `GameStatus` se gestionará mediante una Máquina de Estados Finita (FSM) con transiciones validadas:
+
+| Estado Actual | Transición Válida (Evento) | Estado Siguiente |
+| :--- | :--- | :--- |
+| `MENU` | `START_GAME` | `PLAYING` |
+| `PLAYING` | `TAKE_DAMAGE (lives=0)` | `GAME_OVER` |
+| `PLAYING` | `ENTER_PORTAL` | `SHOP` |
+| `SHOP` | `EXIT_SHOP` | `PLAYING` |
+| `PLAYING` | `COLLECT_LAST_LETTER` | `VICTORY` |
+| `GAME_OVER` / `VICTORY` | `RETRY` | `PLAYING` |
+
+**Regla de Oro:** Ninguna acción debe mutar el estado si no cumple con la matriz de transiciones.
+
 ## 3. Rendimiento: runtime budgets y objetivos medibles
 
 **Define budgets objetivo para web game:**
@@ -56,6 +72,14 @@
 - **GC pauses:** Memory timeline para spikes >16ms (target <1 evento/minuto)
 - **Input latency:** Touch events delay <16ms (target 95% de inputs)
 - **Bundle analysis:** Rollup visualizer para tree-shaking gaps
+
+### Performance Budgets (TASK-005/006/007)
+| Categoría | Budget | Gate de CI |
+| :--- | :--- | :--- |
+| JS Main Bundle | < 500 KB (gzip) | 🔴 Error si > 600 KB |
+| Draw Calls | < 80 por frame | ⚠️ Warn si > 100 |
+| Tri Count | < 60k (móvil) | ⚠️ Warn si > 80k |
+| TTI (Móvil G4) | < 3.0s | 🔴 Error si > 4s |
 
 **Principales riesgos típicos en web:**
 - **GC allocations:** Objetos creados en hot paths (LevelManager spawn)
