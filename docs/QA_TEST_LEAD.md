@@ -1,6 +1,8 @@
 # QA_TEST_LEAD.md
 
-1) Diagnóstico ejecutivo en 10 líneas
+> 🧪 Documento de QA & Testing – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
+## 1) Diagnóstico ejecutivo en 10 líneas
 Estado actual inestable para release: sin suite de tests funcional, GC spikes causan stuttering en móviles, estados de juego no validados, colisiones físicas inexactas. 3 riesgos críticos: crashes por memoria en escenas densas (TASK-005), progreso perdido por estados inválidos (SHOP+PLAYING simultáneo), input lag en touch events móviles. 3 vacíos: tests unitarios ausentes (TASK-010), benchmarks performance faltantes (TASK-011), tests e2e no implementados. 3 quick wins: agregar limits velocidad (previene exploits), validar transiciones estado, implementar smoke tests manuales. **Chequeo TASK:** El diagnóstico original era correcto. El nuevo plan unificado ha corregido la priorización: **TASK-010 (Tests)** y **TASK-011 (Benchmarks)** han sido elevados a **prioridad 🔴 Alta** y son componentes centrales de la Fase 1. Además, se ha añadido **TASK-016 (CI/CD)** para automatizar la ejecución de estas validaciones de calidad.
 
 2) Estrategia de testing recomendada (pirámide)
@@ -63,14 +65,14 @@ Crash-free sessions: >95%; error rate JS exceptions <0.1%; ANR/long task rate <5
 8) Checklist de release (obligatorio)
 Build/config: envs válidos (API_KEY placeholder), version bump (package.json), sourcemaps enabled (vite.config), feature flags off (no dev code). Smoke tests: manual (load→play 1min→shop→game over→retry) + automatizados (E2E-001 to E2E-003). Compatibilidad: browsers (Chrome 90+, Safari 14+, Firefox 88+), dispositivos (iPhone 12+, Android Snapdragon 865+), resolutions (360x640 min). Performance gates: FPS >50 móvil, memoria <100MB, load <3s. Seguridad: CSP headers (no inline scripts), permisos minimal (no geolocation), secrets not exposed. Rollback: git tags, Vercel deploy history, feature toggles ready. Post-release: monitor 24h (analytics crashes, user feedback), hotfix pipeline ready.
 
-## 9. Plan de Acción de QA (Alineado con Roadmap Maestro)
+## 9. Plan de Acción de QA (Alineado con TASK.MD)
 
 El rol de QA es garantizar la calidad, estabilidad y performance del producto en cada etapa del desarrollo. El plan de QA se integra directamente en el roadmap estratégico de 3 fases.
 
 ### 🚀 FASE 1: FUNDACIÓN (Estabilización y Medición)
 **Objetivo de QA:** Construir la red de seguridad. Pasar de un proceso sin tests a uno donde la calidad es un gate automático.
 - **Acciones:**
-  - **Implementar Frameworks de Testing (TASK-010):** Configurar `vitest` para tests unitarios y `Playwright` para E2E.
+  - **Implementar Frameworks de Testing (TASK-010):** Configurar `vitest` para tests unitarios y recomendar `Playwright` para E2E (incluido dentro del alcance de TASK-010 como opcional / según avance, sin generar nuevas tareas fuera del backlog oficial).
   - **Crear Suite de Tests Unitarios Core:** Escribir tests para la lógica de estado en `store.ts` (cálculo de score, daño, etc.). El objetivo es una cobertura > 80% del store.
   - **Desarrollar Benchmarks de Performance (TASK-011):** Crear scripts para medir FPS, uso de memoria y TTI de forma consistente.
   - **Integrar con CI/CD (TASK-016):** Añadir los tests y benchmarks como un paso obligatorio en el pipeline de CI. Un PR no se puede mergear si rompe los tests o degrada la performance más allá de un umbral.
@@ -91,6 +93,8 @@ El rol de QA es garantizar la calidad, estabilidad y performance del producto en
   - **Testing Exploratorio:** Realizar testing exploratorio en nuevos biomas o modos de juego para encontrar bugs no obvios.
   - **Ampliar Regresión Automatizada:** Añadir los flujos críticos de las nuevas features a la suite de regresión automatizada para protegerlos a futuro.
 
+> 📘 Más contexto general: [README.md](../README.md)
+
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
 Última sincronización automática: 2025-12-17
