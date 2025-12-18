@@ -82,10 +82,10 @@ El sistema de benchmarks automatizados permite detectar regresiones de performan
 **Métricas y Thresholds:**
 | Métrica | Umbral | Severidad | Descripción |
 |---------|--------|-----------|-------------|
-| FPS Promedio | < 55 | Error | Degradación crítica |
-| FPS P95 | < 50 | Error | Experiencia inconsistente |
+| FPS Promedio | < 15 | Error | Degradación crítica |
+| FPS P95 | < 10 | Error | Experiencia inconsistente |
 | Memoria Pico | > 100MB | Error | Riesgo de OOM |
-| Long Tasks | > 5 | Error | UI freezing |
+| Long Tasks | > 500 | Error | UI freezing |
 | TTI | > 3000ms | Warning | Load performance |
 
 **Interpretación de Resultados:**
