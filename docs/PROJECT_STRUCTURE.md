@@ -24,6 +24,12 @@ Actualmente, el proyecto presenta una estructura simplificada con lógica disper
 - **Falta de SRP:** `LevelManager` es excesivamente complejo.
 - **Imports Relativos:** Uso de `../../` que dificulta el refactor.
 
+### Mapping rápido (estructura actual → estructura objetivo)
+
+- `components/World/` → `src/world/`
+- `components/UI/` → `src/features/ui/` (o `src/shared/components/` para componentes atómicos)
+- `components/System/Audio.ts` → `src/systems/audio/` (lógica pura tipo engine para manejo de sonidos)
+
 ---
 
 ## 3. Principios de Arquitectura (SRP/DRY)
@@ -58,7 +64,9 @@ Para evitar el "acoplamiento spaghetti" y asegurar una API limpia por módulo:
 ## 4. Reglas SRP por capas (qué va en cada lugar)
 
 - **`src/shared/`**: Tipos globales, constantes físicas, utilidades matemáticas genéricas, hooks que no dependen de la lógica de negocio y componentes UI atómicos (botones, modales) que **no** dependen del store.
+    - `src/shared/types/`: Tipos compartidos cross-feature (usados por más de un dominio).
 - **`src/features/`**: Orquestación de UI + Hooks de dominio + lógica de negocio específica (Game, Shop, Onboarding, Analytics, AI). Es donde vive el "comportamiento" del juego.
+    - `src/features/*/state/types`: Tipos privados del dominio (no exportar fuera salvo vía `public.ts`).
 - **`src/systems/`**: Lógica pura tipo "engine" (Pooling, Timestep Loop, Colisiones). Son agnósticos a React y ThreeFiber; procesan datos y cálculos puros.
 - **`src/world/`**: Grafo de escena R3F. Contiene las "Views" y "Entities" (el modelo 3D y su renderizado). No debe contener lógica de negocio, solo bindings al estado y rendering.
 
@@ -137,6 +145,7 @@ alias: {
 
 Para evitar el "Architectural Drift", se recomiendan estas prácticas:
 - **Linting de Límites:** Usar ESLint con `no-restricted-imports` para prohibir que las features importen internals de otras features.
+- **No imports entre features por subpath:** Una feature no puede importar internals de otra feature. Solo se permite importar la API pública vía `features/<feature>/index.ts` (y su `public.ts`).
 - **API Check:** Solo se permite importar de una feature a través de su `index.ts` o `public.ts`.
 - **No Store en Shared:** Si un componente en `shared` necesita el store, debe ser refactorizado o movido a una `feature`.
 
