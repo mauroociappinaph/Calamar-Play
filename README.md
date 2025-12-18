@@ -76,5 +76,5 @@ Desarrollado por **Mauro Ciappina** – Full Stack → AI Developer.
 Este proyecto está bajo la licencia **MIT**.
 
 ---
-🔗 **Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./docs/TASK.MD)).**
-Última sincronización automática: 2025-12-17
+🔗 Referencia: [TASK.MD](./docs/TASK.MD) | [README.md](./README.md)
+Última actualización: 17/12/2025

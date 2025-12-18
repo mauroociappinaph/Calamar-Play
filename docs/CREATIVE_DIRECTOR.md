@@ -1,5 +1,8 @@
 # CREATIVE_DIRECTOR.md
 
+> 🐙 Dirección Creativa y Fantasía Central – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+> Relacionado: TASK-002, TASK-003, TASK-022
+
 ## 1) Diagnóstico ejecutivo
 El juego transmite una identidad de "aventura absurda de calamar playero" en 1 frase.
 
@@ -175,5 +178,5 @@ El rol del Director Creativo es ser el guardián de la "fantasía" y el "tono" d
   - **Guía de Estilo para Contenido Futuro:** Mantener y expandir la guía de estilo para que todo el contenido nuevo (personajes, enemigos, escenarios) mantenga la coherencia visual y tonal.
 
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
-Última sincronización automática: 2025-12-17
+🔗 Referencia: [TASK.MD](./TASK.MD) | [README.md](../README.md)
+Última actualización: 17/12/2025

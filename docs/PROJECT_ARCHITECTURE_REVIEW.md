@@ -1,4 +1,9 @@
-## 10. Plan de Refactor Arquitectónico (Alineado con TASK.MD)
+# PROJECT_ARCHITECTURE_REVIEW.md
+
+> 🏗️ Revisión de Arquitectura y Refactores – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+> Relacionado: TASK-023, TASK-012, TASK-018
+
+## 1. Plan de Refactor Arquitectónico
 
 Este plan es complementario y no modifica prioridades fuera del backlog oficial definido en `TASK.MD`. Sus acciones se aplicarán dentro de las tasks existentes.
 

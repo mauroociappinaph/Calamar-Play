@@ -70,5 +70,5 @@ El desarrollo de la IA no es una feature aislada y depende de la madurez de los 
 *Nota: Según el roadmap unificado en [TASK.MD](./TASK.MD), el módulo de AI se implementa de forma integral durante la **Fase 3**.*
 
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
-Última sincronización automática: 2025-12-17
+🔗 Referencia: [TASK.MD](./TASK.MD) | [README.md](../README.md)
+Última actualización: 17/12/2025

@@ -41,7 +41,13 @@ function getAllMarkdownFiles(dirPath, arrayOfFiles = []) {
 function auditFile(filePath) {
   const fileName = path.basename(filePath);
   const relativePath = path.relative(ROOT_DIR, filePath);
-  const content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(filePath, 'utf8');
+
+  // Ignorar bloques de código triple backtick para evitar falsos positivos
+  content = content.replace(/```[\s\S]*?```/g, '');
+  // Ignorar código inline
+  content = content.replace(/`[^`\n]+`/g, '');
+
   const lines = content.split('\n');
 
   const report = {
