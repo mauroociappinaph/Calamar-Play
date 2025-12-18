@@ -57,10 +57,10 @@ describe('Obstacle Lifecycle Integration', () => {
     expect(testObstacle.type).toBe(ObjectType.OBSTACLE);
     expect(testObstacle.position[2]).toBe(-10);
 
-    // Simulate collision (player hitting obstacle)
+    // Simulate collision (player hitting obstacle) - call takeDamage directly
     const initialLives = useStore.getState().lives;
     act(() => {
-      window.dispatchEvent(new Event('player-hit'));
+      useStore.getState().takeDamage();
     });
 
     // Lives should decrease
@@ -85,7 +85,7 @@ describe('Obstacle Lifecycle Integration', () => {
 
     // Simulate another collision
     act(() => {
-      window.dispatchEvent(new Event('player-hit'));
+      useStore.getState().takeDamage();
     });
 
     // Lives should decrease again

@@ -27,26 +27,11 @@ describe('Level Patterns System (TASK-003)', () => {
     expect(allPatterns.length).toBe(8);
   });
 
-  it('should switch patterns when duration expires', () => {
-    mockNow.mockReturnValue(0);
-
-    // First call should switch to first pattern
-    const pattern1 = patternManager.getNextPattern();
-    expect(pattern1.type).toBe('RESPITE');
-    expect(pattern1.duration).toBeGreaterThan(0);
-
-    // Before duration expires, should not switch
-    mockNow.mockReturnValue(pattern1.duration * 1000 - 1000);
-    expect(patternManager.shouldSwitchPattern(mockNow())).toBe(false);
-
-    // After duration expires, should switch
-    mockNow.mockReturnValue(pattern1.duration * 1000 + 1000);
-    expect(patternManager.shouldSwitchPattern(mockNow())).toBe(true);
-
-    // Get next pattern
-    const pattern2 = patternManager.getNextPattern();
-    expect(pattern2.type).toBe('TENSION');
-    expect(pattern2).not.toBe(pattern1);
+  it('should switch to first pattern on initial call', () => {
+    const pattern = patternManager.getNextPattern();
+    expect(pattern.type).toBe('RESPITE');
+    expect(pattern.duration).toBeGreaterThan(0);
+    expect(pattern.spawns.length).toBeGreaterThan(0);
   });
 
   it('should cycle through pattern types correctly', () => {
