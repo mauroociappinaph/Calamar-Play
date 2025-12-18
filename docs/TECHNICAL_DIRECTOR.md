@@ -264,9 +264,7 @@ El rol del Director Técnico es garantizar la salud, escalabilidad y rendimiento
   - **Supervisar Refactor Crítico:** Liderar la ejecución de las tareas de estabilización del core loop: **TASK-020 (Fixed Timestep)**, **TASK-001 (Object Pooling)**, y **TASK-005 (Memoización)**.
   - **Implementar Infraestructura de Calidad:** Desplegar el pipeline de **CI/CD (TASK-016)**, configurar **tests unitarios (TASK-010)** y **benchmarks de performance (TASK-011)** como gates de calidad obligatorios en cada PR.
   - **Establecer Observabilidad:** Integrar **Analytics (TASK-015)** para las métricas de producto y un sistema de **Error Tracking** (ej. Sentry) para monitorear la salud del build en producción.
-- **Señal de Éxito:** Releases automáticos a staging, crash rate < 1%, y un dashboard de performance funcional.
-
-
+- **Señal de Éxito:** Releases automáticos con previews / deploy controlado, crash rate < 1%, y un dashboard de performance funcional.
 
 ### 🎯 FASE 2: RETENCIÓN (Arquitectura para Gameplay)
 **Objetivo Técnico:** Garantizar que la arquitectura soporte las nuevas mecánicas de juego de forma limpia y escalable, sin introducir nueva deuda técnica.
