@@ -20,7 +20,7 @@ export const Tronco: React.FC<{ data: GameObject }> = ({ data }) => {
       </mesh>
       {/* Top part */}
       <mesh position={[0, 1.6, 0]}>
-        <coneGeometry args={[0.5, 0.5, 0.5, 8]} />
+        <coneGeometry args={[0.5, 0.5, 8, 8]} />
         <meshStandardMaterial color="#8b4513" roughness={0.9} />
       </mesh>
     </group>

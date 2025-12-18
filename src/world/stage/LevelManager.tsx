@@ -15,6 +15,7 @@ import { GameObject, ObjectType, LANE_WIDTH, SPAWN_DISTANCE, REMOVE_DISTANCE, Ga
 import { audio } from '@/systems/audio/AudioEngine';
 import { ObjectPool } from '@/systems/pooling/ObjectPool';
 import { FixedTimestepLoop, InputState } from '@/systems/core/FixedTimestepLoop';
+import { Tronco, ForcedTronco } from '@/world/obstacles/Tronco';
 
 // Geometry Constants
 const OBSTACLE_HEIGHT = 1.6;
@@ -313,7 +314,9 @@ export const LevelManager: React.FC = () => {
         if (keep) {
             keptObjects.push(obj);
         } else {
+            console.log('POOL RELEASE:', gameObjectPool.getStats(), 'obj id:', obj.id, 'type:', obj.type, 'active:', obj.active, 'position:', obj.position, 'frame:', performance.now());
             gameObjectPool.release(obj);
+            console.log('POOL AFTER RELEASE:', gameObjectPool.getStats());
         }
     }
 
@@ -327,7 +330,7 @@ export const LevelManager: React.FC = () => {
     if (staticObjects.length > 0) {
         furthestZ = Math.min(...staticObjects.map(o => o.position[2]));
     } else {
-        furthestZ = -20;
+        furthestZ = -100; // Initialize to trigger initial spawn
     }
 
     if (furthestZ > -SPAWN_DISTANCE) {
@@ -402,6 +405,7 @@ export const LevelManager: React.FC = () => {
                     for (let k = 0; k < alienCount; k++) {
                         const lane = availableLanes[k];
                         const alienObj = gameObjectPool.acquire();
+                        console.log('POOL ACQUIRE ALIEN:', gameObjectPool.getStats(), 'frame:', performance.now());
                         alienObj.type = ObjectType.ALIEN;
                         alienObj.position[0] = lane * LANE_WIDTH;
                         alienObj.position[1] = 1.5;
@@ -410,7 +414,9 @@ export const LevelManager: React.FC = () => {
                         alienObj.color = '#00ff00';
                         alienObj.hasFired = false;
 
-                        currentObjects.push(alienObj);
+                        keptObjects.push(alienObj);
+                        console.log('SPAWN ALIEN', alienObj.id, alienObj.position, alienObj.active);
+                        console.log('POOL AFTER ACQUIRE ALIEN:', gameObjectPool.getStats());
                     }
                 } else {
                     const availableLanes = [];
@@ -432,6 +438,7 @@ export const LevelManager: React.FC = () => {
                         const laneX = lane * LANE_WIDTH;
 
                         const obstacleObj = gameObjectPool.acquire();
+                        console.log('POOL ACQUIRE OBSTACLE:', gameObjectPool.getStats(), 'frame:', performance.now());
                         obstacleObj.type = ObjectType.OBSTACLE;
                         obstacleObj.position[0] = laneX;
                         obstacleObj.position[1] = OBSTACLE_HEIGHT / 2;
@@ -439,8 +446,10 @@ export const LevelManager: React.FC = () => {
                         obstacleObj.active = true;
                         obstacleObj.color = '#8b4513';
 
+                        console.log('SPAWN TRONCO', obstacleObj.id, obstacleObj.position, obstacleObj.active);
                         console.log('DEBUG SPAWN: Created obstacle at lane', lane, 'position', laneX, spawnZ);
-                        currentObjects.push(obstacleObj);
+                        keptObjects.push(obstacleObj);
+                        console.log('POOL AFTER ACQUIRE OBSTACLE:', gameObjectPool.getStats());
 
                         if (Math.random() < 0.3) {
                              const extraGem = gameObjectPool.acquire();
@@ -452,7 +461,7 @@ export const LevelManager: React.FC = () => {
                              extraGem.color = '#ffffff';
                              extraGem.points = 100;
 
-                             currentObjects.push(extraGem);
+                             keptObjects.push(extraGem);
                         }
                     }
                 }
@@ -508,6 +517,7 @@ export const LevelManager: React.FC = () => {
     const isVictoryReset = status === GameStatus.PLAYING && prevStatus.current === GameStatus.VICTORY;
 
     if (isMenuReset || isRestart || isVictoryReset) {
+        // Clear objects for fresh start - spawn will provide initial objects
         objectsRef.current = [];
         setRenderTrigger(t => t + 1);
 
@@ -576,6 +586,7 @@ export const LevelManager: React.FC = () => {
 
   return (
     <group>
+      <ForcedTronco />
       <ParticleSystem />
       {objectsRef.current.map(obj => {
         if (!obj.active) {
@@ -663,30 +674,8 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
                     </group>
                 )}
 
-                {/* --- OBSTACLE (Driftwood Stump) --- */}
-                {data.type === ObjectType.OBSTACLE && (() => {
-                    console.log('DEBUG RENDER: Rendering obstacle', {
-                        id: data.id,
-                        active: data.active,
-                        position: data.position,
-                        type: data.type
-                    });
-                    return (
-                        <group>
-                            <mesh geometry={OBSTACLE_GEOMETRY} castShadow receiveShadow>
-                                 <meshStandardMaterial color="#ff0000" roughness={0.9} />
-                            </mesh>
-                            <mesh position={[0, OBSTACLE_HEIGHT/2, 0]} geometry={OBSTACLE_TOP_GEO}>
-                                 <meshStandardMaterial color="#ff0000" roughness={0.9} />
-                            </mesh>
-                            {/* TEMP: Debug cube to ensure rendering works */}
-                            <mesh position={[0, 2, 0]}>
-                                <boxGeometry args={[0.5, 0.5, 0.5]} />
-                                <meshBasicMaterial color="#00ff00" />
-                            </mesh>
-                        </group>
-                    );
-                })()}
+                {/* --- OBSTACLE (Tronco) --- */}
+                {data.type === ObjectType.OBSTACLE && <Tronco data={data} />}
 
                 {/* --- ALIEN (Shark Fin) --- */}
                 {data.type === ObjectType.ALIEN && (

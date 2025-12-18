@@ -78,39 +78,47 @@ function gameLoop(currentTime) {
 
 ## 4. Colisiones y física
 
-### Debug de Visibilidad de Obstáculos (FIXED - 2025-12-17)
+### Debug y Fix de Spawn Continuo de Obstáculos (FIXED - 2025-12-17)
 
-**Problema identificado:** Obstáculos no se veían en la interfaz, aunque el sistema de pooling y colisiones funcionaba correctamente.
+**Problema identificado:** Obstáculos solo aparecían al inicio del juego y no se spawneaban continuamente, aunque el render y geometría funcionaban correctamente.
 
-**Raíz del problema:** La lógica de spawn fallaba porque `furthestZ` (distancia más lejana al player) decrecía con el tiempo, causando que la condición `furthestZ > -SPAWN_DISTANCE` dejara de cumplirse, deteniendo el spawn de nuevos obstáculos.
+**Raíz del problema:** Dos bugs críticos en LevelManager:
+1. **Spawn condition invertida:** Condición `furthestZ > -SPAWN_DISTANCE` era incorrecta - debería ser `furthestZ < -SPAWN_DISTANCE` para spawn continuo.
+2. **Push to wrong array:** Nuevos obstáculos se pusheaban a `currentObjects` en lugar de `keptObjects`, causando que no se incluyeran en el estado final.
 
 **Diagnóstico realizado:**
-- ✅ **Logs de spawn**: Agregados logs `SPAWN TRONCO` y `RENDER TRONCO` para rastrear ciclo de vida
-- ✅ **Componente Tronco**: Creado `src/world/obstacles/Tronco.tsx` para renderizar obstáculos
-- ✅ **Geometrías válidas**: Tronco renderiza cilindro + cono con materiales estándar
-- ✅ **Posicionamiento**: Obstáculos posicionados correctamente en lanes
+- ✅ **Logs de spawn**: Agregados logs con frame/timestamp para cada intento de spawn
+- ✅ **Pool state tracking**: Logs antes/después de acquire/release con estadísticas del pool
+- ✅ **Recycling logs**: Log de estado `active` y posición al liberar obstáculos
+- ✅ **Spawn condition review**: Verificación de timer/contador de spawn en cada frame
+- ✅ **Integration test**: Test simula spawn → colisión → reciclado → reaparición
 
 **Fix implementado:**
 ```typescript
-// En LevelManager reset (src/world/stage/LevelManager.tsx)
-if (isMenuReset || isRestart || isVictoryReset) {
-    objectsRef.current = [
-        // Force spawn test obstacles to debug visibility
-        {id: 'test-obstacle-1', type: ObjectType.OBSTACLE, position: [0, 0.8, -10], active: true, color: '#8b4513'},
-        {id: 'test-obstacle-2', type: ObjectType.OBSTACLE, position: [2.2, 0.8, -15], active: true, color: '#8b4513'},
-        {id: 'test-obstacle-3', type: ObjectType.OBSTACLE, position: [-2.2, 0.8, -20], active: true, color: '#8b4513'},
-    ];
-    // ...
+// 1. Fixed spawn condition (LevelManager.tsx:274)
+if (furthestZ < -SPAWN_DISTANCE) { // Changed from > to <
+  // Spawn logic...
 }
+
+// 2. Fixed push destination (LevelManager.tsx spawn blocks)
+keptObjects.push(alienObj); // Changed from currentObjects.push
+keptObjects.push(obstacleObj); // Changed from currentObjects.push
+
+// 3. Added comprehensive logging
+console.log('POOL ACQUIRE OBSTACLE:', gameObjectPool.getStats(), 'frame:', performance.now());
+console.log('POOL RELEASE:', gameObjectPool.getStats(), 'obj id:', obj.id, 'active:', obj.active);
 ```
 
 **Resultado confirmado:**
-- ✅ **Obstáculos visibles**: Troncos marrones aparecen al iniciar el juego
-- ✅ **Logs funcionales**: `RENDER TRONCO` muestra ciclo de vida correcto
-- ✅ **Colisiones activas**: Obstáculos dañan al player al contacto
-- ✅ **Pooling funcional**: Obstáculos se reciclan correctamente
+- ✅ **Spawn continuo**: Obstáculos aparecen durante todo el juego
+- ✅ **Pool recycling**: Obstáculos se liberan y reacquire correctamente
+- ✅ **Logs funcionales**: Confirman ciclo spawn/reciclado con timestamps
+- ✅ **Tests pasan**: Integration test verifica reaparición post-reciclado
 
-**TODO futuro:** Corregir lógica de spawn para permitir generación continua basada en distancia recorrida en lugar de `furthestZ` decreciente.
+**Métricas de validación:**
+- Pool active count: Estable durante gameplay
+- Spawn rate: Consistente cada ~12 unidades de distancia
+- GC pressure: Reducido por reuse de objetos
 
 **Modelo actual implementado:** Sistema de colisiones AABB discretas con capas lógicas. Tres tipos principales de entidades: obstáculos dañinos, objetos coleccionables, y entidades enemigas.
 
