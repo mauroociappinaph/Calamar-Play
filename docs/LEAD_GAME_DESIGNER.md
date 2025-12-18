@@ -73,7 +73,7 @@
 **Problemas típicos:**
 - **Escalado excesivo:** Speed aumenta 30% por nivel sin compensación mecánica. **Solución: TASK-019.**
 - **Combinaciones no anticipadas:** Aliens + misiles aparecen sin build-up. **Solución: TASK-003.**
-- **Castigo sin aprendizaje:** Muerte = perder todo progreso. **Solución: TASK-017.**
+- **Castigo sin aprendizaje:** Muerte = perder todo progreso. **Solución: TASK-017 (IMPLEMENTADO).**
 - **RNG injusto:** Spawn procedural puede crear patrones imposibles. **Solución: TASK-003.**
 
 **Propuesta de re-rampa:**
@@ -268,6 +268,91 @@ Con una base estable y un loop divertido, el foco es añadir profundidad y rejug
 - **Tareas Críticas Añadidas:** El backlog ahora incluye las tareas fundamentales de diseño que faltaban: **TASK-017 (Checkpoints)**, **TASK-019 (Balance)**, **TASK-021 (Combate)** y **TASK-022 (Onboarding)**.
 - **Prioridades Claras:** El foco del diseño está en la **Fase 2 (Retención)**, que depende directamente de la estabilidad que se logrará en la **Fase 1 (Fundación)**.
 - **Rol Definido:** El Game Designer supervisa la integridad de la experiencia durante la Fase 1, lidera la reconstrucción del core loop en la Fase 2, y expande el universo del juego en la Fase 3.
+
+## 10. Arquitectura del Sistema de Checkpoints (TASK-017 - IMPLEMENTADO)
+
+### Visión General
+El sistema de checkpoints resuelve el problema crítico de pérdida total de progreso al morir, implementando guardado automático de estado cada 50 metros recorridos. Esto transforma la experiencia de "todo o nada" en una progresión más justa y motivadora.
+
+### Estructura de Datos del Checkpoint
+```typescript
+interface CheckpointData {
+  // Estado del juego (store)
+  score: number;
+  lives: number;
+  maxLives: number;
+  speed: number;
+  collectedLetters: number[];
+  level: number;
+  laneCount: number;
+  gemsCollected: number;
+  distance: number;
+  hasDoubleJump: boolean;
+  hasImmortality: boolean;
+  isImmortalityActive: boolean;
+
+  // Estado del nivel (LevelManager)
+  objects: GameObject[];
+  distanceTraveled: number;
+  nextLetterDistance: number;
+
+  // Validación
+  timestamp: number;
+}
+```
+
+### Lógica de Creación
+- **Frecuencia:** Automática cada 50 metros recorridos
+- **Trigger:** En el fixed update loop del LevelManager
+- **Validación:** Checkpoints incluyen timestamp para caducidad (24h)
+- **Persistencia:** En memoria (no localStorage para simplicidad)
+
+### Lógica de Restauración
+- **Disponibilidad:** Solo si existe checkpoint válido
+- **Activación:** Opción "REINTENTAR DESDE CHECKPOINT" en pantalla de GAME_OVER
+- **Restauración:** Estado completo del store + objetos del nivel
+- **Transición:** Evento `restore-checkpoint` coordina LevelManager
+
+### Integración con UI
+- **Mensaje visual:** "Checkpoint alcanzado en Xm" (3s de duración)
+- **Pantalla GAME_OVER:** Botones "REINTENTAR DESDE CHECKPOINT" y "REINTENTAR DESDE EL INICIO"
+- **Feedback:** Evento `checkpoint-created` dispara notificaciones
+
+### Edge Cases y Validación
+- **Nuevo juego:** Clear checkpoints al iniciar
+- **Cambio de nivel:** Clear checkpoints al avanzar
+- **Checkpoint inválido:** Fallback a restart normal
+- **Múltiples checkpoints:** Solo el último válido se mantiene
+
+### Impacto en Balance de Dificultad
+- **Antes:** Muerte = perder todo progreso → frustración alta
+- **Después:** Muerte = perder progreso desde último checkpoint (50m) → recuperación rápida
+- **Resultado:** Curva de dificultad más justa, retención mejorada, menos "death spirals"
+
+### Testing y QA
+- **Cobertura:** Tests de integración validan creación, restauración y validación
+- **Escenarios:** Checkpoint creation, restoration, clearing, validation
+- **Performance:** Sistema lightweight, no impacta framerate
+
+### Ejemplo de Código
+```typescript
+// Creación automática en LevelManager
+createCheckpoint({
+  objects: objectsRef.current,
+  distanceTraveled: distanceTraveled.current,
+  nextLetterDistance: nextLetterDistance.current
+});
+
+// Restauración desde GAME_OVER
+if (hasCheckpoint()) {
+  restartFromCheckpoint(); // Restaura estado completo
+}
+```
+
+### Métricas de Éxito
+- **Antes:** 100% pérdida de progreso por muerte
+- **Después:** Solo pérdida de progreso desde último checkpoint (50m)
+- **Beneficio:** Reducción significativa de frustración, mejor retención D1
 
 > 📘 Más contexto general: [README.md](../README.md)
 

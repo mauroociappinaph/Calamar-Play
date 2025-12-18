@@ -26,7 +26,7 @@ export class FixedTimestepLoop {
   private fixedDeltaTime: number;
   private maxDeltaTime: number;
   private accumulator: number = 0;
-  private lastTime: number = 0;
+  private lastTime: number = -1; // -1 means uninitialized
   private isRunning: boolean = false;
 
   private onFixedUpdate: FixedUpdateCallback | null = null;
@@ -90,7 +90,7 @@ export class FixedTimestepLoop {
     if (!this.isRunning) return;
 
     // Initialize lastTime on first call
-    if (this.lastTime === 0) {
+    if (this.lastTime === -1) {
       this.lastTime = currentTime;
       return;
     }
@@ -107,7 +107,7 @@ export class FixedTimestepLoop {
 
     // Fixed timestep updates
     let fixedUpdateCount = 0;
-    while (this.accumulator >= this.fixedDeltaTime && fixedUpdateCount < 10) { // Safety limit
+    while (this.accumulator >= this.fixedDeltaTime && fixedUpdateCount < 25) { // Safety limit
       if (this.onFixedUpdate) {
         this.onFixedUpdate(this.fixedDeltaTime);
       }
@@ -130,7 +130,7 @@ export class FixedTimestepLoop {
   start(): void {
     this.isRunning = true;
     this.accumulator = 0;
-    this.lastTime = 0;
+    this.lastTime = -1; // Reset to uninitialized state
   }
 
   /**
@@ -145,7 +145,7 @@ export class FixedTimestepLoop {
    */
   reset(): void {
     this.accumulator = 0;
-    this.lastTime = 0;
+    this.lastTime = -1; // Reset to uninitialized state
     this.isRunning = false;
   }
 

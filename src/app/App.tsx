@@ -13,6 +13,7 @@ import { LevelManager } from '@/world/stage/LevelManager';
 import { Effects } from '@/world/fx/Effects';
 import { HUD } from '@/features/ui/HUD';
 import { useStore } from '@/features/game/state/store';
+import { initAnalytics, cleanupAnalytics, trackGameEvent } from '@/shared/analytics';
 
 // Dynamic Camera Controller with Shake
 const CameraController = () => {
@@ -90,6 +91,20 @@ function Scene() {
 
 function App() {
     console.log('App component rendering');
+
+    // Initialize analytics on app load
+    useEffect(() => {
+        initAnalytics({
+            enabled: true,
+            trackLocalhost: true // Enable for development
+        });
+
+        // Cleanup on unmount
+        return () => {
+            cleanupAnalytics();
+        };
+    }, []);
+
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden select-none">
       <HUD />

@@ -52,12 +52,14 @@ Checklist de calidad: Unicidad user_id (SUPUESTO - implementar con crypto.random
 Tabla obligatoria:
 | Evento | Propósito | Props clave | Estado actual | Riesgo de calidad | Fix propuesto | Prioridad |
 |--------|-----------|-------------|---------------|-------------------|---------------|-----------|
-| session_start | Inicio sesión | user_id, timestamp, device | No existe | Sin baseline | Agregar en App load | Alta |
-| game_start | Inicio partida | level, lane_count | No existe | Funnel roto | Agregar en startGame | Alta |
-| level_start | Inicio nivel | level, collected_letters | No existe | Progreso opaco | Agregar en advanceLevel | Media |
-| collect_item | Colección | type (gem/letter), value, lane, distance_bucket | No existe | Engagement invisible | Agregar en collectGem/Letter | Media |
-| game_end | Fin partida | outcome (win/lose), score, duration | No existe | KPIs imposibles | Agregar en GAME_OVER/VICTORY | Alta |
-| error_captured | Errores | error_type, stack_trace (truncated) | No existe | Bugs invisibles | Global error handler | Baja |
+| session_start | Inicio sesión | user_id, timestamp, device | ✅ Implementado | Sin baseline | ✅ Completado | Alta |
+| game_start | Inicio partida | level, lane_count | ✅ Implementado | Funnel roto | ✅ Completado | Alta |
+| level_complete | Completitud nivel | level, score, duration | ✅ Implementado | Progreso opaco | ✅ Completado | Media |
+| collect_item | Colección | type (gem/letter), value, lane | ✅ Implementado | Engagement invisible | ✅ Completado | Media |
+| death | Muerte jugador | reason, level, score | ✅ Implementado | KPIs imposibles | ✅ Completado | Alta |
+| shop_open | Apertura tienda | available_items | ✅ Implementado | Sin conversión | ✅ Completado | Media |
+| item_purchase | Compra item | item_type, cost, remaining_score | ✅ Implementado | Revenue invisible | ✅ Completado | Alta |
+| error_captured | Errores | error_type, message (truncated) | ✅ Framework listo | Bugs invisibles | Agregar global handler | Baja |
 
 ## 5) KPIs accionables (North Star + soporte)
 Propón 1 North Star KPI: Runs completadas por usuario activo (medida de engagement principal para endless runner).
@@ -120,6 +122,81 @@ Ejemplos de insights:
 - "Runs por sesión alta en recurrentes → buen engagement, pero session length baja → optimizar pacing"
 
 Guardrails: Correlación ≠ causalidad (ej: score alto no implica diversión).
+
+## 7.1) Implementación Actual de Analytics (TASK-015 Completado)
+
+### Arquitectura del Sistema
+- **Framework**: Sistema de analytics custom en `src/shared/analytics.ts`
+- **Privacidad**: User IDs anónimos con `crypto.randomUUID()`, sin PII
+- **Sesiones**: Timeout automático de 30 minutos de inactividad
+- **Integración**: Eventos instrumentados en Zustand store (`src/features/game/state/store.ts`)
+- **Inicialización**: Analytics se activa en `src/app/App.tsx` al cargar la aplicación
+
+### Eventos Implementados
+Cada evento incluye automáticamente: `userId`, `sessionId`, `timestamp`, `deviceInfo`, `url`, `path`
+
+#### Core Events (Prioridad Alta)
+- **`session_start`**: Trigger: App initialization
+  - Props: `session_type: 'game_session'`
+  - Propósito: Baseline de usuarios activos, session length
+
+- **`game_start`**: Trigger: `startGame()` action
+  - Props: `level: number`, `lane_count: number`
+  - Propósito: Funnel onboarding, frecuencia de partidas
+
+- **`level_complete`**: Trigger: `advanceLevel()` action
+  - Props: `level: number`, `score: number`, `duration: number`
+  - Propósito: Progreso por nivel, tiempo de completitud
+
+- **`death`**: Trigger: `takeDamage()` cuando vidas = 0
+  - Props: `reason: string`, `level: number`, `score: number`
+  - Propósito: Puntos de frustración, balance de dificultad
+
+#### Engagement Events (Prioridad Media)
+- **`collect_item`**: Trigger: `collectGem()` y `collectLetter()`
+  - Props: `type: 'gem'|'letter'`, `value: number`, `lane: number`
+  - Propósito: Engagement con mecánicas de colección
+
+- **`shop_open`**: Trigger: `openShop()` action
+  - Props: `available_items: string[]`
+  - Propósito: Interés en monetización
+
+- **`item_purchase`**: Trigger: `buyItem()` success
+  - Props: `item_type: string`, `cost: number`, `remaining_score: number`
+  - Propósito: Conversión de tienda, revenue tracking
+
+### Dashboard Readiness
+Con los eventos implementados, los siguientes dashboards pueden ser configurados:
+
+#### Dashboard "Overview" ✅ Ready
+- Métricas: DAU/MAU, session length, runs por usuario
+- Eventos requeridos: `session_start`, `game_start`
+
+#### Dashboard "Onboarding & Funnel" ✅ Ready
+- Funnel: session_start → game_start → level_complete
+- Eventos requeridos: `session_start`, `game_start`, `level_complete`
+
+#### Dashboard "Gameplay & Difficulty" ✅ Ready
+- Métricas: Muertes por nivel, score distribution
+- Eventos requeridos: `death`, `level_complete`, `collect_item`
+
+#### Dashboard "Monetization" ✅ Ready
+- Métricas: Shop opens, purchase conversion, revenue por item
+- Eventos requeridos: `shop_open`, `item_purchase`
+
+### Próximos Pasos
+1. **Configurar Plausible/Simple Analytics**: Reemplazar console logs con servicio real
+2. **Agregar Error Tracking**: Implementar global error handler para `error_captured`
+3. **Performance Metrics**: Agregar `performance_snapshot` con FPS/memory
+4. **A/B Testing**: Framework para feature flags con tracking
+
+### Validación de Calidad
+- ✅ User IDs únicos y persistentes
+- ✅ Session management con timeout
+- ✅ No PII en eventos
+- ✅ Device info no identificable
+- ✅ Eventos trigger correctamente en game flow
+- ✅ Console logging para desarrollo/debugging
 
 ## 8) Plan mínimo de eventos (si hoy falta instrumentación)
 Eventos obligatorios:

@@ -6,6 +6,8 @@
 
 import { create } from 'zustand';
 import { GameStatus, RUN_SPEED_BASE } from '@/shared/types/types';
+import { trackGameEvent } from '@/shared/analytics';
+import { checkpointManager, CheckpointData } from './checkpoints';
 
 interface GameState {
   status: GameStatus;
@@ -27,6 +29,7 @@ interface GameState {
   // Actions
   startGame: () => void;
   restartGame: () => void;
+  restartFromCheckpoint: () => boolean;
   takeDamage: () => void;
   addScore: (amount: number) => void;
   collectGem: (value: number) => void;
@@ -41,6 +44,10 @@ interface GameState {
   closeShop: () => void;
   activateImmortality: () => void;
   _transitionTo: (status: GameStatus) => boolean;
+
+  // Checkpoint System
+  createCheckpoint: (levelState: { objects: any[]; distanceTraveled: number; nextLetterDistance: number }) => boolean;
+  hasCheckpoint: () => boolean;
 }
 
 // FSM Transition Matrix
@@ -83,7 +90,7 @@ export const useStore = create<GameState>((set, get) => ({
   },
 
   startGame: () => {
-    const { _transitionTo } = get();
+    const { _transitionTo, level, laneCount } = get();
     if (_transitionTo(GameStatus.PLAYING)) {
       set({
         score: 0,
@@ -99,6 +106,9 @@ export const useStore = create<GameState>((set, get) => ({
         hasImmortality: false,
         isImmortalityActive: false
       });
+
+      // Analytics: Track game start
+      trackGameEvent.gameStart(level, laneCount);
     }
   },
 
@@ -123,7 +133,7 @@ export const useStore = create<GameState>((set, get) => ({
   },
 
   takeDamage: () => {
-    const { lives, isImmortalityActive, _transitionTo } = get();
+    const { lives, isImmortalityActive, _transitionTo, level, score } = get();
     if (isImmortalityActive) return;
 
     if (lives > 1) {
@@ -131,20 +141,29 @@ export const useStore = create<GameState>((set, get) => ({
     } else {
       set({ lives: 0, speed: 0 });
       _transitionTo(GameStatus.GAME_OVER);
+
+      // Analytics: Track death
+      trackGameEvent.death('damage', level, score);
     }
   },
 
   addScore: (amount) => set((state) => ({ score: state.score + amount })),
 
-  collectGem: (value) => set((state) => ({
-    score: state.score + value,
-    gemsCollected: state.gemsCollected + 1
-  })),
+  collectGem: (value) => {
+    const { laneCount } = get();
+    set((state) => ({
+      score: state.score + value,
+      gemsCollected: state.gemsCollected + 1
+    }));
+
+    // Analytics: Track gem collection
+    trackGameEvent.collectItem('gem', value, Math.floor(Math.random() * laneCount));
+  },
 
   setDistance: (dist) => set({ distance: dist }),
 
   collectLetter: (index) => {
-    const { collectedLetters, level, speed } = get();
+    const { collectedLetters, level, speed, laneCount } = get();
 
     if (!collectedLetters.includes(index)) {
       const newLetters = [...collectedLetters, index];
@@ -157,6 +176,9 @@ export const useStore = create<GameState>((set, get) => ({
         collectedLetters: newLetters,
         speed: nextSpeed
       });
+
+      // Analytics: Track letter collection
+      trackGameEvent.collectItem('letter', 100, Math.floor(Math.random() * laneCount));
 
       // Check if full word collected
       if (newLetters.length === GEMINI_TARGET.length) {
@@ -177,7 +199,7 @@ export const useStore = create<GameState>((set, get) => ({
   },
 
   advanceLevel: () => {
-      const { level, laneCount, speed } = get();
+      const { level, laneCount, speed, score, distance } = get();
       const nextLevel = level + 1;
 
       const speedIncrease = RUN_SPEED_BASE * 0.30;
@@ -190,9 +212,18 @@ export const useStore = create<GameState>((set, get) => ({
           speed: newSpeed,
           collectedLetters: [] // Reset letters
       });
+
+      // Analytics: Track level complete
+      trackGameEvent.levelComplete(level, score, distance);
   },
 
-  openShop: () => get()._transitionTo(GameStatus.SHOP),
+  openShop: () => {
+    const availableItems = ['DOUBLE_JUMP', 'MAX_LIFE', 'HEAL', 'IMMORTAL'];
+    get()._transitionTo(GameStatus.SHOP);
+
+    // Analytics: Track shop open
+    trackGameEvent.shopOpen(availableItems);
+  },
 
   closeShop: () => get()._transitionTo(GameStatus.PLAYING),
 
@@ -216,6 +247,9 @@ export const useStore = create<GameState>((set, get) => ({
                   set({ hasImmortality: true });
                   break;
           }
+
+          // Analytics: Track item purchase
+          trackGameEvent.itemPurchase(type.toLowerCase(), cost, score - cost);
           return true;
       }
       return false;
@@ -235,4 +269,78 @@ export const useStore = create<GameState>((set, get) => ({
 
   setStatus: (status) => get()._transitionTo(status),
   increaseLevel: () => set((state) => ({ level: state.level + 1 })),
+
+  // Checkpoint System Implementation
+  restartFromCheckpoint: () => {
+    const checkpoint = checkpointManager.getLastCheckpoint();
+    if (!checkpoint || !checkpointManager.validateCheckpoint(checkpoint)) {
+      console.warn('[Checkpoint] No valid checkpoint available');
+      return false;
+    }
+
+    const { _transitionTo } = get();
+    if (_transitionTo(GameStatus.PLAYING)) {
+      set({
+        status: GameStatus.PLAYING,
+        score: checkpoint.score,
+        lives: checkpoint.lives,
+        maxLives: checkpoint.maxLives,
+        speed: checkpoint.speed,
+        collectedLetters: [...checkpoint.collectedLetters],
+        level: checkpoint.level,
+        laneCount: checkpoint.laneCount,
+        gemsCollected: checkpoint.gemsCollected,
+        distance: checkpoint.distance,
+        hasDoubleJump: checkpoint.hasDoubleJump,
+        hasImmortality: checkpoint.hasImmortality,
+        isImmortalityActive: checkpoint.isImmortalityActive
+      });
+
+      // Dispatch event to restore level state
+      window.dispatchEvent(new CustomEvent('restore-checkpoint', {
+        detail: {
+          objects: checkpoint.objects,
+          distanceTraveled: checkpoint.distanceTraveled,
+          nextLetterDistance: checkpoint.nextLetterDistance
+        }
+      }));
+
+      console.log('[Checkpoint] Restored from checkpoint at distance:', checkpoint.distance);
+      return true;
+    }
+    return false;
+  },
+
+  createCheckpoint: (levelState) => {
+    const { distance } = get();
+    if (!checkpointManager.shouldCreateCheckpoint(distance)) {
+      return false;
+    }
+
+    const gameState = {
+      score: get().score,
+      lives: get().lives,
+      maxLives: get().maxLives,
+      speed: get().speed,
+      collectedLetters: [...get().collectedLetters],
+      level: get().level,
+      laneCount: get().laneCount,
+      gemsCollected: get().gemsCollected,
+      distance: get().distance,
+      hasDoubleJump: get().hasDoubleJump,
+      hasImmortality: get().hasImmortality,
+      isImmortalityActive: get().isImmortalityActive
+    };
+
+    checkpointManager.createCheckpoint(gameState, levelState);
+
+    // Dispatch checkpoint created event for UI feedback
+    window.dispatchEvent(new CustomEvent('checkpoint-created', {
+      detail: { distance: gameState.distance }
+    }));
+
+    return true;
+  },
+
+  hasCheckpoint: () => checkpointManager.hasCheckpoint(),
 }));

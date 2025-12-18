@@ -5,7 +5,7 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { Heart, Zap, Trophy, MapPin, Diamond, Rocket, ArrowUpCircle, Shield, Activity, PlusCircle, Play } from 'lucide-react';
+import { Heart, Zap, Trophy, MapPin, Diamond, Rocket, ArrowUpCircle, Shield, Activity, PlusCircle, Play, RotateCcw } from 'lucide-react';
 import { useStore } from '@/features/game/state/store';
 import { GameStatus, GEMINI_COLORS, ShopItem, RUN_SPEED_BASE } from '@/shared/types/types';
 import { audio } from '@/systems/audio/AudioEngine';
@@ -102,10 +102,23 @@ const ShopScreen: React.FC = () => {
 };
 
 export const HUD: React.FC = () => {
-  const { score, lives, maxLives, collectedLetters, status, level, restartGame, startGame, gemsCollected, distance, isImmortalityActive, speed } = useStore();
+  const { score, lives, maxLives, collectedLetters, status, level, restartGame, restartFromCheckpoint, startGame, gemsCollected, distance, isImmortalityActive, speed, hasCheckpoint } = useStore();
   const target = ['C', 'A', 'L', 'A', 'M', 'A', 'R', 'L', 'O', 'C', 'O'];
+  const [checkpointMessage, setCheckpointMessage] = useState<string | null>(null);
 
   const containerClass = "absolute inset-0 pointer-events-none flex flex-col justify-between p-4 md:p-8 z-50";
+
+  // Handle checkpoint created events
+  useEffect(() => {
+    const handleCheckpointCreated = (e: CustomEvent) => {
+      const { distance } = e.detail;
+      setCheckpointMessage(`Checkpoint alcanzado en ${distance}m`);
+      setTimeout(() => setCheckpointMessage(null), 3000); // Hide after 3 seconds
+    };
+
+    window.addEventListener('checkpoint-created', handleCheckpointCreated as any);
+    return () => window.removeEventListener('checkpoint-created', handleCheckpointCreated as any);
+  }, []);
 
   if (status === GameStatus.SHOP) {
       return <ShopScreen />;
@@ -174,12 +187,22 @@ export const HUD: React.FC = () => {
                     </div>
                 </div>
 
-                <button
-                  onClick={() => { audio.init(); restartGame(); }}
-                  className="px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg md:text-xl rounded-full hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,255,255,0.4)]"
-                >
-                    REINTENTAR
-                </button>
+                <div className="flex flex-col gap-4">
+                  {hasCheckpoint() && (
+                    <button
+                      onClick={() => { audio.init(); restartFromCheckpoint(); }}
+                      className="flex items-center justify-center px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-lg md:text-xl rounded-full hover:scale-105 transition-all shadow-[0_0_20px_rgba(34,197,94,0.4)]"
+                    >
+                        <RotateCcw className="mr-2 w-5 h-5" /> REINTENTAR DESDE CHECKPOINT
+                    </button>
+                  )}
+                  <button
+                    onClick={() => { audio.init(); restartGame(); }}
+                    className="px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg md:text-xl rounded-full hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,255,255,0.4)]"
+                  >
+                      REINTENTAR DESDE EL INICIO
+                  </button>
+                </div>
               </div>
           </div>
       );
@@ -239,6 +262,13 @@ export const HUD: React.FC = () => {
         <div className="absolute top-5 left-1/2 transform -translate-x-1/2 text-sm md:text-lg text-white font-bold tracking-wider font-mono bg-black/20 px-4 py-1 rounded-full backdrop-blur-sm z-50">
             NIVEL {level} <span className="text-white/60 text-xs md:text-sm">/ 3</span>
         </div>
+
+        {/* Checkpoint Message */}
+        {checkpointMessage && (
+          <div className="absolute top-16 left-1/2 transform -translate-x-1/2 text-green-400 font-bold text-lg md:text-xl animate-bounce bg-black/60 px-4 py-2 rounded-lg backdrop-blur-sm z-50">
+            {checkpointMessage}
+          </div>
+        )}
 
         {/* Active Skill Indicator */}
         {isImmortalityActive && (

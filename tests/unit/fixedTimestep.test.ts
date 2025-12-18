@@ -126,7 +126,7 @@ describe('FixedTimestepLoop', () => {
     loop.update(10.0); // Very large frame time
 
     // Should be limited to prevent infinite loops
-    expect(fixedUpdateSpy).toHaveBeenCalledTimes(10); // Safety limit
+    expect(fixedUpdateSpy).toHaveBeenCalledTimes(15); // Safety limit (0.25 / (1/60) = 15)
   });
 
   it('should handle multiple updates in single frame correctly', () => {

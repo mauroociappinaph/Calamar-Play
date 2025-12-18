@@ -10,6 +10,7 @@ import * as THREE from 'three';
 import { Text3D, Center, Float } from '@react-three/drei';
 import { v4 as uuidv4 } from 'uuid';
 import { useStore } from '@/features/game/state/store';
+import { checkpointManager } from '@/features/game/state/checkpoints';
 import { GameObject, ObjectType, LANE_WIDTH, SPAWN_DISTANCE, REMOVE_DISTANCE, GameStatus, GEMINI_COLORS } from '@/shared/types/types';
 import { audio } from '@/systems/audio/AudioEngine';
 import { ObjectPool } from '@/systems/pooling/ObjectPool';
@@ -163,7 +164,8 @@ export const LevelManager: React.FC = () => {
     laneCount,
     setDistance,
     openShop,
-    level
+    level,
+    createCheckpoint
   } = useStore();
 
   const objectsRef = useRef<GameObject[]>([]);
@@ -184,6 +186,13 @@ export const LevelManager: React.FC = () => {
 
     const dist = speed * deltaTime;
     distanceTraveled.current += dist;
+
+    // Try to create checkpoint at regular intervals
+    createCheckpoint({
+      objects: objectsRef.current,
+      distanceTraveled: distanceTraveled.current,
+      nextLetterDistance: nextLetterDistance.current
+    });
 
     let hasChanges = false;
     let playerPos = new THREE.Vector3(0, 0, 0);
@@ -325,7 +334,11 @@ export const LevelManager: React.FC = () => {
          const minGap = 12 + (speed * 0.4);
          const spawnZ = Math.min(furthestZ - minGap, -SPAWN_DISTANCE);
 
+         console.log('DEBUG SPAWN: Spawning logic triggered, furthestZ:', furthestZ, 'spawnZ:', spawnZ);
+
          const isLetterDue = distanceTraveled.current >= nextLetterDistance.current;
+
+         console.log('DEBUG SPAWN: isLetterDue:', isLetterDue, 'distanceTraveled:', distanceTraveled.current, 'nextLetterDistance:', nextLetterDistance.current);
 
          if (isLetterDue) {
              const lane = getRandomLane(laneCount);
@@ -367,8 +380,12 @@ export const LevelManager: React.FC = () => {
              }
 
          } else if (Math.random() > 0.1) {
+            const spawnRandom = Math.random();
+            console.log('DEBUG SPAWN: Attempting spawn, spawnRandom:', spawnRandom, 'threshold: 0.1, will spawn:', spawnRandom > 0.1);
 
-            const isObstacle = Math.random() > 0.20;
+            const randomValue = Math.random();
+            const isObstacle = randomValue > 0.5; // TEMP: Increased from 0.20 to 0.5 for testing
+            console.log('DEBUG SPAWN: Spawning branch entered, randomValue:', randomValue, 'isObstacle:', isObstacle);
 
             if (isObstacle) {
                 const spawnAlien = level >= 2 && Math.random() < 0.2;
@@ -422,6 +439,7 @@ export const LevelManager: React.FC = () => {
                         obstacleObj.active = true;
                         obstacleObj.color = '#8b4513';
 
+                        console.log('DEBUG SPAWN: Created obstacle at lane', lane, 'position', laneX, spawnZ);
                         currentObjects.push(obstacleObj);
 
                         if (Math.random() < 0.3) {
@@ -496,6 +514,9 @@ export const LevelManager: React.FC = () => {
         distanceTraveled.current = 0;
         nextLetterDistance.current = getLetterInterval(1);
 
+        // Clear checkpoints on new game
+        checkpointManager.clearCheckpoint();
+
     } else if (isLevelUp && level > 1) {
         objectsRef.current = objectsRef.current.filter(obj => obj.position[2] > -80);
 
@@ -517,6 +538,25 @@ export const LevelManager: React.FC = () => {
     prevLevel.current = level;
   }, [status, level, setDistance]);
 
+  // Handle checkpoint restoration
+  useEffect(() => {
+    const handleRestoreCheckpoint = (e: CustomEvent) => {
+      const { objects, distanceTraveled: restoredDistance, nextLetterDistance: restoredNextLetter } = e.detail;
+
+      // Restore objects from checkpoint
+      objectsRef.current = objects.map((obj: GameObject) => ({ ...obj })); // Deep copy
+      distanceTraveled.current = restoredDistance;
+      nextLetterDistance.current = restoredNextLetter;
+
+      setRenderTrigger(t => t + 1);
+
+      console.log('[LevelManager] Restored checkpoint with', objects.length, 'objects');
+    };
+
+    window.addEventListener('restore-checkpoint', handleRestoreCheckpoint as any);
+    return () => window.removeEventListener('restore-checkpoint', handleRestoreCheckpoint as any);
+  }, []);
+
   useFrame((state) => {
       if (!playerObjRef.current) {
           const group = state.scene.getObjectByName('PlayerGroup');
@@ -531,11 +571,18 @@ export const LevelManager: React.FC = () => {
     fixedLoopRef.current.update(state.clock.elapsedTime);
   });
 
+  console.log('DEBUG RENDER: LevelManager rendering', objectsRef.current.length, 'objects');
+  console.log('DEBUG RENDER: Active objects:', objectsRef.current.filter(obj => obj.active));
+
   return (
     <group>
       <ParticleSystem />
       {objectsRef.current.map(obj => {
-        if (!obj.active) return null;
+        if (!obj.active) {
+          console.log('DEBUG RENDER: Skipping inactive object', obj.id, obj.type);
+          return null;
+        }
+        console.log('DEBUG RENDER: Rendering active object', obj.id, obj.type, obj.position);
         return <GameEntity key={obj.id} data={obj} />;
       })}
     </group>
@@ -617,16 +664,29 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
                 )}
 
                 {/* --- OBSTACLE (Driftwood Stump) --- */}
-                {data.type === ObjectType.OBSTACLE && (
-                    <group>
-                        <mesh geometry={OBSTACLE_GEOMETRY} castShadow receiveShadow>
-                             <meshStandardMaterial color="#5c4033" roughness={0.9} />
-                        </mesh>
-                        <mesh position={[0, OBSTACLE_HEIGHT/2, 0]} geometry={OBSTACLE_TOP_GEO}>
-                             <meshStandardMaterial color="#5c4033" roughness={0.9} />
-                        </mesh>
-                    </group>
-                )}
+                {data.type === ObjectType.OBSTACLE && (() => {
+                    console.log('DEBUG RENDER: Rendering obstacle', {
+                        id: data.id,
+                        active: data.active,
+                        position: data.position,
+                        type: data.type
+                    });
+                    return (
+                        <group>
+                            <mesh geometry={OBSTACLE_GEOMETRY} castShadow receiveShadow>
+                                 <meshStandardMaterial color="#ff0000" roughness={0.9} />
+                            </mesh>
+                            <mesh position={[0, OBSTACLE_HEIGHT/2, 0]} geometry={OBSTACLE_TOP_GEO}>
+                                 <meshStandardMaterial color="#ff0000" roughness={0.9} />
+                            </mesh>
+                            {/* TEMP: Debug cube to ensure rendering works */}
+                            <mesh position={[0, 2, 0]}>
+                                <boxGeometry args={[0.5, 0.5, 0.5]} />
+                                <meshBasicMaterial color="#00ff00" />
+                            </mesh>
+                        </group>
+                    );
+                })()}
 
                 {/* --- ALIEN (Shark Fin) --- */}
                 {data.type === ObjectType.ALIEN && (

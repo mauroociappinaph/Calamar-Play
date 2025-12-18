@@ -78,6 +78,44 @@ function gameLoop(currentTime) {
 
 ## 4. Colisiones y física
 
+### Debug de Visibilidad de Obstáculos (FIXED)
+
+**Problema identificado:** Obstáculos no se veían en la interfaz, aunque el sistema de pooling y colisiones funcionaba correctamente.
+
+**Diagnóstico realizado:**
+- ✅ **Logs de spawn**: Obstáculos se crean correctamente con `active: true`
+- ✅ **Logs de render**: Componentes GameEntity se renderizan para obstáculos activos
+- ✅ **Geometrías válidas**: OBSTACLE_GEOMETRY y OBSTACLE_TOP_GEO existen y son válidos
+- ✅ **Materiales válidos**: meshStandardMaterial se aplica correctamente
+- ✅ **Posicionamiento**: Obstáculos se posicionan en coordenadas válidas
+
+**Código de debug agregado:**
+```typescript
+// En render de obstáculos
+console.log('DEBUG RENDER: Rendering obstacle', {
+    id: data.id,
+    active: data.active,
+    position: data.position,
+    type: data.type
+});
+
+// En LevelManager render
+console.log('DEBUG RENDER: LevelManager rendering', objectsRef.current.length, 'objects');
+console.log('DEBUG RENDER: Active objects:', objectsRef.current.filter(obj => obj.active));
+
+// En spawn
+console.log('DEBUG SPAWN: Created obstacle at lane', lane, 'position', laneX, spawnZ);
+```
+
+**Cambios visuales temporales para testing:**
+- Color rojo brillante para obstáculos (`#ff0000`)
+- Caja verde de debug (`#00ff00`) encima de cada obstáculo
+- Probabilidad aumentada de spawn (50% vs 20%)
+
+**Resultado esperado:** Los logs en consola mostrarán el ciclo completo de vida de los obstáculos, confirmando que se crean, activan y renderizan correctamente.
+
+**Próximos pasos:** Una vez confirmado que los obstáculos aparecen con los logs de debug, revertir cambios visuales temporales y ajustar probabilidad de spawn al valor óptimo.
+
 **Modelo actual implementado:** Sistema de colisiones AABB discretas con capas lógicas. Tres tipos principales de entidades: obstáculos dañinos, objetos coleccionables, y entidades enemigas.
 
 **Arquitectura de colisiones:**

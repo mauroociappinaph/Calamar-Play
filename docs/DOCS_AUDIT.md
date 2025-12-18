@@ -48,7 +48,7 @@
 | **TASK-014** | Leaderboard | `docs/LEADERBOARD_SPEC.md` | ✅ OK |
 | **TASK-015** | Analytics y Telemetría | `docs/DATA_ANALYST_GAME_INSIGHTS.md` | ✅ OK |
 | **TASK-016** | CI/CD | `docs/BUILD_ENGINEER_DEVOPS_GAMES.md` | ✅ OK |
-| **TASK-017** | Sistema Checkpoints | `docs/LEAD_GAME_DESIGNER.md` | ✅ OK |
+| **TASK-017** | Sistema Checkpoints | `docs/LEAD_GAME_DESIGNER.md` | ✅ **IMPLEMENTADO** |
 | **TASK-018** | Máquina de Estados (FSM) | `docs/TECHNICAL_DIRECTOR.md` | ✅ OK |
 | **TASK-019** | Balance Economía | `docs/GAME_ECONOMY_DESIGNER.md` | ✅ OK |
 | **TASK-020** | Fixed Timestep | `docs/GAMEPLAY_ENGINEER.md` | ✅ OK |
@@ -75,6 +75,7 @@
 - **Implementación completa de Fixed Timestep Loop (TASK-020)**: Sistema desacoplado implementado, LevelManager refactorizado con callbacks separados, tests unitarios (12 tests pasando), documentación actualizada con arquitectura y beneficios logrados.
 - **Implementación de Memoización de Geometrías y Materiales (TASK-005)**: useMemo para geometrías/materiales en Player y Environment, dispose() on unmount para evitar memory leaks, documentación actualizada en ART_DIRECTOR_TECH_ARTIST.md con ejemplos de código y métricas.
 - **Implementación de LOD (TASK-006)**: Lógica custom de Level of Detail implementada en palmeras (render condicional basado en distancia a cámara), -30% tris render en escenas densas, documentación actualizada con código ejemplo.
+- **Debug de Visibilidad de Obstáculos**: Sistema de logs implementado para diagnosticar render de obstáculos, cambios visuales temporales (color rojo + debug cube), validación de ciclo de vida spawn→render→collision→recycle, documentación actualizada en GAMEPLAY_ENGINEER.md con código de debug y próximos pasos.
 
 ---
 
