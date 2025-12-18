@@ -23,3 +23,12 @@ jobs:
         run: npm run test
       - name: Build smoke test
         run: npm run build
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      - name: Run benchmarks
+        run: |
+          npm run preview &
+          sleep 10
+          npm run test:perf
+        env:
+          APP_URL: http://localhost:4173

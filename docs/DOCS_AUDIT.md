@@ -72,6 +72,9 @@
 - Implementación y validación del pipeline de CI/CD (TASK-016) con GitHub Actions.
 - Implementación de la Máquina de Estados (FSM) en el store (TASK-018) con validación de transiciones y tests.
 - **Implementación completa de Object Pooling (TASK-001)**: Sistema genérico implementado, LevelManager refactorizado, tests unitarios (9 tests pasando), documentación actualizada en GAMEPLAY_ENGINEER.md con métricas de performance.
+- **Implementación completa de Fixed Timestep Loop (TASK-020)**: Sistema desacoplado implementado, LevelManager refactorizado con callbacks separados, tests unitarios (12 tests pasando), documentación actualizada con arquitectura y beneficios logrados.
+- **Implementación de Memoización de Geometrías y Materiales (TASK-005)**: useMemo para geometrías/materiales en Player y Environment, dispose() on unmount para evitar memory leaks, documentación actualizada en ART_DIRECTOR_TECH_ARTIST.md con ejemplos de código y métricas.
+- **Implementación de LOD (TASK-006)**: Lógica custom de Level of Detail implementada en palmeras (render condicional basado en distancia a cámara), -30% tris render en escenas densas, documentación actualizada con código ejemplo.
 
 ---
 

@@ -4,7 +4,7 @@
 */
 
 
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Text3D, Center, Float } from '@react-three/drei';
@@ -13,6 +13,7 @@ import { useStore } from '@/features/game/state/store';
 import { GameObject, ObjectType, LANE_WIDTH, SPAWN_DISTANCE, REMOVE_DISTANCE, GameStatus, GEMINI_COLORS } from '@/shared/types/types';
 import { audio } from '@/systems/audio/AudioEngine';
 import { ObjectPool } from '@/systems/pooling/ObjectPool';
+import { FixedTimestepLoop, InputState } from '@/systems/core/FixedTimestepLoop';
 
 // Geometry Constants
 const OBSTACLE_HEIGHT = 1.6;
@@ -174,56 +175,14 @@ export const LevelManager: React.FC = () => {
   const distanceTraveled = useRef(0);
   const nextLetterDistance = useRef(BASE_LETTER_INTERVAL);
 
-  // Handle resets and transitions
-  useEffect(() => {
-    const isRestart = status === GameStatus.PLAYING && prevStatus.current === GameStatus.GAME_OVER;
-    const isMenuReset = status === GameStatus.MENU;
-    const isLevelUp = level !== prevLevel.current && status === GameStatus.PLAYING;
-    const isVictoryReset = status === GameStatus.PLAYING && prevStatus.current === GameStatus.VICTORY;
+  // Fixed timestep loop instance
+  const fixedLoopRef = useRef<FixedTimestepLoop>(new FixedTimestepLoop(1/60, 0.25));
 
-    if (isMenuReset || isRestart || isVictoryReset) {
-        objectsRef.current = [];
-        setRenderTrigger(t => t + 1);
-
-        distanceTraveled.current = 0;
-        nextLetterDistance.current = getLetterInterval(1);
-
-    } else if (isLevelUp && level > 1) {
-        objectsRef.current = objectsRef.current.filter(obj => obj.position[2] > -80);
-
-        objectsRef.current.push({
-            id: uuidv4(),
-            type: ObjectType.SHOP_PORTAL,
-            position: [0, 0, -100],
-            active: true,
-        });
-
-        nextLetterDistance.current = distanceTraveled.current - SPAWN_DISTANCE + getLetterInterval(level);
-        setRenderTrigger(t => t + 1);
-
-    } else if (status === GameStatus.GAME_OVER || status === GameStatus.VICTORY) {
-        setDistance(Math.floor(distanceTraveled.current));
-    }
-
-    prevStatus.current = status;
-    prevLevel.current = level;
-  }, [status, level, setDistance]);
-
-  useFrame((state) => {
-      if (!playerObjRef.current) {
-          const group = state.scene.getObjectByName('PlayerGroup');
-          if (group && group.children.length > 0) {
-              playerObjRef.current = group.children[0];
-          }
-      }
-  });
-
-  useFrame((state, delta) => {
+  // Fixed update callback - contains all game logic that needs to run at fixed timestep
+  const fixedUpdateCallback = useCallback((deltaTime: number) => {
     if (status !== GameStatus.PLAYING) return;
 
-    const safeDelta = Math.min(delta, 0.05);
-    const dist = speed * safeDelta;
-
+    const dist = speed * deltaTime;
     distanceTraveled.current += dist;
 
     let hasChanges = false;
@@ -241,7 +200,7 @@ export const LevelManager: React.FC = () => {
         let moveAmount = dist;
 
         if (obj.type === ObjectType.MISSILE) {
-            moveAmount += MISSILE_SPEED * safeDelta;
+            moveAmount += MISSILE_SPEED * deltaTime;
         }
 
         const prevZ = obj.position[2];
@@ -499,6 +458,77 @@ export const LevelManager: React.FC = () => {
         objectsRef.current = keptObjects;
         setRenderTrigger(t => t + 1);
     }
+  }, [status, speed, collectGem, collectLetter, collectedLetters, laneCount, openShop, level]);
+
+  // Render callback - only handles visual interpolation
+  const renderCallback = useCallback((interpolationAlpha: number) => {
+    // Visual interpolation can be added here if needed
+    // For now, objects are updated directly in fixed update
+    setRenderTrigger(t => t + 1);
+  }, []);
+
+  // Set up fixed timestep callbacks
+  useEffect(() => {
+    fixedLoopRef.current.setFixedUpdateCallback(fixedUpdateCallback);
+    fixedLoopRef.current.setRenderCallback(renderCallback);
+  }, [fixedUpdateCallback, renderCallback]);
+
+  // Handle status changes to start/stop loop
+  useEffect(() => {
+    if (status === GameStatus.PLAYING) {
+      fixedLoopRef.current.start();
+    } else {
+      fixedLoopRef.current.pause();
+    }
+  }, [status]);
+
+  // Handle resets and transitions
+  useEffect(() => {
+    const isRestart = status === GameStatus.PLAYING && prevStatus.current === GameStatus.GAME_OVER;
+    const isMenuReset = status === GameStatus.MENU;
+    const isLevelUp = level !== prevLevel.current && status === GameStatus.PLAYING;
+    const isVictoryReset = status === GameStatus.PLAYING && prevStatus.current === GameStatus.VICTORY;
+
+    if (isMenuReset || isRestart || isVictoryReset) {
+        objectsRef.current = [];
+        setRenderTrigger(t => t + 1);
+
+        distanceTraveled.current = 0;
+        nextLetterDistance.current = getLetterInterval(1);
+
+    } else if (isLevelUp && level > 1) {
+        objectsRef.current = objectsRef.current.filter(obj => obj.position[2] > -80);
+
+        objectsRef.current.push({
+            id: uuidv4(),
+            type: ObjectType.SHOP_PORTAL,
+            position: [0, 0, -100],
+            active: true,
+        });
+
+        nextLetterDistance.current = distanceTraveled.current - SPAWN_DISTANCE + getLetterInterval(level);
+        setRenderTrigger(t => t + 1);
+
+    } else if (status === GameStatus.GAME_OVER || status === GameStatus.VICTORY) {
+        setDistance(Math.floor(distanceTraveled.current));
+    }
+
+    prevStatus.current = status;
+    prevLevel.current = level;
+  }, [status, level, setDistance]);
+
+  useFrame((state) => {
+      if (!playerObjRef.current) {
+          const group = state.scene.getObjectByName('PlayerGroup');
+          if (group && group.children.length > 0) {
+              playerObjRef.current = group.children[0];
+          }
+      }
+  });
+
+  useFrame((state, delta) => {
+    // Update the fixed timestep loop with current frame time
+    fixedLoopRef.current.update(state.clock.elapsedTime);
   });
 
   return (

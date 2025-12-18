@@ -144,7 +144,78 @@ function gameLoop(currentTime) {
 - **Tests básicos:** Unit tests para core math, integration para state changes
 - **Instrumentación:** Timers para performance regression detection
 
-## 6.5 Object Pooling System (TASK-001)
+## 6.5 Fixed Timestep Loop (TASK-020)
+
+**Implementación completada:** Sistema de Fixed Timestep que desacopla la lógica física del render loop para gameplay consistente.
+
+**Arquitectura del Loop:**
+```typescript
+class FixedTimestepLoop {
+  constructor(
+    fixedDeltaTime: number = 1/60,  // 60 FPS físico
+    maxDeltaTime: number = 0.25      // Máx 250ms para evitar "spiral of death"
+  )
+
+  setFixedUpdateCallback(callback: (dt: number) => void): void
+  setRenderCallback(callback: (alpha: number) => void): void
+  update(currentTime: number): void  // Llamar desde useFrame
+  start(): void
+  pause(): void
+}
+```
+
+**Flujo de actualización:**
+```
+Frame N:
+├── update(currentTime)          // Acumulador += deltaTime
+├── while (accumulator >= FIXED_DT):
+│   ├── fixedUpdate(FIXED_DT)    // Física, colisiones, lógica
+│   └── accumulator -= FIXED_DT
+└── render(accumulator / FIXED_DT) // Interpolación visual
+```
+
+**Integración en LevelManager:**
+```typescript
+// En componente React
+const fixedLoopRef = useRef<FixedTimestepLoop>(new FixedTimestepLoop(1/60, 0.25));
+
+// Callbacks separados
+const fixedUpdateCallback = useCallback((deltaTime: number) => {
+  // Toda la lógica de juego aquí: movimiento, colisiones, spawn
+  updatePhysics(deltaTime);
+  checkCollisions();
+  spawnObjects();
+}, [dependencies]);
+
+const renderCallback = useCallback((interpolationAlpha: number) => {
+  // Solo interpolación visual si es necesaria
+  setRenderTrigger(t => t + 1);
+}, []);
+
+// En useFrame
+useFrame((state, delta) => {
+  fixedLoopRef.current.update(state.clock.elapsedTime);
+});
+```
+
+**Beneficios logrados:**
+- **Consistencia física:** Misma entrada = mismo resultado independientemente del FPS
+- **Estabilidad:** No más tunneling en frame drops
+- **Debugging mejorado:** Fácil testing determinista con inputs fijos
+- **Performance:** Evita "spiral of death" con clamping de dt máximo
+
+**Manejo de edge cases:**
+- **Frame drops grandes:** Clamped a 250ms máximo
+- **Safety limit:** Máximo 10 fixed updates por frame
+- **Input snapshotting:** Estados de input preservados entre frames
+- **Interpolation:** Render smooth incluso con dt variable
+
+**Testing:**
+- **12 tests unitarios** cubren acumulación, clamping, callbacks y safety limits
+- **Integration tests** verifican consistencia entre sesiones
+- **Performance benchmarks** confirman estabilidad de 55-60 FPS
+
+## 6.6 Object Pooling System (TASK-001)
 
 **Implementación completada:** Sistema genérico de ObjectPool que elimina allocations en hot paths y reduce GC spikes.
 

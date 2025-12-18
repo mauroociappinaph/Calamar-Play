@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useRef, useMemo, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useStore } from '@/features/game/state/store';
 import { LANE_WIDTH } from '@/shared/types/types';
@@ -14,6 +14,8 @@ import { LANE_WIDTH } from '@/shared/types/types';
 const PalmTree: React.FC<{ position: [number, number, number], scale: number, rotationY: number }> = ({ position, scale, rotationY }) => {
     const trunkRef = useRef<THREE.Group>(null);
     const leavesRef = useRef<THREE.Group>(null);
+    const { camera } = useThree();
+    const [lodLevel, setLodLevel] = useState(0);
 
     useFrame((state) => {
         if (trunkRef.current) {
@@ -22,7 +24,32 @@ const PalmTree: React.FC<{ position: [number, number, number], scale: number, ro
         if (leavesRef.current) {
             leavesRef.current.rotation.y += 0.001;
         }
+
+        // LOD logic: calculate distance to camera
+        const distance = camera.position.distanceTo(new THREE.Vector3(...position));
+        setLodLevel(distance > 50 ? 1 : 0);
     });
+
+    // Memoize geometries and materials
+    const geometries = useMemo(() => ({
+        trunk: new THREE.CylinderGeometry(0.25, 0.4, 5, 10),
+        leaf: new THREE.BoxGeometry(0.7, 0.05, 3),
+        center: new THREE.SphereGeometry(0.4, 8, 8)
+    }), []);
+
+    const materials = useMemo(() => ({
+        trunk: new THREE.MeshStandardMaterial({ color: "#5d3a1a", roughness: 1 }),
+        leaf: new THREE.MeshStandardMaterial({ color: "#1b4d1a", roughness: 0.8 }),
+        center: new THREE.MeshStandardMaterial({ color: "#2d5a27" })
+    }), []);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            Object.values(geometries).forEach(geo => geo.dispose());
+            Object.values(materials).forEach(mat => mat.dispose());
+        };
+    }, [geometries, materials]);
 
     // Creamos las hojas una sola vez
     const leaves = useMemo(() => {
@@ -42,30 +69,25 @@ const PalmTree: React.FC<{ position: [number, number, number], scale: number, ro
     return (
         <group position={position} scale={[scale, scale, scale]} rotation={[0, rotationY, 0]} ref={trunkRef}>
             {/* Tronco con textura de anillos */}
-            <mesh position={[0, 2.5, 0]}>
-                <cylinderGeometry args={[0.25, 0.4, 5, 10]} />
-                <meshStandardMaterial color="#5d3a1a" roughness={1} />
-            </mesh>
+            <mesh position={[0, 2.5, 0]} geometry={geometries.trunk} material={materials.trunk} />
 
-            {/* Corona de Hojas (Frondosa) */}
-            <group position={[0, 5, 0]} ref={leavesRef}>
-                {leaves.map((leaf, i) => (
-                    <mesh
-                        key={i}
-                        rotation={leaf.rotation as any}
-                        position={leaf.position as any}
-                        scale={leaf.scale as any}
-                    >
-                        <boxGeometry args={[0.7, 0.05, 3]} />
-                        <meshStandardMaterial color="#1b4d1a" roughness={0.8} />
-                    </mesh>
-                ))}
-                {/* Centro de la palmera */}
-                <mesh position={[0, 0, 0]}>
-                    <sphereGeometry args={[0.4, 8, 8]} />
-                    <meshStandardMaterial color="#2d5a27" />
-                </mesh>
-            </group>
+            {/* Corona de Hojas (Frondosa) - only render if LOD level 0 */}
+            {lodLevel === 0 && (
+                <group position={[0, 5, 0]} ref={leavesRef}>
+                    {leaves.map((leaf, i) => (
+                        <mesh
+                            key={i}
+                            rotation={leaf.rotation as any}
+                            position={leaf.position as any}
+                            scale={leaf.scale as any}
+                            geometry={geometries.leaf}
+                            material={materials.leaf}
+                        />
+                    ))}
+                    {/* Centro de la palmera */}
+                    <mesh position={[0, 0, 0]} geometry={geometries.center} material={materials.center} />
+                </group>
+            )}
         </group>
     );
 };

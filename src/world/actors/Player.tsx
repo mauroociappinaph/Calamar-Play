@@ -10,21 +10,6 @@ import { useStore } from '@/features/game/state/store';
 import { LANE_WIDTH, GameStatus } from '@/shared/types/types';
 import { audio } from '@/systems/audio/AudioEngine';
 
-// --- GEOMETRÍAS PROCEDURALES (Estilo Toy Art) ---
-const BODY_GEO = new THREE.SphereGeometry(0.7, 32, 32);
-const BEANIE_DOME_GEO = new THREE.SphereGeometry(0.71, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-const BEANIE_RIM_GEO = new THREE.TorusGeometry(0.65, 0.12, 12, 32);
-
-const GLASS_FRAME_GEO = new THREE.CapsuleGeometry(0.18, 0.3, 4, 16);
-const GLASS_BRIDGE_GEO = new THREE.CapsuleGeometry(0.05, 0.1, 4, 8);
-
-const TENTACLE_GEO = new THREE.CapsuleGeometry(0.15, 0.6, 4, 12);
-const SHADOW_GEO = new THREE.CircleGeometry(0.6, 32);
-
-// Detalles del Tatuaje (Ancla)
-const ANCHOR_RING_GEO = new THREE.TorusGeometry(0.08, 0.02, 8, 16);
-const ANCHOR_BAR_GEO = new THREE.CapsuleGeometry(0.02, 0.15, 4, 8);
-
 export const Player: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null);
   const bodyGroupRef = useRef<THREE.Group>(null);
@@ -42,6 +27,21 @@ export const Player: React.FC = () => {
   const jumpsPerformed = useRef(0);
   const isInvincible = useRef(false);
   const lastDamageTime = useRef(0);
+
+  // --- GEOMETRÍAS PROCEDURALES (Estilo Toy Art) ---
+  const geometries = useMemo(() => {
+    return {
+      body: new THREE.SphereGeometry(0.7, 32, 32),
+      beanieDome: new THREE.SphereGeometry(0.71, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+      beanieRim: new THREE.TorusGeometry(0.65, 0.12, 12, 32),
+      glassFrame: new THREE.CapsuleGeometry(0.18, 0.3, 4, 16),
+      glassBridge: new THREE.CapsuleGeometry(0.05, 0.1, 4, 8),
+      tentacle: new THREE.CapsuleGeometry(0.15, 0.6, 4, 12),
+      shadow: new THREE.CircleGeometry(0.6, 32),
+      anchorRing: new THREE.TorusGeometry(0.08, 0.02, 8, 16),
+      anchorBar: new THREE.CapsuleGeometry(0.02, 0.15, 4, 8)
+    };
+  }, []);
 
   // --- MATERIALES (Paleta del Logo) ---
   const materials = useMemo(() => {
@@ -254,6 +254,14 @@ export const Player: React.FC = () => {
     return () => window.removeEventListener('player-hit', onHit);
   }, [takeDamage, isImmortalityActive]);
 
+  // Cleanup geometries and materials on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(geometries).forEach(geo => geo.dispose());
+      Object.values(materials).forEach(mat => mat.dispose());
+    };
+  }, [geometries, materials]);
+
   const activeSkin = isImmortalityActive ? materials.invincible : materials.skin;
 
   return (
@@ -261,25 +269,25 @@ export const Player: React.FC = () => {
       <group ref={bodyGroupRef} position={[0, 0.8, 0]}>
 
         {/* CUERPO */}
-        <mesh geometry={BODY_GEO} material={activeSkin} castShadow />
+        <mesh geometry={geometries.body} material={activeSkin} castShadow />
 
         {/* GORRO (BEANIE) */}
         <group position={[0, 0.35, 0]} rotation={[-0.1, 0, 0]}>
-          <mesh geometry={BEANIE_DOME_GEO} material={materials.beanie} />
-          <mesh geometry={BEANIE_RIM_GEO} material={materials.beanie} rotation={[Math.PI/2, 0, 0]} position={[0, 0.05, 0]} />
+          <mesh geometry={geometries.beanieDome} material={materials.beanie} />
+          <mesh geometry={geometries.beanieRim} material={materials.beanie} rotation={[Math.PI/2, 0, 0]} position={[0, 0.05, 0]} />
         </group>
 
         {/* GAFAS */}
         <group position={[0, 0.15, 0.55]}>
-          <mesh position={[0.25, 0, 0]} geometry={GLASS_FRAME_GEO} material={materials.glasses} />
-          <mesh position={[-0.25, 0, 0]} geometry={GLASS_FRAME_GEO} material={materials.glasses} />
-          <mesh rotation={[0, 0, Math.PI/2]} geometry={GLASS_BRIDGE_GEO} material={materials.glasses} />
+          <mesh position={[0.25, 0, 0]} geometry={geometries.glassFrame} material={materials.glasses} />
+          <mesh position={[-0.25, 0, 0]} geometry={geometries.glassFrame} material={materials.glasses} />
+          <mesh rotation={[0, 0, Math.PI/2]} geometry={geometries.glassBridge} material={materials.glasses} />
         </group>
 
         {/* TATUAJE ANCLA */}
         <group position={[0.5, -0.2, 0.3]} rotation={[0, 0.8, 0]} scale={[0.8, 0.8, 0.8]}>
-          <mesh geometry={ANCHOR_RING_GEO} material={materials.ink} />
-          <mesh position={[0, -0.1, 0]} geometry={ANCHOR_BAR_GEO} material={materials.ink} />
+          <mesh geometry={geometries.anchorRing} material={materials.ink} />
+          <mesh position={[0, -0.1, 0]} geometry={geometries.anchorBar} material={materials.ink} />
         </group>
 
         {/* TENTÁCULOS */}
@@ -289,7 +297,7 @@ export const Player: React.FC = () => {
             return (
               <mesh
                 key={i}
-                geometry={TENTACLE_GEO}
+                geometry={geometries.tentacle}
                 material={activeSkin}
                 position={[Math.cos(angle) * 0.4, 0, Math.sin(angle) * 0.4]}
                 rotation={[0.5, angle, 0]}
@@ -301,7 +309,7 @@ export const Player: React.FC = () => {
       </group>
 
       {/* SOMBRA */}
-      <mesh ref={shadowRef} position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]} geometry={SHADOW_GEO} material={materials.shadow} />
+      <mesh ref={shadowRef} position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]} geometry={geometries.shadow} material={materials.shadow} />
     </group>
   );
 };

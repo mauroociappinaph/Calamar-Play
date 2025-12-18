@@ -27,15 +27,17 @@
     - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 - **TASK-020: Refactorizar Core Loop (Fixed Timestep)**
-    - [ ] Implementar acumulador de tiempo y loop de física estable `[DEP: TASK-001]` `[ESTADO: 🔵]`
-    - [ ] Documentar lógica de desacople en `docs/GAMEPLAY_ENGINEER.md` `[ESTADO: 🔵]`
-    - [ ] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: 🔵]`
+    - [x] Implementar FixedTimestepLoop con acumulador y callbacks separados `[DEP: TASK-001]` `[ESTADO: ✅]`
+    - [x] Refactorizar LevelManager para usar fixed timestep en lógica de juego `[ESTADO: ✅]`
+    - [x] Crear tests unitarios en `tests/unit/fixedTimestep.test.ts` (12 tests pasando) `[ESTADO: ✅]`
+    - [x] Documentar lógica de desacople en `docs/GAMEPLAY_ENGINEER.md` `[ESTADO: ✅]`
+    - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 - **TASK-005 & TASK-006: Optimización de Assets (LOD/Memoización)**
-    - [ ] Aplicar `useMemo` a geometrías/materiales en componentes `World` `[DEP: Ninguna]` `[ESTADO: 🔵]`
-    - [ ] Implementar niveles de detalle (LOD) para modelos críticos `[ESTADO: 🔵]`
-    - [ ] Validar contra presupuestos en `docs/TECHNICAL_DIRECTOR.md` `[ESTADO: 🔵]`
-    - [ ] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: 🔵]`
+    - [x] Aplicar `useMemo` a geometrías/materiales en componentes `World` `[DEP: Ninguna]` `[ESTADO: ✅]`
+    - [x] Implementar niveles de detalle (LOD) para modelos críticos `[ESTADO: ✅]`
+    - [x] Validar contra presupuestos en `docs/TECHNICAL_DIRECTOR.md` `[ESTADO: ✅]`
+    - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 ### 🧪 Infraestructura de Calidad (🔴 Alta Prioridad)
 
@@ -49,8 +51,8 @@
     - [x] Documentar flujo de despliegue en `docs/BUILD_ENGINEER_DEVOPS_GAMES.md` `[ESTADO: ✅]`
 
 - **TASK-011: Benchmarks Automatizados**
-    - [ ] Implementar script de extracción de métricas de performance `[DEP: TASK-016]` `[ESTADO: 🔵]`
-    - [ ] Documentar metodología de medición en `docs/QA_TEST_LEAD.md` `[ESTADO: 🔵]`
+    - [x] Implementar script de extracción de métricas de performance `[DEP: TASK-016]` `[ESTADO: ✅]`
+    - [x] Documentar metodología de medición en `docs/QA_TEST_LEAD.md` `[ESTADO: ✅]`
 
 - **TASK-015: Analytics y Telemetría**
     - [ ] Instrumentar eventos core (session, start, death) `[DEP: Ninguna]` `[ESTADO: 🔵]`

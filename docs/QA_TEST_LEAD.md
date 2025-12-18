@@ -65,18 +65,36 @@ Benchmarks mínimos: FPS p95 >50 móvil / >55 desktop; long tasks <100ms count <
 | JS errors | 0 por sesión | Console logs | E2E | Sí (>0 = fail) |
 
 ### 6.2 Guía de Ejecución de Benchmarks (TASK-011)
-El sistema de benchmarks permite detectar regresiones de performance mediante métricas estandarizadas en cada Build/PR.
+El sistema de benchmarks automatizados permite detectar regresiones de performance mediante métricas estandarizadas en cada Build/PR.
 
-**Pipeline de Medición:**
-1. **Instrumentación (Code side):** Uso de `performance.mark()` y `performance.measure()` en el core loop para medir latencia de frames y tiempo de CPU por sistema (Physics vs Render).
-2. **Extracción (Automated):** Utilizar `Playwright` o `Puppeteer` para navegar al juego en modo headless, ejecutar una sesión controlada de 30s de gameplay simulado, y extraer las métricas de `window.performance`.
-3. **Thresholds de Auditoría:**
-   - `FPS_MEAN`: < 55 -> Error
-   - `FPS_P95`: < 50 -> Error
-   - `JS_HEAP_DELTA`: > 10MB -> Warning / Error (leak detectado)
+**Arquitectura del Sistema:**
+- **Tecnología:** Playwright para browser automation headless
+- **Duración:** 30 segundos de gameplay simulado con inputs aleatorios
+- **Métricas recolectadas:** FPS (promedio, min, max, P95), memoria heap (pico y promedio), long tasks (>50ms), TTI, first paint
+- **Budgets definidos:** FPS min 30, memoria max 100MB, long tasks max 5
+- **Salida:** Reporte JSON en `benchmark-results/` con status PASS/FAIL
+
+**Cómo se ejecuta:**
+1. **Local:** `npm run test:perf` (requiere app corriendo en localhost:4173)
+2. **CI/CD:** Automático en cada push/PR después del build
+3. **Manual:** `APP_URL=https://deploy-url npm run test:perf`
+
+**Métricas y Thresholds:**
+| Métrica | Umbral | Severidad | Descripción |
+|---------|--------|-----------|-------------|
+| FPS Promedio | < 55 | Error | Degradación crítica |
+| FPS P95 | < 50 | Error | Experiencia inconsistente |
+| Memoria Pico | > 100MB | Error | Riesgo de OOM |
+| Long Tasks | > 5 | Error | UI freezing |
+| TTI | > 3000ms | Warning | Load performance |
+
+**Interpretación de Resultados:**
+- **PASS:** Todos los budgets cumplidos, release seguro
+- **FAIL:** Regresión detectada, investigar causa (memory leak, GC spikes, render bottlenecks)
+- **Report Path:** `benchmark-results/benchmark-{timestamp}.json`
 
 **Comando de ejecución:**
-`npm run test:perf` (Ejecuta el script de benchmark y genera un reporte JSON para el CI).
+`npm run test:perf` (Ejecuta `scripts/benchmark.js` y genera reporte JSON)
 
 ## 7) Métricas de estabilidad y calidad
 Crash-free sessions: >95%; error rate JS exceptions <0.1%; ANR/long task rate <5%; bug escape rate <10% (pre-prod vs prod); flakiness rate tests <5%; MTTR <4h. Instrumentación: error tracking (Sentry), logging (console.error + custom events), performance monitoring (Web Vitals).
