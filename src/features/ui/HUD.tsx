@@ -240,19 +240,25 @@ export const HUD: React.FC = () => {
 
   return (
     <div className={containerClass}>
-        {/* Top Bar */}
+        {/* Top Bar - Redesigned for better hierarchy */}
         <div className="flex justify-between items-start w-full">
             <div className="flex flex-col">
-                <div className="text-3xl md:text-5xl font-bold text-white drop-shadow-md font-cyber">
+                <div className="text-2xl md:text-4xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)] font-cyber">
                     {score.toLocaleString()}
+                </div>
+                <div className="text-sm md:text-lg text-yellow-400 font-mono">
+                    PERLAS
                 </div>
             </div>
 
-            <div className="flex space-x-1 md:space-x-2">
+            <div className="flex space-x-2 md:space-x-3">
                 {[...Array(maxLives)].map((_, i) => (
                     <Heart
                         key={i}
-                        className={`w-6 h-6 md:w-8 md:h-8 ${i < lives ? 'text-red-500 fill-red-500' : 'text-black/30 fill-black/30'} drop-shadow-sm`}
+                        className={`w-12 h-12 md:w-14 md:h-14 ${i < lives ? 'text-red-500 fill-red-500 drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]' : 'text-gray-600 fill-gray-600'} transition-all duration-200`}
+                        style={{
+                            filter: i < lives ? 'drop-shadow(0 0 8px rgba(255,0,0,0.8))' : 'none'
+                        }}
                     />
                 ))}
             </div>
@@ -277,26 +283,32 @@ export const HUD: React.FC = () => {
              </div>
         )}
 
-        {/* Calamar Collection Status */}
-        <div className="absolute top-16 md:top-24 left-1/2 transform -translate-x-1/2 flex space-x-1 md:space-x-2">
-            {target.map((char, idx) => {
-                const isCollected = collectedLetters.includes(idx);
-                const color = GEMINI_COLORS[idx];
+        {/* Letters Collection Progress Bar */}
+        <div className="absolute top-16 md:top-24 left-1/2 transform -translate-x-1/2">
+            <div className="bg-black/60 rounded-full px-4 py-2 backdrop-blur-sm border border-white/20">
+                <div className="text-xs md:text-sm text-white/80 font-mono mb-1 text-center">
+                    LETRAS: {collectedLetters.length}/{target.length}
+                </div>
+                <div className="flex space-x-1">
+                    {target.map((char, idx) => {
+                        const isCollected = collectedLetters.includes(idx);
+                        const color = GEMINI_COLORS[idx];
 
-                return (
-                    <div
-                        key={idx}
-                        style={{
-                            borderColor: isCollected ? color : 'rgba(255, 255, 255, 0.5)',
-                            backgroundColor: isCollected ? color : 'rgba(0, 0, 0, 0.2)',
-                            color: isCollected ? '#fff' : 'rgba(255,255,255,0.5)',
-                        }}
-                        className={`w-6 h-8 md:w-8 md:h-10 flex items-center justify-center border-2 font-black text-sm md:text-lg font-cyber rounded transform transition-all duration-300`}
-                    >
-                        {char}
-                    </div>
-                );
-            })}
+                        return (
+                            <div
+                                key={idx}
+                                style={{
+                                    backgroundColor: isCollected ? color : 'rgba(255, 255, 255, 0.2)',
+                                    color: isCollected ? '#fff' : 'rgba(255,255,255,0.5)',
+                                }}
+                                className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center font-black text-xs md:text-sm font-cyber rounded transition-all duration-500 ${isCollected ? 'animate-pulse scale-110' : ''}`}
+                            >
+                                {char}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
         </div>
 
         {/* Bottom Overlay */}

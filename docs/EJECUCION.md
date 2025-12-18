@@ -73,9 +73,11 @@
     - [ ] Documentar mecánica en `docs/LEAD_GAME_DESIGNER.md` `[ESTADO: 🔵]`
 
 - **TASK-022: Onboarding Básico y Mejoras de UX (🟡)**
-    - [ ] Implementar sistema de tooltips contextuales dinámicos `[DEP: Ninguna]` `[ESTADO: 🔵]`
-    - [ ] Rediseñar jerarquía visual del HUD (outlines/glows) `[ESTADO: 🔵]`
-    - [ ] Documentar principios aplicados en `docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md` `[ESTADO: 🔵]`
+    - [x] Implementar sistema de tooltips contextuales dinámicos en `src/features/ui/onboarding.tsx` `[DEP: Ninguna]` `[ESTADO: ✅]`
+    - [x] Rediseñar jerarquía visual del HUD (tamaños 48px, barra progresiva para letras) en `src/features/ui/HUD.tsx` `[ESTADO: ✅]`
+    - [x] Crear tests de integración en `tests/integration/onboarding.test.tsx` `[ESTADO: ✅]`
+    - [x] Documentar principios aplicados en `docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md` `[ESTADO: ✅]`
+    - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 - **TASK-002: Sistema de Audio Completo (🟡)**
     - [ ] Implementar `AudioEngine` y sistemas de crossfade `[DEP: Ninguna]` `[ESTADO: 🔵]`

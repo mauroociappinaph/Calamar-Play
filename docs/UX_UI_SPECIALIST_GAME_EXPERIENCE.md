@@ -95,27 +95,37 @@
 
 ## 5. Onboarding y tutorial (time-to-fun)
 
-**Primeros 60–180 segundos:**
-- **Aprende:** Movimiento básico (0-30s), coleccionismo (30-60s), peligro (60-90s), shop básico (90-120s)
-- **Aha moment:** Primera letra coleccionada con speed boost feedback (debería ocurrir ~45s)
-- **Práctica segura:** Zonas iniciales con obstáculos previsibles, vidas extra
+**Primeros 60 segundos:**
+- **Aprende:** Movimiento básico (0-10s), coleccionismo (10-60s)
+- **Aha moment:** Primera letra coleccionada con speed boost feedback (debería ocurrir ~30-45s)
+- **Práctica segura:** Zonas iniciales sin obstáculos, vidas completas
 
-**Fricciones:**
-- **Texto excesivo:** Sin texto explicativo, aprendizaje por prueba/error
-- **Tutorial que interrumpe:** No hay tutorial, momentum se rompe por muertes frustrantes
-- **Falta práctica:** Primeros obstáculos requieren timing perfecto sin build-up
+**Implementación actual (TASK-022):**
+- **Sistema de tooltips contextuales:** Aparecen durante los primeros 60 segundos de juego
+- **Tooltips secuenciales:**
+  1. "Toca para moverte" - Aparece al inicio, se dismiss cuando el jugador se mueve >5 unidades
+  2. "Recolecta todas las letras" - Aparece después del movimiento, se dismiss cuando se recolecta la primera letra
+- **Auto-dismiss:** Cada tooltip se oculta automáticamente después de 10 segundos si no hay acción
+- **Timeout global:** Todo el sistema de onboarding se desactiva después de 60 segundos
 
-**Propuesta de onboarding:**
-- **Teach:** Spotlight en primera gema con hint "Toca para mover"
-- **Practice:** 3 gemas fáciles con feedback positivo
-- **Test:** Primera letra con hint contextual "Recolecta todas las letras"
+**Arquitectura técnica:**
+- **Componente:** `src/features/ui/onboarding.tsx` - Renderiza tooltips condicionalmente
+- **Estado:** Integrado en `store.ts` con campos `isOnboardingActive`, `currentTooltip`, `dismissedTooltips`
+- **Triggers:** Se inicia automáticamente en `startGame()`, progreso basado en acciones del jugador
+- **Estilos:** Tooltips con fondo negro translúcido, borde amarillo, animación de pulso
 
-**Tooltips contextual + dismiss:** Primer toque muestra hint "Swipe para cambiar lane", desaparece después de acción exitosa.
+**Métricas de éxito:**
+- **% completa onboarding:** Target 80% (implementado con tooltips dismiss por acción)
+- **Tiempo al primer movimiento:** Target <10s (tooltip inicial guía inmediatamente)
+- **Tiempo a primera letra:** Target <45s (progreso natural del tutorial)
+- **Drop-off por paso:** Target <20% por paso (feedback inmediato reduce frustración)
 
-**Success criteria:**
-- **% completa tutorial:** Target 80% (vs actual 0%)
-- **Tiempo al primer éxito:** Target <60s (vs actual ~120s SUPUESTO)
-- **Drop-off por paso:** Target <20% por paso (vs actual ~50% SUPUESTO)
+**Success criteria alcanzado:**
+- ✅ Tooltips aparecen en timing correcto
+- ✅ Dismiss automático por acción del jugador
+- ✅ Sistema no interrumpe flow del juego
+- ✅ Auto-timeout previene spam
+- ✅ Tests de integración cubren todos los casos
 
 ## 6. Accesibilidad (mínimo viable + mejoras)
 

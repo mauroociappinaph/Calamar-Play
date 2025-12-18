@@ -26,6 +26,12 @@ interface GameState {
   hasImmortality: boolean;
   isImmortalityActive: boolean;
 
+  // Onboarding
+  isOnboardingActive: boolean;
+  onboardingStartTime: number;
+  currentTooltip: string | null;
+  dismissedTooltips: string[];
+
   // Actions
   startGame: () => void;
   restartGame: () => void;
@@ -48,6 +54,11 @@ interface GameState {
   // Checkpoint System
   createCheckpoint: (levelState: { objects: any[]; distanceTraveled: number; nextLetterDistance: number }) => boolean;
   hasCheckpoint: () => boolean;
+
+  // Onboarding
+  startOnboarding: () => void;
+  dismissTooltip: (tooltip: string) => void;
+  updateTooltip: (tooltip: string | null) => void;
 }
 
 // FSM Transition Matrix
@@ -78,6 +89,12 @@ export const useStore = create<GameState>((set, get) => ({
   hasImmortality: false,
   isImmortalityActive: false,
 
+  // Onboarding
+  isOnboardingActive: false,
+  onboardingStartTime: 0,
+  currentTooltip: null,
+  dismissedTooltips: [],
+
   // Helper for internal state transitions
   _transitionTo: (nextStatus: GameStatus) => {
     const { status } = get();
@@ -90,7 +107,7 @@ export const useStore = create<GameState>((set, get) => ({
   },
 
   startGame: () => {
-    const { _transitionTo, level, laneCount } = get();
+    const { _transitionTo, level, laneCount, startOnboarding } = get();
     if (_transitionTo(GameStatus.PLAYING)) {
       set({
         score: 0,
@@ -106,6 +123,9 @@ export const useStore = create<GameState>((set, get) => ({
         hasImmortality: false,
         isImmortalityActive: false
       });
+
+      // Start onboarding
+      startOnboarding();
 
       // Analytics: Track game start
       trackGameEvent.gameStart(level, laneCount);
@@ -343,4 +363,25 @@ export const useStore = create<GameState>((set, get) => ({
   },
 
   hasCheckpoint: () => checkpointManager.hasCheckpoint(),
+
+  // Onboarding Implementation
+  startOnboarding: () => {
+    set({
+      isOnboardingActive: true,
+      onboardingStartTime: Date.now(),
+      currentTooltip: 'move',
+      dismissedTooltips: []
+    });
+  },
+
+  dismissTooltip: (tooltip: string) => {
+    set((state) => ({
+      dismissedTooltips: [...state.dismissedTooltips, tooltip],
+      currentTooltip: null
+    }));
+  },
+
+  updateTooltip: (tooltip: string | null) => {
+    set({ currentTooltip: tooltip });
+  },
 }));

@@ -12,6 +12,7 @@ import { Player } from '@/world/actors/Player';
 import { LevelManager } from '@/world/stage/LevelManager';
 import { Effects } from '@/world/fx/Effects';
 import { HUD } from '@/features/ui/HUD';
+import { Onboarding } from '@/features/ui/onboarding';
 import { useStore } from '@/features/game/state/store';
 import { initAnalytics, cleanupAnalytics, trackGameEvent } from '@/shared/analytics';
 
@@ -108,6 +109,7 @@ function App() {
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden select-none">
       <HUD />
+      <Onboarding />
       <Canvas
         shadows
         dpr={[1, 1.5]}

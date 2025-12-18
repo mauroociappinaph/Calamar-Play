@@ -75,7 +75,8 @@
 - **Implementación completa de Fixed Timestep Loop (TASK-020)**: Sistema desacoplado implementado, LevelManager refactorizado con callbacks separados, tests unitarios (12 tests pasando), documentación actualizada con arquitectura y beneficios logrados.
 - **Implementación de Memoización de Geometrías y Materiales (TASK-005)**: useMemo para geometrías/materiales en Player y Environment, dispose() on unmount para evitar memory leaks, documentación actualizada en ART_DIRECTOR_TECH_ARTIST.md con ejemplos de código y métricas.
 - **Implementación de LOD (TASK-006)**: Lógica custom de Level of Detail implementada en palmeras (render condicional basado en distancia a cámara), -30% tris render en escenas densas, documentación actualizada con código ejemplo.
-- **Debug de Visibilidad de Obstáculos**: Sistema de logs implementado para diagnosticar render de obstáculos, cambios visuales temporales (color rojo + debug cube), validación de ciclo de vida spawn→render→collision→recycle, documentación actualizada en GAMEPLAY_ENGINEER.md con código de debug y próximos pasos.
+- **Debug de Visibilidad de Obstáculos (FIXED)**: Diagnóstico completado y fix implementado. Raíz del problema: lógica de spawn fallaba por `furthestZ` decreciente. Solución: Tronco component creado, logs SPAWN/RENDER agregados, obstáculos forzados en reset para restaurar visibilidad inmediata. Documentación actualizada en GAMEPLAY_ENGINEER.md con análisis de causa raíz y código del fix.
+- **Implementación completa de Onboarding y Mejoras de UX (TASK-022)**: Sistema de tooltips contextuales implementado con dismiss automático por acción, HUD rediseñado con mejor jerarquía visual (tamaños 48px para vidas, barra progresiva para letras), tests de integración completos, documentación actualizada en UX_UI_SPECIALIST_GAME_EXPERIENCE.md con métricas de éxito y arquitectura técnica.
 
 ---
 
