@@ -219,7 +219,6 @@ export class PatternManager {
     this.patternStartTime = Date.now();
     this.lastPatternType = nextType;
 
-    console.log(`🎯 Pattern switched to: ${selectedPattern.name} (${selectedPattern.type}) - Duration: ${selectedPattern.duration}s`);
     return selectedPattern;
   }
 

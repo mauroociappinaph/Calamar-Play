@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-12-18T16:18:11.606Z",
+  "duration": 30000,
+  "url": "http://localhost:4174",
+  "device": {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/143.0.7499.4 Safari/537.36"
+  },
+  "performance": {
+    "fps": {
+      "samples": 81,
+      "average": 16.209876543209877,
+      "min": 12,
+      "max": 19,
+      "p95": 18
+    },
+    "memory": {
+      "samples": 83,
+      "average": 24500000,
+      "peak": 24500000
+    },
+    "timing": {
+      "domContentLoaded": 0,
+      "loadComplete": 0,
+      "firstPaint": 700,
+      "firstContentfulPaint": 980
+    },
+    "longTasks": {
+      "count": 468,
+      "totalDuration": 29546,
+      "averageDuration": 63.13247863247863
+    }
+  },
+  "budgets": {
+    "fps": {
+      "min": 30,
+      "target": 55,
+      "status": "FAIL"
+    },
+    "memory": {
+      "maxMB": 100,
+      "status": "PASS"
+    },
+    "longTasks": {
+      "maxCount": 5,
+      "status": "FAIL"
+    }
+  }
+}

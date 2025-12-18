@@ -42,7 +42,7 @@ const SHOP_FRAME_GEO = new THREE.BoxGeometry(1, 7, 1);
 const SHOP_BACK_GEO = new THREE.BoxGeometry(1, 5, 1.2);
 const SHOP_ROOF_GEO = new THREE.ConeGeometry(3.5, 2, 4); // Roof
 
-const PARTICLE_COUNT = 300;
+const PARTICLE_COUNT = 100;
 const BASE_LETTER_INTERVAL = 150;
 
 const getLetterInterval = (level: number) => {
@@ -153,7 +153,7 @@ const gameObjectPool = new ObjectPool<GameObject>(
         // reuse the same ID to avoid generating new UUIDs
     },
     50, // Initial size
-    500 // Max size
+    100 // Max size - reduced for performance
 );
 
 export const LevelManager: React.FC = () => {
@@ -315,9 +315,7 @@ export const LevelManager: React.FC = () => {
         if (keep) {
             keptObjects.push(obj);
         } else {
-            console.log('POOL RELEASE:', gameObjectPool.getStats(), 'obj id:', obj.id, 'type:', obj.type, 'active:', obj.active, 'position:', obj.position, 'frame:', performance.now());
             gameObjectPool.release(obj);
-            console.log('POOL AFTER RELEASE:', gameObjectPool.getStats());
         }
     }
 
@@ -340,7 +338,6 @@ export const LevelManager: React.FC = () => {
     // Check if we need to switch patterns
     if (patternManager.shouldSwitchPattern(currentTime)) {
         const newPattern = patternManager.getNextPattern();
-        console.log(`🎯 LevelManager: Switching to pattern-based spawning`);
 
         // Spawn all objects from the new pattern
         const spawnZ = Math.min(furthestZ - 15, -SPAWN_DISTANCE);
@@ -374,7 +371,6 @@ export const LevelManager: React.FC = () => {
                 obj.color = GEMINI_COLORS[spawn.targetIndex || 0];
             }
 
-            console.log(`🎯 Pattern spawn: ${spawn.type} at lane ${spawn.lane}, z=${obj.position[2]}`);
             keptObjects.push(obj);
         }
 
@@ -487,8 +483,6 @@ export const LevelManager: React.FC = () => {
       nextLetterDistance.current = restoredNextLetter;
 
       setRenderTrigger(t => t + 1);
-
-      console.log('[LevelManager] Restored checkpoint with', objects.length, 'objects');
     };
 
     window.addEventListener('restore-checkpoint', handleRestoreCheckpoint as any);
@@ -509,19 +503,14 @@ export const LevelManager: React.FC = () => {
     fixedLoopRef.current.update(state.clock.elapsedTime);
   });
 
-  console.log('DEBUG RENDER: LevelManager rendering', objectsRef.current.length, 'objects');
-  console.log('DEBUG RENDER: Active objects:', objectsRef.current.filter(obj => obj.active));
-
   return (
     <group>
       <ForcedTronco />
       <ParticleSystem />
       {objectsRef.current.map(obj => {
         if (!obj.active) {
-          console.log('DEBUG RENDER: Skipping inactive object', obj.id, obj.type);
           return null;
         }
-        console.log('DEBUG RENDER: Rendering active object', obj.id, obj.type, obj.position);
         return <GameEntity key={obj.id} data={obj} />;
       })}
     </group>
@@ -537,6 +526,14 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
     useFrame((state, delta) => {
         if (groupRef.current) {
             groupRef.current.position.set(data.position[0], 0, data.position[2]);
+        }
+
+        // LOD: Skip animations for distant objects to improve performance
+        if (data.position[2] < -20) {
+            if (visualRef.current) {
+                visualRef.current.position.y = data.position[1];
+            }
+            return;
         }
 
         if (visualRef.current) {
