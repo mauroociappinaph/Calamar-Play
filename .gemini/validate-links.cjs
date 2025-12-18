@@ -1,7 +1,6 @@
 /**
  * validate-links.js
- * Script para validar links internos en archivos Markdown de la carpeta /docs.
- *
+ * Valida links internos en archivos Markdown de /docs.
  * Uso: node .gemini/validate-links.js
  */
 
@@ -11,67 +10,95 @@ const path = require('path');
 const DOCS_DIR = path.join(__dirname, '../docs');
 const ROOT_DIR = path.join(__dirname, '..');
 
-function getAllFiles(dirPath, arrayOfFiles) {
+// ✅ FIX: Consistencia con path.join (evita "/" hardcodeado)
+function getAllFiles(dirPath, arrayOfFiles = []) {
   const files = fs.readdirSync(dirPath);
 
-  arrayOfFiles = arrayOfFiles || [];
+  files.forEach((file) => {
+    const fullPath = path.join(dirPath, file); // ← más limpio
 
-  files.forEach(function(file) {
-    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-      arrayOfFiles = getAllFiles(dirPath + "/" + file, arrayOfFiles);
-    } else {
-      if (file.endsWith('.md')) {
-        arrayOfFiles.push(path.join(dirPath, "/", file));
-      }
+    if (fs.statSync(fullPath).isDirectory()) {
+      getAllFiles(fullPath, arrayOfFiles);
+    } else if (file.endsWith('.md')) {
+      arrayOfFiles.push(fullPath);
     }
   });
 
   return arrayOfFiles;
 }
 
+// ✅ NEW: Extracción de lógica para testabilidad
+function extractLinks(content) {
+  // Ignorar bloques de código
+  let cleaned = content.replace(/```[\s\S]*?```/g, '');
+  cleaned = cleaned.replace(/`[^`\n]+`/g, '');
+
+  const links = [];
+  // ✅ FIX: Regex más robusto (permite espacios en label)
+  const linkRegex = /\[([^\]]*)\]\((?!http|https|mailto|#)([^)]+)\)/g;
+  let match;
+
+  while ((match = linkRegex.exec(cleaned)) !== null) {
+    const [fullMatch, label, href] = match;
+    const filePath = href.split('#')[0].trim(); // ← trim para espacios
+    if (filePath) {
+      links.push({ label, href, filePath });
+    }
+  }
+
+  return links;
+}
+
 function validateFileLinks() {
   const mdFiles = getAllFiles(DOCS_DIR);
-  // También incluir el README y CONTRIBUTING de la raíz
-  if (fs.existsSync(path.join(ROOT_DIR, 'README.md'))) mdFiles.push(path.join(ROOT_DIR, 'README.md'));
-  if (fs.existsSync(path.join(ROOT_DIR, 'CONTRIBUTING.md'))) mdFiles.push(path.join(ROOT_DIR, 'CONTRIBUTING.md'));
 
-  let errors = 0;
-
-  mdFiles.forEach(file => {
-    let content = fs.readFileSync(file, 'utf8');
-    const relativePath = path.relative(ROOT_DIR, file);
-
-    // Ignorar bloques de código triple backtick
-    content = content.replace(/```[\s\S]*?```/g, '');
-    // Ignorar código inline
-    content = content.replace(/`[^`\n]+`/g, '');
-
-    // Regex para encontrar links de markdown: [label](path)
-    // Filtra links externos (http) y anclas internas (#) que no tienen path de archivo
-    const linkRegex = /\[.*?\]\((?!http|https|#)(.*?)\)/g;
-    let match;
-
-    while ((match = linkRegex.exec(content)) !== null) {
-      let linkPath = match[1].split('#')[0]; // Ignorar anclas al validar existencia de archivo
-      if (!linkPath) continue;
-
-      const absoluteLinkPath = path.resolve(path.dirname(file), linkPath);
-
-      if (!fs.existsSync(absoluteLinkPath)) {
-        console.error(`❌ Link roto en [${relativePath}]: "${match[1]}" -> No existe: ${path.relative(ROOT_DIR, absoluteLinkPath)}`);
-        errors++;
-      }
-    }
+  // Agregar archivos de raíz si existen
+  ['README.md', 'CONTRIBUTING.md'].forEach((file) => {
+    const fullPath = path.join(ROOT_DIR, file);
+    if (fs.existsSync(fullPath)) mdFiles.push(fullPath);
   });
 
-  if (errors === 0) {
+  const errors = [];
+
+  mdFiles.forEach((file) => {
+    // ✅ NEW: Try/catch para archivos problemáticos
+    let content;
+    try {
+      content = fs.readFileSync(file, 'utf8');
+    } catch (err) {
+      console.warn(`⚠️  No se pudo leer: ${path.relative(ROOT_DIR, file)}`);
+      return;
+    }
+
+    const relativePath = path.relative(ROOT_DIR, file);
+    const links = extractLinks(content);
+
+    links.forEach(({ href, filePath }) => {
+      const absoluteLinkPath = path.resolve(path.dirname(file), filePath);
+
+      if (!fs.existsSync(absoluteLinkPath)) {
+        errors.push({
+          file: relativePath,
+          link: href,
+          target: path.relative(ROOT_DIR, absoluteLinkPath),
+        });
+      }
+    });
+  });
+
+  // Reporte
+  if (errors.length === 0) {
     console.log('✅ Todos los links internos son válidos.');
     process.exit(0);
   } else {
-    console.error(`\n🔴 Se encontraron ${errors} links rotos.`);
+    console.error('\n🔴 Links rotos encontrados:\n');
+    errors.forEach(({ file, link, target }) => {
+      console.error(`  ❌ [${file}]: "${link}" → No existe: ${target}`);
+    });
+    console.error(`\n   Total: ${errors.length} errores\n`);
     process.exit(1);
   }
 }
 
-console.log('🔍 Validando links internos en la documentación...');
+console.log('🔍 Validando links internos en la documentación...\n');
 validateFileLinks();
