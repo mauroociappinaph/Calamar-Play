@@ -1,0 +1,24 @@
+## 10. Plan de Refactor Arquitectónico (Alineado)
+
+La refactorización de la arquitectura seguirá la estrategia de 3 fases para minimizar el riesgo y alinear el trabajo técnico con los objetivos del producto.
+
+### 🚀 FASE 1: FUNDACIÓN (Habilitadores Arquitectónicos)
+**Objetivo:** Mejorar la experiencia de desarrollo y sentar las bases para refactors más grandes sin alterar la lógica de negocio.
+- **Acciones:**
+  - **Configurar Alias de Paths en TS/Vite:** Implementar alias como `@/components`, `@/shared`, etc., para eliminar los imports relativos (`../../`) y limpiar el código.
+  - **Crear Barrels Iniciales:** Introducir archivos `index.ts` en las carpetas principales (`components`, `components/UI`, `components/World`) para simplificar las importaciones.
+  - **Centralizar Constantes:** Mover constantes mágicas (colores, valores de juego) a un directorio `/shared/constants`.
+
+### 🎯 FASE 2: RETENCIÓN (Refactorización Segura)
+**Objetivo:** Con la base de tests de la Fase 1, comenzar a desacoplar los componentes más problemáticos.
+- **Acciones:**
+  - **Separar Lógica de UI:** Refactorizar componentes como `HUD` para que sean puramente presentacionales, extrayendo la lógica de estado a hooks personalizados.
+  - **Refactorizar `LevelManager`:** Comenzar la extracción de responsabilidades del `LevelManager`. Separar la lógica de colisiones a un sistema independiente y la lógica de spawn a otro.
+  - **Consolidar Helpers (DRY):** Extraer funciones de utilidad duplicadas a un directorio `/shared/lib` y cubrirlas con tests unitarios.
+
+### 🌟 FASE 3: EXPANSIÓN (Arquitectura Escalable)
+**Objetivo:** Realizar los cambios estructurales más grandes que permitirán el crecimiento futuro del juego.
+- **Acciones:**
+  - **Adoptar Arquitectura por Features:** Migrar gradualmente la estructura de carpetas hacia la propuesta en la sección 4 (ej. `/features/game`, `/features/shop`).
+  - **Refactorizar Store con Slices:** Dividir el "god store" de Zustand en `slices` más pequeños y manejables, uno por cada dominio (ej. `createPlayerSlice`, `createGameSlice`).
+  - **Endurecer Boundaries:** Implementar reglas de ESLint para forzar la regla de dependencia y prevenir importaciones cíclicas.
