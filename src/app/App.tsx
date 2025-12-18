@@ -7,15 +7,17 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Environment } from '@/world/stage/Environment';
-import { Player } from '@/world/actors/Player';
-import { LevelManager } from '@/world/stage/LevelManager';
-import { Effects } from '@/world/fx/Effects';
-import { HUD } from '@/features/ui/HUD';
-import { Onboarding } from '@/features/ui/onboarding';
 import { useStore } from '@/features/game/state/store';
 import { initAnalytics, cleanupAnalytics, trackGameEvent } from '@/shared/analytics';
 import { audio, audioEvents } from '@/systems/audio/AudioEngine';
+
+// Dynamic imports for code splitting
+const Environment = React.lazy(() => import('@/world/stage/Environment').then(module => ({ default: module.Environment })));
+const Player = React.lazy(() => import('@/world/actors/Player').then(module => ({ default: module.Player })));
+const LevelManager = React.lazy(() => import('@/world/stage/LevelManager').then(module => ({ default: module.LevelManager })));
+const Effects = React.lazy(() => import('@/world/fx/Effects').then(module => ({ default: module.Effects })));
+const HUD = React.lazy(() => import('@/features/ui/HUD').then(module => ({ default: module.HUD })));
+const Onboarding = React.lazy(() => import('@/features/ui/onboarding').then(module => ({ default: module.Onboarding })));
 
 // Dynamic Camera Controller with Shake
 const CameraController = () => {
@@ -165,8 +167,10 @@ function App() {
 
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden select-none">
-      <HUD />
-      <Onboarding />
+      <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-white">Loading UI...</div>}>
+        <HUD />
+        <Onboarding />
+      </Suspense>
 
       {/* Audio Debug Panel (Development Only) */}
       {process.env.NODE_ENV === 'development' && (

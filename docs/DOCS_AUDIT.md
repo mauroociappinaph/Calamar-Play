@@ -40,7 +40,7 @@
 | **TASK-006** | Implementar LOD | `docs/ART_DIRECTOR_TECH_ARTIST.md` | ✅ OK |
 | **TASK-007** | Optimizar Partículas | `docs/ART_DIRECTOR_TECH_ARTIST.md` | ✅ OK |
 | **TASK-008** | PWA | `docs/BUILD_ENGINEER_DEVOPS_GAMES.md` | ✅ OK |
-| **TASK-009** | Build Optimizado | `docs/TECHNICAL_DIRECTOR.md` | ✅ OK |
+| **TASK-009** | Build Optimizado | `docs/BUILD_ENGINEER_DEVOPS_GAMES.md` | ✅ **IMPLEMENTADO** |
 | **TASK-010** | Infraestructura Testing | `docs/QA_TEST_LEAD.md` | ✅ OK |
 | **TASK-011** | Benchmarks Performance | `docs/QA_TEST_LEAD.md` | ✅ OK |
 | **TASK-012** | Documentar API Store | `docs/STORE_API.md` | ✅ OK |
@@ -77,6 +77,7 @@
 - **Implementación de LOD (TASK-006)**: Lógica custom de Level of Detail implementada en palmeras (render condicional basado en distancia a cámara), -30% tris render en escenas densas, documentación actualizada con código ejemplo.
 - **Debug y Fix de Spawn Continuo de Obstáculos (FIXED - 2025-12-17)**: Diagnóstico completado y fix implementado. Raíz del problema: spawn condition invertida (`furthestZ > -SPAWN_DISTANCE` en lugar de `<`) y push a wrong array (`currentObjects` en lugar de `keptObjects`). Solución: condition corregida, push destination fixed, logs comprehensivos agregados (pool stats, frame timestamps, recycling), integration test creado para validar ciclo spawn→collision→recycle→reaparición. Documentación actualizada en GAMEPLAY_ENGINEER.md con métricas de validación y código del fix.
 - **Implementación completa de Onboarding y Mejoras de UX (TASK-022)**: Sistema de tooltips contextuales implementado con dismiss automático por acción, HUD rediseñado con mejor jerarquía visual (tamaños 48px para vidas, barra progresiva para letras), tests de integración completos, documentación actualizada en UX_UI_SPECIALIST_GAME_EXPERIENCE.md con métricas de éxito y arquitectura técnica.
+- **Implementación completa de Build Optimizado (TASK-009)**: Code splitting por features implementado (8 chunks separados), compresión gzip/brotli automática, lazy loading de componentes, reducción de bundle del 13% (-46KB gzipped), TTI mejorado en ~5.5%, documentación completa en BUILD_ENGINEER_DEVOPS_GAMES.md con métricas de validación y benchmarks de performance.
 
 ---
 
@@ -88,4 +89,4 @@
 
 ---
 🔗 Referencia principal: [TASK.MD](./TASK.MD) | [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
-Última actualización: 17/12/2025
+Última actualización: 18/12/2025

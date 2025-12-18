@@ -58,21 +58,23 @@ async function runBenchmark() {
 
     // Collect performance observer data
     await page.evaluate(() => {
-      // FPS monitoring
+      // FPS monitoring using requestAnimationFrame
       let frameCount = 0;
-      let lastTime = performance.now();
+      let lastFpsTime = performance.now();
+      let fps = 0;
 
-      const fpsObserver = new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-          frameCount++;
-          if (performance.now() - lastTime >= 1000) {
-            window.fps = frameCount;
-            frameCount = 0;
-            lastTime = performance.now();
-          }
+      function measureFPS() {
+        frameCount++;
+        const now = performance.now();
+        if (now - lastFpsTime >= 1000) {
+          fps = frameCount;
+          frameCount = 0;
+          lastFpsTime = now;
         }
-      });
-      fpsObserver.observe({ entryTypes: ['measure'] });
+        window.fps = fps;
+        requestAnimationFrame(measureFPS);
+      }
+      measureFPS();
 
       // Long tasks monitoring
       const longTaskObserver = new PerformanceObserver((list) => {
