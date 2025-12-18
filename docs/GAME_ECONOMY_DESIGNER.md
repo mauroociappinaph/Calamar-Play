@@ -1,5 +1,7 @@
 # GAME_ECONOMY_DESIGNER.md
 
+> 💰 Documento de Diseño de Economía – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 1) Diagnóstico ejecutivo en 10 líneas
 Economía básica con score como moneda única, sin hard currency ni IAP. Fuentes limitadas (solo gemas 50-100 pts), sinks débiles (tienda post-nivel con items 1000-3000 pts). Inflación de velocidad lineal sin caps (5% por letra +30% por nivel). Grind alto para progresión (11 letras para level-up). Motivación extrínseca pobre: sin metas D0/D1, rewards fijos sin varianza. 3 riesgos: inflación sin control, grind monótono, falta de sinks recurrentes. 3 fricciones: costos shop altos vs earnings bajos, speed-up obliga reaprendizaje, sin checkpoints. 3 quick wins: agregar caps velocidad, sinks diarios/semanal, rewards variables por desempeño. **Chequeo TASK:** El diagnóstico es acertado. El nuevo plan unificado aborda estos huecos directamente: **TASK-015 (Analytics)**, que incluye la telemetría económica, es ahora una prioridad de **Fase 1**. El balance de la economía y la progresión se abordarán en **TASK-019 (Balance)**, una tarea clave de la **Fase 2**.
 
@@ -50,14 +52,14 @@ Lista monedas/rol: score (soft, compras tienda, motivación extrínseca). Fuente
 | Base | 500 pts | 50 pts | 10 min | Medio |
 | Generoso | 750 pts | 25 pts | 7 min | Alto |
 
-## 10. Plan de Acción de Diseño de Economía (Alineado)
+## 10. Plan de Acción de Diseño de Economía (Alineado con TASK.MD)
 
 El rol del Diseñador de Economía es construir un sistema de progresión que sea motivador, justo y que soporte los objetivos de retención del producto.
 
 ### 🚀 FASE 1: FUNDACIÓN (Estabilización y Medición)
 **Objetivo:** Establecer la base para la toma de decisiones informadas. Es imposible balancear una economía sin datos.
 - **Acciones:**
-  - **Definir Telemetría Económica (Prioridad 🔴 Alta):** Colaborar estrechamente con el Data Analyst para definir el esquema de eventos económicos que se deben rastrear en **TASK-015**. Esto incluye `currency_earned`, `currency_spent`, `upgrade_purchased` y `economy_snapshot` al final de cada partida.
+  - **Definir Telemetría Económica (Prioridad 🔴 Alta):** Alinear la telemetría económica con el esquema de eventos definido para **TASK-015** (ver [DATA_ANALYST_GAME_INSIGHTS.md](./DATA_ANALYST_GAME_INSIGHTS.md)). Esto incluye `currency_earned`, `currency_spent`, `upgrade_purchased` y `economy_snapshot` al final de cada partida.
   - **Establecer KPIs Económicos:** Definir los Indicadores Clave de Rendimiento para la economía, como el "earning rate" (puntos por minuto), "sink-source ratio" (proporción entre lo que se gana y se gasta) y "time-to-first-purchase".
 
 ### 🎯 FASE 2: RETENCIÓN (Diversión y Equidad)
@@ -67,16 +69,19 @@ El rol del Diseñador de Economía es construir un sistema de progresión que se
     - Ajustar los costos de los ítems de la tienda para que sean alcanzables en un número razonable de partidas.
     - Re-balancear el valor de las gemas y otras fuentes de puntos.
     - Implementar una curva de velocidad que sea desafiante pero no exponencialmente punitiva.
+  - **Reducción de Fricción:** Integrar el sistema de **Checkpoints (TASK-017)** como soporte a la retención y economía, reduciendo la pérdida total tras un fallo y minimizando el "grind" innecesario.
   - **Diseñar Recompensas Variables:** Introducir sistemas de multiplicadores de score (por combos, near-misses) para recompensar la habilidad del jugador, no solo el tiempo jugado.
-  - **Diseñar Sinks de Moneda:** Proponer e implementar sinks recurrentes (como compras diarias limitadas o eventos) para controlar la inflación a largo plazo.
+  - **Diseñar Sinks de Moneda:** Proponer e implementar sinks recurrentes (como compras diarias limitadas o eventos) para controlar la inflación a largo plazo, basándose en las decisiones de diseño tomadas.
 
 ### 🌟 FASE 3: EXPANSIÓN (Profundidad y Monetización)
 **Objetivo:** Diseñar sistemas económicos para las nuevas mecánicas de juego y preparar el terreno para la monetización.
 - **Acciones:**
   - **Diseñar Economía para Nuevos Sistemas:** Crear el modelo económico para el **Sistema de Combate (TASK-021)**, incluyendo la obtención de munición y el costo de sus mejoras.
   - **Diseñar la Estrategia de Monetización:** Modelar el impacto de la publicidad recompensada y los IAPs (Initial App Purchases) en la economía del juego, asegurando que no se convierta en un "pay-to-win".
-  - **Planificar la Economía a Largo Plazo:** Diseñar sistemas económicos para features futuras, como crafteo, clanes o eventos de temporada.
+  - **Planificar la Economía a Largo Plazo:** Diseñar sistemas económicos para features futuras, como crafteo o eventos de temporada, asegurando la sostenibilidad del ecosistema.
+
+> 📘 Más contexto general: [README.md](../README.md)
 
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
 Última sincronización automática: 2025-12-17
