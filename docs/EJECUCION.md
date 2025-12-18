@@ -39,9 +39,9 @@
 ### 🧪 Infraestructura de Calidad (🔴 Alta Prioridad)
 
 - **TASK-010: Infraestructura de Testing (Vitest)**
-    - [ ] Configurar `vitest` y suite de tests unitarios inicial `[DEP: Ninguna]` `[ESTADO: 🔵]`
-    - [ ] Implementar tests para lógica de score y vida en `store.ts` `[ESTADO: 🔵]`
-    - [ ] Documentar estrategia en `docs/QA_TEST_LEAD.md` `[ESTADO: 🔵]`
+    - [x] Configurar `vitest` y suite de tests unitarios inicial `[DEP: Ninguna]` `[ESTADO: ✅]`
+    - [x] Implementar tests para lógica de score y vida en `store.ts` `[ESTADO: ✅]`
+    - [x] Documentar estrategia en `docs/QA_TEST_LEAD.md` `[ESTADO: ✅]`
 
 - **TASK-016: Pipeline de CI/CD (GitHub Actions)**
     - [ ] Configurar workflow de Build, Test y Type-check `[DEP: TASK-010]` `[ESTADO: 🔵]`

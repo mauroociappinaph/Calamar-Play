@@ -3,13 +3,18 @@
 > 🧪 Documento de QA & Testing – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
 
 ## 1) Diagnóstico ejecutivo en 10 líneas
-Estado actual inestable para release: sin suite de tests funcional, GC spikes causan stuttering en móviles, estados de juego no validados, colisiones físicas inexactas. 3 riesgos críticos: crashes por memoria en escenas densas (TASK-005), progreso perdido por estados inválidos (SHOP+PLAYING simultáneo), input lag en touch events móviles. 3 vacíos: tests unitarios ausentes (TASK-010), benchmarks performance faltantes (TASK-011), tests e2e no implementados. 3 quick wins: agregar limits velocidad (previene exploits), validar transiciones estado, implementar smoke tests manuales. **Chequeo TASK:** El diagnóstico original era correcto. El nuevo plan unificado ha corregido la priorización: **TASK-010 (Tests)** y **TASK-011 (Benchmarks)** han sido elevados a **prioridad 🔴 Alta** y son componentes centrales de la Fase 1. Además, se ha añadido **TASK-016 (CI/CD)** para automatizar la ejecución de estas validaciones de calidad.
+Estado de calidad en transición: Suite de tests unitarios (Vitest) implementada y funcional para el núcleo lógico (Zustand Store) – **TASK-010 OK**. 3 riesgos críticos persistentes: GC spikes causan stuttering en móviles (TASK-005/006), colisiones físicas inexactas (TASK-020), y falta de tests E2E automatizados. 3 vacíos actuales: benchmarks performance faltantes (TASK-011), pipeline CI/CD no configurado (TASK-016), y lógica de FSM no formalizada (TASK-018). 3 quick wins inmediatos: ampliar cobertura a utilidades matemáticas, configurar GitHub Actions, y automatizar benchmarks de FPS/Memory. **Chequeo TASK:** El hito inicial de **TASK-010 (Infraestructura de Testing)** ha sido completado con éxito, estableciendo la base de calidad automatizada para el resto del desarrollo.
 
 ## 2) Estrategia de testing recomendada (pirámide)
 Pirámide objetivo: unit tests (80%) para lógica store (takeDamage, collectGem), físicas (colisiones), utilities; integration tests (15%) para flujos input→estado→render, audio triggers, UI state sync; E2E tests (5%) para critical path: start→play→fail/win→retry→progression. No testear: animaciones CSS (coste alto, bajo riesgo), assets loading (browser dependent), offline mode (no implementado). Compensar con smoke tests diarios (5 min manual: load→play 1 min→shop→restart).
 
 ## 3) Auditoría de cobertura actual
-Suites existentes: ninguna suite funcional (SUPUESTO: TASK-010 menciona Vitest pero no implementado); ubicación: package.json scripts vacío de test; comandos: npm test no definido. Cobertura: módulos store.ts/UI.tsx/LevelManager.tsx sin tests; calidad asserts: nulo (no hay tests). Señales fragilidad: dependencias temporales (useFrame), estado global mutable (Zustand sin validaciones), closures recreados. Tabla:
+Suites existentes: **Vitest v4+** configurada con soporte para `happy-dom`; ubicación: archivos `*.test.ts`. Comandos: `npm test` (watch mode) y `npm test -- --run` (CI mode). Cobertura actual:
+- **`store.ts`**: Cobertura crítica (score, vidas, daño, niveles, tienda) implementada.
+- **`types.ts`**: Validado indirectamente.
+- **Pendiente**: Lógica de colisiones, generación de niveles y componentes UI.
+
+Señales de mejora: Estado global (Zustand) ahora bajo control de tests automáticos. Trazabilidad asegurada.
 
 | Área | Tests existentes | Riesgo | Hueco | Test propuesto | Prioridad |
 |------|-----------------|--------|-------|----------------|-----------|
