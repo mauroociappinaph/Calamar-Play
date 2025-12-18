@@ -1,5 +1,7 @@
 # COMMUNITY_MANAGER_TECH.md
 
+> 💬 Documento de Gestión Comunitaria – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 ## 1) Resumen ejecutivo mensual
 Estado del mes en 10 líneas: Sentimiento general positivo (SUPUESTO basado en mecánica divertida), con 3 highlights celebrados (animaciones del calamar, sonido tropical, progresión rápida). 3 pains repetidos (tiempo de carga largo, muertes por colisiones invisibles, falta de tutorial detallado). 3 bugs top (crashes en móviles, controles no responsivos, letras que no se recogen). 3 oportunidades (agregar leaderboard global, eventos diarios, UGC para compartir scores). Chequeo TASK: TASK-015 (analytics) responde parcialmente, pero falta engagement features como leaderboards.
 
@@ -122,6 +124,8 @@ Decisiones priorización: Severidad (bloqueantes primero), frecuencia (alto volu
 
 No pude verificar: Real user feedback, sentiment analysis, bug reproduction. Cómo verificar: Setup Discord/X monitoring, user testing sessions, analytics dashboards.
 
+> 📘 Más contexto general: [README.md](../README.md)
+
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).  
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD).
 Última sincronización automática: 2025-12-17
