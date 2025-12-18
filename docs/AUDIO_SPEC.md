@@ -130,18 +130,35 @@ if (obj.type === ObjectType.GEM) {
 - ✅ Integración completa con audioEvents
 - ✅ Limpieza y disposal del contexto
 
-### Assets de Audio Recomendados
+### Assets de Audio Implementados (Procedurales)
 ```
-📁 public/assets/audio/
-├── 🎵 game_theme.ogg          # Música de fondo tropical
-├── 🔊 jump.wav               # Salto (pitch variable)
-├── 💎 gem_collect.wav        # Recolección de perlas
-├── 🔤 letter_collect.wav     # Recolección de letras
-├── 💥 damage.wav             # Daño recibido
-├── 🏁 checkpoint.wav         # Checkpoint alcanzado
-├── 🌊 ocean_ambience.wav     # Ambiente oceánico (loop)
-├── 🎯 menu_select.wav        # Navegación de menú
-└── ✅ menu_confirm.wav       # Confirmación de acciones
+🎵 game_theme         # Música tropical calypso (30s loop)
+  ├── Bass line: A-D-E-G progression
+  ├── Melody: C-D-E-F-G with syncopation
+  ├── Percussion: Kick (4/4) + Snare (2/4)
+  └── BPM: 120, 4/4 time signature
+
+🌊 ocean_ambience     # Ambiente oceánico (10s loop)
+  ├── Deep rumble (20Hz noise)
+  ├── Wave bursts (intermittent)
+  └── Bubble pops (random, rare)
+
+🔤 letter_collect     # Escala musical ascendente (1s)
+  ├── Notas: C-D-E-F-G-A-B-C (octava arriba)
+  ├── ADSR envelope completo
+  └── Armónicos para riqueza
+
+🏁 checkpoint         # Fanfarria triunfal (2s)
+  ├── Acorde: G-C-E-G (G mayor)
+  └── Arpegiado ascendente
+
+🔊 jump              # Salto ascendente (0.15s)
+  ├── Pitch: 300Hz → 500Hz
+  └── Envolvente exponencial
+
+💥 damage            # Daño descendente (0.2s)
+  ├── Pitch: 400Hz → 250Hz
+  └── Envolvente decay agresivo
 ```
 
 ### Métricas de Éxito Alcanzadas

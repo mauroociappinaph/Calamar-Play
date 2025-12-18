@@ -190,25 +190,65 @@ function App() {
                 <div>SFX: {(audioDebug.volumes?.sfx * 100) || 0}%</div>
                 <div>Ambience: {(audioDebug.volumes?.ambience * 100) || 0}%</div>
               </div>
-              <div className="mt-2 space-x-1">
-                <button
-                  onClick={() => audio.unlock()}
-                  className="bg-green-600 text-white px-2 py-1 rounded text-xs"
-                >
-                  Unlock
-                </button>
-                <button
-                  onClick={() => audioEvents.playJump()}
-                  className="bg-yellow-600 text-white px-2 py-1 rounded text-xs"
-                >
-                  Jump
-                </button>
-                <button
-                  onClick={() => audioEvents.playDamage()}
-                  className="bg-red-600 text-white px-2 py-1 rounded text-xs"
-                >
-                  Damage
-                </button>
+              <div className="mt-2 space-x-1 space-y-1">
+                <div className="flex flex-wrap gap-1">
+                  <button
+                    onClick={() => audio.unlock()}
+                    className="bg-green-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Unlock
+                  </button>
+                  <button
+                    onClick={() => audioEvents.playJump()}
+                    className="bg-yellow-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Jump
+                  </button>
+                  <button
+                    onClick={() => audioEvents.playDamage()}
+                    className="bg-red-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Damage
+                  </button>
+                  <button
+                    onClick={() => audioEvents.playGemCollect()}
+                    className="bg-blue-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Gem
+                  </button>
+                  <button
+                    onClick={() => audioEvents.playLetterCollect()}
+                    className="bg-purple-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Letter
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  <button
+                    onClick={() => audioEvents.playCheckpoint()}
+                    className="bg-orange-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Checkpoint
+                  </button>
+                  <button
+                    onClick={() => audioEvents.playGameMusic()}
+                    className="bg-pink-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Music
+                  </button>
+                  <button
+                    onClick={() => audioEvents.playOceanAmbience()}
+                    className="bg-cyan-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Ambience
+                  </button>
+                  <button
+                    onClick={() => audioEvents.stopMusic()}
+                    className="bg-gray-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Stop Music
+                  </button>
+                </div>
               </div>
             </div>
           )}

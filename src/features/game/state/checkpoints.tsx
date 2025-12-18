@@ -4,6 +4,7 @@
  */
 
 import { GameObject } from '@/shared/types/types';
+import { audioEvents } from '@/systems/audio/AudioEngine';
 
 // Checkpoint data structure
 export interface CheckpointData {
@@ -79,6 +80,10 @@ export class CheckpointManager {
     this.lastCheckpointDistance = gameState.distance;
 
     console.log('[Checkpoint] Created checkpoint at distance:', gameState.distance);
+
+    // Play checkpoint sound
+    audioEvents.playCheckpoint();
+
     return checkpoint;
   }
 

@@ -8,6 +8,7 @@ import { create } from 'zustand';
 import { GameStatus, RUN_SPEED_BASE } from '@/shared/types/types';
 import { trackGameEvent } from '@/shared/analytics';
 import { checkpointManager, CheckpointData } from './checkpoints';
+import { audioEvents } from '@/systems/audio/AudioEngine';
 
 interface GameState {
   status: GameStatus;
@@ -126,6 +127,12 @@ export const useStore = create<GameState>((set, get) => ({
 
       // Start onboarding
       startOnboarding();
+
+      // Start game audio (music and ambience)
+      setTimeout(() => {
+        audioEvents.playGameMusic();
+        audioEvents.playOceanAmbience();
+      }, 500); // Small delay to ensure audio is ready
 
       // Analytics: Track game start
       trackGameEvent.gameStart(level, laneCount);

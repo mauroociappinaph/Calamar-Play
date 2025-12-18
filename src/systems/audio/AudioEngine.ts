@@ -81,6 +81,9 @@ class AudioEngine {
       this.createGainNodes();
 
       console.log('🎵 AudioEngine initialized successfully:', this.audioContext.state);
+
+      // Generate procedural audio for development
+      this.generateProceduralAudio();
     } catch (error) {
       console.error('❌ Failed to initialize AudioEngine:', error);
       console.error('❌ Browser support:', {
@@ -337,6 +340,200 @@ class AudioEngine {
     }
 
     console.log(`🔊 SFX played: ${id}`, options);
+  }
+
+  // AUDIO GENERATION: Create procedural sounds for development/testing
+  private generateProceduralAudio(): void {
+    if (!this.audioContext) return;
+
+    console.log('🎵 Generating procedural audio for development...');
+
+    // Generate game theme music (tropical/calypso style)
+    const themeBuffer = this.generateThemeMusic();
+    if (themeBuffer) {
+      this.audioBuffers.set('game_theme', themeBuffer);
+      console.log('✅ Generated game theme music');
+    }
+
+    // Generate ocean ambience
+    const oceanBuffer = this.generateOceanAmbience();
+    if (oceanBuffer) {
+      this.audioBuffers.set('ocean_ambience', oceanBuffer);
+      console.log('✅ Generated ocean ambience');
+    }
+
+    // Generate letter collect sound (ascending musical notes)
+    const letterBuffer = this.generateLetterCollect();
+    if (letterBuffer) {
+      this.audioBuffers.set('letter_collect', letterBuffer);
+      console.log('✅ Generated letter collect sound');
+    }
+
+    // Generate checkpoint sound (fanfare)
+    const checkpointBuffer = this.generateCheckpoint();
+    if (checkpointBuffer) {
+      this.audioBuffers.set('checkpoint', checkpointBuffer);
+      console.log('✅ Generated checkpoint sound');
+    }
+
+    console.log('🎵 All procedural audio generated successfully');
+  }
+
+  private generateThemeMusic(): AudioBuffer | null {
+    if (!this.audioContext) return null;
+
+    const duration = 30; // 30 seconds
+    const sampleRate = this.audioContext.sampleRate;
+    const buffer = this.audioContext.createBuffer(1, duration * sampleRate, sampleRate);
+    const channelData = buffer.getChannelData(0);
+
+    // Generate a simple tropical melody with multiple instruments
+    for (let i = 0; i < buffer.length; i++) {
+      const time = i / sampleRate;
+      const beat = time * 2; // 120 BPM
+
+      // Bass line (low frequency)
+      const bassNote = [110, 146.83, 164.81, 196][Math.floor(beat % 4)]; // A, D, E, G
+      const bass = Math.sin(2 * Math.PI * bassNote * time) * 0.2;
+
+      // Melody (higher frequency, syncopated)
+      let melody = 0;
+      if ((beat % 2) > 1.5 || (beat % 2) < 0.5) {
+        const melodyNote = [261.63, 293.66, 329.63, 349.23, 392][Math.floor(beat * 2) % 5]; // C, D, E, F, G
+        melody = Math.sin(2 * Math.PI * melodyNote * time) * 0.15;
+      }
+
+      // Percussion (kick and snare pattern)
+      const kickPattern = Math.floor(beat) % 4 === 0;
+      const snarePattern = Math.floor(beat) % 4 === 2;
+      const kick = kickPattern ? Math.sin(2 * Math.PI * 80 * time) * Math.exp(-time * 20) * 0.3 : 0;
+      const snare = snarePattern ? (Math.random() * 2 - 1) * Math.exp(-time * 15) * 0.2 : 0;
+
+      channelData[i] = bass + melody + kick + snare;
+    }
+
+    return buffer;
+  }
+
+  private generateOceanAmbience(): AudioBuffer | null {
+    if (!this.audioContext) return null;
+
+    const duration = 10; // 10 seconds loop
+    const sampleRate = this.audioContext.sampleRate;
+    const buffer = this.audioContext.createBuffer(1, duration * sampleRate, sampleRate);
+    const channelData = buffer.getChannelData(0);
+
+    for (let i = 0; i < buffer.length; i++) {
+      const time = i / sampleRate;
+
+      // Layer 1: Deep ocean rumble (low frequency noise)
+      const rumble = (Math.random() * 2 - 1) * 0.1 * Math.sin(2 * Math.PI * 20 * time);
+
+      // Layer 2: Wave sounds (filtered noise bursts)
+      const waveBurst = Math.sin(2 * Math.PI * 0.5 * time) > 0.8 ?
+        (Math.random() * 2 - 1) * Math.exp(-(time % 2) * 5) * 0.15 : 0;
+
+      // Layer 3: Bubble pops (occasional sharp sounds)
+      const bubblePop = (Math.random() < 0.01) ?
+        Math.sin(2 * Math.PI * 1000 * time) * Math.exp(-time * 50) * 0.05 : 0;
+
+      channelData[i] = rumble + waveBurst + bubblePop;
+    }
+
+    return buffer;
+  }
+
+  private generateLetterCollect(): AudioBuffer | null {
+    if (!this.audioContext) return null;
+
+    const duration = 1.0; // 1 second
+    const sampleRate = this.audioContext.sampleRate;
+    const buffer = this.audioContext.createBuffer(1, duration * sampleRate, sampleRate);
+    const channelData = buffer.getChannelData(0);
+
+    // Musical scale: C, D, E, F, G, A, B, C (octave up)
+    const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+
+    for (let i = 0; i < buffer.length; i++) {
+      const time = i / sampleRate;
+      const noteIndex = Math.floor(time * 8); // 8 notes in 1 second
+      const note = notes[Math.min(noteIndex, notes.length - 1)];
+
+      // ADSR envelope
+      const attackTime = 0.05;
+      const decayTime = 0.1;
+      const sustainLevel = 0.7;
+      const releaseTime = 0.3;
+
+      let envelope = 1.0;
+      if (time < attackTime) {
+        envelope = time / attackTime; // Attack
+      } else if (time < attackTime + decayTime) {
+        envelope = 1.0 - ((time - attackTime) / decayTime) * (1.0 - sustainLevel); // Decay
+      } else if (time < duration - releaseTime) {
+        envelope = sustainLevel; // Sustain
+      } else {
+        envelope = sustainLevel * ((duration - time) / releaseTime); // Release
+      }
+
+      // Harmonics for richer sound
+      const fundamental = Math.sin(2 * Math.PI * note * time);
+      const harmonic1 = Math.sin(2 * Math.PI * note * 2 * time) * 0.5;
+      const harmonic2 = Math.sin(2 * Math.PI * note * 3 * time) * 0.25;
+
+      channelData[i] = (fundamental + harmonic1 + harmonic2) * envelope * 0.2;
+    }
+
+    return buffer;
+  }
+
+  private generateCheckpoint(): AudioBuffer | null {
+    if (!this.audioContext) return null;
+
+    const duration = 2.0; // 2 seconds
+    const sampleRate = this.audioContext.sampleRate;
+    const buffer = this.audioContext.createBuffer(1, duration * sampleRate, sampleRate);
+    const channelData = buffer.getChannelData(0);
+
+    // Fanfare notes: G, C, E, G (triumphant chord)
+    const chord = [392.00, 523.25, 659.25, 783.99]; // G4, C5, E5, G5
+
+    for (let i = 0; i < buffer.length; i++) {
+      const time = i / sampleRate;
+      let sample = 0;
+
+      // Arpeggiate the chord
+      const noteIndex = Math.floor(time * 8) % chord.length;
+      const note = chord[noteIndex];
+
+      // ADSR envelope
+      const attackTime = 0.02;
+      const decayTime = 0.1;
+      const sustainLevel = 0.8;
+      const releaseTime = 0.5;
+
+      let envelope = 1.0;
+      if (time < attackTime) {
+        envelope = time / attackTime;
+      } else if (time < attackTime + decayTime) {
+        envelope = 1.0 - ((time - attackTime) / decayTime) * (1.0 - sustainLevel);
+      } else if (time < duration - releaseTime) {
+        envelope = sustainLevel;
+      } else {
+        envelope = sustainLevel * ((duration - time) / releaseTime);
+      }
+
+      // Generate note with harmonics
+      const fundamental = Math.sin(2 * Math.PI * note * time);
+      const harmonic1 = Math.sin(2 * Math.PI * note * 2 * time) * 0.3;
+      const harmonic2 = Math.sin(2 * Math.PI * note * 4 * time) * 0.1;
+
+      sample = (fundamental + harmonic1 + harmonic2) * envelope * 0.15;
+
+      channelData[i] = sample;
+    }
+
+    return buffer;
   }
 
   // UTILITY METHODS
