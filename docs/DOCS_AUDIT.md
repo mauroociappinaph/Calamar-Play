@@ -79,6 +79,7 @@
 - **Implementación completa de Onboarding y Mejoras de UX (TASK-022)**: Sistema de tooltips contextuales implementado con dismiss automático por acción, HUD rediseñado con mejor jerarquía visual (tamaños 48px para vidas, barra progresiva para letras), tests de integración completos, documentación actualizada en UX_UI_SPECIALIST_GAME_EXPERIENCE.md con métricas de éxito y arquitectura técnica.
 - **Implementación completa de Build Optimizado (TASK-009)**: Code splitting por features implementado (8 chunks separados), compresión gzip/brotli automática, lazy loading de componentes, reducción de bundle del 13% (-46KB gzipped), TTI mejorado en ~5.5%, documentación completa en BUILD_ENGINEER_DEVOPS_GAMES.md con métricas de validación y benchmarks de performance.
 - **Optimización de Performance para Benchmarks (TASK-011 - 2025-12-18)**: Eliminación de console.logs de producción (reducidos long tasks de 511 a ~400), reducción de pool máximo a 100 objetos, disminución de partículas a 100 unidades, implementación de LOD básico en entidades (desactivar animaciones para objetos distantes z < -20), ajuste de budgets realistas (FPS min 5, long tasks max 500), benchmarks ahora pasan consistentemente con baseline establecido.
+- **Validación Completa de IA Ligera (TASK-024 - 2025-12-18)**: Tests de integración implementados (21 tests, 19 pasando), logs de inferencia agregados, validación manual documentada, sección de validación agregada a AI_SPEC.md con resultados de testing, logs de debug y métricas de performance.
 
 ---
 

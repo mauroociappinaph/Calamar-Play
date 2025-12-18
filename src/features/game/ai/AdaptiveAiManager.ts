@@ -231,17 +231,22 @@ export class AdaptiveAiManager {
       const avgObstacleDistance = 1 - Math.min(metrics.obstacleDensity, 1); // Invert density
       const reactionTimeNormalized = Math.min(metrics.reactionTime / 500, 1); // 0-1, cap at 500ms
 
-      const input = tf.tensor2d([[playerScoreNormalized, avgObstacleDistance, reactionTimeNormalized]]);
+      const inputs = [playerScoreNormalized, avgObstacleDistance, reactionTimeNormalized];
+      const input = tf.tensor2d([inputs]);
       const prediction = this.neuralModel.model.predict(input) as tf.Tensor;
       const result = prediction.dataSync()[0];
 
       // Denormalize output to multiplier range
-      const multiplier = 0.5 + (result * 1.5); // 0.5-2.0 range
+      const output = 0.5 + (result * 1.5); // 0.5-2.0 range
+      const confidence = Math.abs(result - 0.5) * 200; // Rough confidence estimate
+      const tier = output < 0.8 ? DifficultyTier.RELAX : output > 1.3 ? DifficultyTier.HARDCORE : DifficultyTier.FLOW;
+
+      console.log('AI Inference:', { inputs, output, confidence, tier });
 
       input.dispose();
       prediction.dispose();
 
-      return multiplier;
+      return output;
     } catch (error) {
       console.warn('[AI] Neural prediction failed:', error);
       return null;
