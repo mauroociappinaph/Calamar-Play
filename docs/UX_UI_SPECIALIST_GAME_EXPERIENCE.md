@@ -1,8 +1,10 @@
 # UX_UI_SPECIALIST_GAME_EXPERIENCE.md
 
+> 🎛️ Documento de UX/UI – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 ## 1. Diagnóstico ejecutivo en 10 líneas
 
-**Qué tan "autoexplicativo" es el juego hoy:** Tiempo de comprensión alto - requiere ensayo/error para entender mecánicas de evasión y coleccionismo sin onboarding claro.
+**Qué tan "intuitivo" es el juego hoy:** Tiempo de comprensión alto - requiere ensayo/error para entender mecánicas de evasión y coleccionismo sin onboarding claro.
 
 **3 fricciones principales:** Shop interrumpe momentum sin explicación clara de upgrades, jerarquía visual pobre entre letras críticas y gemas distractivas, feedback binario (vivo/muerto) sin grados de near-miss.
 
@@ -190,20 +192,20 @@
 
 **Fallback si no hay soporte:** Audio feedback equivalente + visual flash para cada haptic perdido.
 
-## 9. Plan de Acción de UX/UI (Alineado con Roadmap Maestro)
+## 9. Plan de Acción de UX/UI (Alineado con TASK.MD)
 
 El rol del especialista en UX/UI es asegurar que el juego sea intuitivo, accesible y satisfactorio de usar. El plan de acción se enfoca en eliminar la fricción y mejorar la claridad, alineado con las fases estratégicas del proyecto.
 
 ### 🚀 FASE 1: FUNDACIÓN (Estabilización y Medición)
 **Objetivo:** Rol de apoyo. Asegurar que las herramientas de debugging y los cambios de performance no introduzcan nueva confusión visual.
 - **Acciones:**
-  - **Diseñar y validar overlays de debug:** Trabajar con ingeniería para que los contadores de FPS (TASK-011) y otros HUDs de profiling sean legibles y no obstructivos.
+  - **Diseñar y validar overlays de debug:** Asegurar que los contadores de FPS (TASK-011) y otros HUDs de profiling sean legibles y no obstructivos.
   - **Revisar impacto visual de optimizaciones:** Evaluar los cambios de LOD (TASK-006) y partículas (TASK-007) para confirmar que la degradación visual es aceptable y no rompe la jerarquía.
 
 ### 🎯 FASE 2: RETENCIÓN (Diversión y Equidad)
 **Objetivo:** Rediseñar la experiencia del jugador para que sea clara, justa y atractiva desde el primer segundo. Esta es la fase central para UX/UI.
 - **Acciones:**
-  - **Liderar TASK-022 (Onboarding y Mejoras de UX):**
+  - **Ejecutar TASK-022 (Onboarding y Mejoras de UX):**
     - **Diseñar el flujo de Onboarding:** Crear los tooltips contextuales y el "golden path" para los primeros 60 segundos de juego.
     - **Rediseñar el HUD:** Implementar las mejoras de jerarquía visual (tamaños, posición), contraste (outlines, glows) y claridad (barra de progreso para letras).
     - **Rediseñar Flujo de la Tienda:** Crear un flujo no intrusivo que no rompa el momentum del juego (ej. modal con tiempo limitado).
@@ -215,13 +217,15 @@ El rol del especialista en UX/UI es asegurar que el juego sea intuitivo, accesib
 - **Acciones:**
   - **Diseñar la UI de Combate (TASK-021):** Crear los elementos del HUD para la munición, el feedback de impacto y cualquier otra información relevante para el combate.
   - **Diseñar la UI del Árbol de Perks:** Crear la pantalla y el flujo de navegación para un futuro sistema de progresión de habilidades.
-  - **Expandir Accesibilidad:** Trabajar en mejoras de accesibilidad más complejas, como el soporte para lectores de pantalla o modos de alto contraste.
+  - **Expandir Accesibilidad:** Implementar mejoras de accesibilidad más complejas, como el soporte para lectores de pantalla o modos de alto contraste.
 
 ### Integración con TASK (Resumen Alineado)
 - **Tarea Central:** **TASK-022** se convierte en la tarea principal para el especialista en UX/UI durante la Fase 2, agrupando las mejoras de onboarding, HUD y flujo de juego.
-- **Colaboración:** El rol de UX/UI colabora estrechamente con el Game Designer en la Fase 2 para el balance y con el Art Director para la consistencia visual.
+- **Consistencia:** Mantener coherencia con el diseño de juego (Fase 2) para el balance y con la dirección de arte para la consistencia visual.
 - **Prioridad Clara:** La prioridad es arreglar la experiencia del primer minuto (Fase 2) antes de diseñar interfaces para contenido avanzado (Fase 3).
 
+> 📘 Más contexto general: [README.md](../README.md)
+
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
 Última sincronización automática: 2025-12-17
