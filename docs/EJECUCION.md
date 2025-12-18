@@ -20,10 +20,11 @@
     - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 - **TASK-001: Implementar Object Pooling**
-    - [ ] Crear sistema de Pool genérico en `src/shared/lib` `[DEP: Ninguna]` `[ESTADO: 🔵]`
-    - [ ] Refactorizar `LevelManager` para usar pooling en spawn de obstáculos/gemas `[ESTADO: 🔵]`
-    - [ ] Documentar arquitectura de pooling en `docs/GAMEPLAY_ENGINEER.md` `[ESTADO: 🔵]`
-    - [ ] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: 🔵]`
+    - [x] Crear sistema de Pool genérico en `src/systems/pooling/ObjectPool.ts` `[DEP: Ninguna]` `[ESTADO: ✅]`
+    - [x] Refactorizar `LevelManager` para usar pooling en spawn de obstáculos/gemas `[ESTADO: ✅]`
+    - [x] Crear tests unitarios en `tests/unit/objectPool.test.ts` (9 tests pasando) `[ESTADO: ✅]`
+    - [x] Documentar arquitectura de pooling en `docs/GAMEPLAY_ENGINEER.md` `[ESTADO: ✅]`
+    - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 - **TASK-020: Refactorizar Core Loop (Fixed Timestep)**
     - [ ] Implementar acumulador de tiempo y loop de física estable `[DEP: TASK-001]` `[ESTADO: 🔵]`

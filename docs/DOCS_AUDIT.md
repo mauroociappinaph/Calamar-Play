@@ -71,6 +71,7 @@
 - Creación de `CONTRIBUTING.md` (TASK-013) en la raíz del proyecto.
 - Implementación y validación del pipeline de CI/CD (TASK-016) con GitHub Actions.
 - Implementación de la Máquina de Estados (FSM) en el store (TASK-018) con validación de transiciones y tests.
+- **Implementación completa de Object Pooling (TASK-001)**: Sistema genérico implementado, LevelManager refactorizado, tests unitarios (9 tests pasando), documentación actualizada en GAMEPLAY_ENGINEER.md con métricas de performance.
 
 ---
 

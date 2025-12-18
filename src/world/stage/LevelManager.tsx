@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useStore } from '@/features/game/state/store';
 import { GameObject, ObjectType, LANE_WIDTH, SPAWN_DISTANCE, REMOVE_DISTANCE, GameStatus, GEMINI_COLORS } from '@/shared/types/types';
 import { audio } from '@/systems/audio/AudioEngine';
+import { ObjectPool } from '@/systems/pooling/ObjectPool';
 
 // Geometry Constants
 const OBSTACLE_HEIGHT = 1.6;
@@ -130,6 +131,27 @@ const getRandomLane = (laneCount: number) => {
     return Math.floor(Math.random() * (max * 2 + 1)) - max;
 };
 
+// --- Object Pooling for Level Objects ---
+const gameObjectPool = new ObjectPool<GameObject>(
+    () => ({
+        id: uuidv4(),
+        type: ObjectType.OBSTACLE,
+        position: [0, 0, 0],
+        active: false
+    }),
+    (obj) => {
+        // Reset state for reuse
+        obj.active = false;
+        obj.value = undefined;
+        obj.targetIndex = undefined;
+        obj.points = undefined;
+        obj.hasFired = undefined;
+        // reuse the same ID to avoid generating new UUIDs
+    },
+    50, // Initial size
+    500 // Max size
+);
+
 export const LevelManager: React.FC = () => {
   const {
     status,
@@ -229,13 +251,15 @@ export const LevelManager: React.FC = () => {
              if (obj.position[2] > -90) {
                  obj.hasFired = true;
 
-                 newSpawns.push({
-                     id: uuidv4(),
-                     type: ObjectType.MISSILE,
-                     position: [obj.position[0], 1.0, obj.position[2] + 2],
-                     active: true,
-                     color: '#ffffff'
-                 });
+                 const missile = gameObjectPool.acquire();
+                 missile.type = ObjectType.MISSILE;
+                 missile.position[0] = obj.position[0];
+                 missile.position[1] = 1.0;
+                 missile.position[2] = obj.position[2] + 2;
+                 missile.active = true;
+                 missile.color = '#ffffff';
+
+                 newSpawns.push(missile);
                  hasChanges = true;
              }
         }
@@ -320,6 +344,8 @@ export const LevelManager: React.FC = () => {
 
         if (keep) {
             keptObjects.push(obj);
+        } else {
+            gameObjectPool.release(obj);
         }
     }
 
@@ -399,14 +425,16 @@ export const LevelManager: React.FC = () => {
 
                     for (let k = 0; k < alienCount; k++) {
                         const lane = availableLanes[k];
-                        keptObjects.push({
-                            id: uuidv4(),
-                            type: ObjectType.ALIEN,
-                            position: [lane * LANE_WIDTH, 1.5, spawnZ],
-                            active: true,
-                            color: '#00ff00',
-                            hasFired: false
-                        });
+                        const alienObj = gameObjectPool.acquire();
+                        alienObj.type = ObjectType.ALIEN;
+                        alienObj.position[0] = lane * LANE_WIDTH;
+                        alienObj.position[1] = 1.5;
+                        alienObj.position[2] = spawnZ;
+                        alienObj.active = true;
+                        alienObj.color = '#00ff00';
+                        alienObj.hasFired = false;
+
+                        currentObjects.push(alienObj);
                     }
                 } else {
                     const availableLanes = [];
@@ -427,23 +455,27 @@ export const LevelManager: React.FC = () => {
                         const lane = availableLanes[i];
                         const laneX = lane * LANE_WIDTH;
 
-                        keptObjects.push({
-                            id: uuidv4(),
-                            type: ObjectType.OBSTACLE,
-                            position: [laneX, OBSTACLE_HEIGHT / 2, spawnZ],
-                            active: true,
-                            color: '#8b4513'
-                        });
+                        const obstacleObj = gameObjectPool.acquire();
+                        obstacleObj.type = ObjectType.OBSTACLE;
+                        obstacleObj.position[0] = laneX;
+                        obstacleObj.position[1] = OBSTACLE_HEIGHT / 2;
+                        obstacleObj.position[2] = spawnZ;
+                        obstacleObj.active = true;
+                        obstacleObj.color = '#8b4513';
+
+                        currentObjects.push(obstacleObj);
 
                         if (Math.random() < 0.3) {
-                             keptObjects.push({
-                                id: uuidv4(),
-                                type: ObjectType.GEM,
-                                position: [laneX, OBSTACLE_HEIGHT + 1.0, spawnZ],
-                                active: true,
-                                color: '#ffffff',
-                                points: 100
-                            });
+                             const extraGem = gameObjectPool.acquire();
+                             extraGem.type = ObjectType.GEM;
+                             extraGem.position[0] = laneX;
+                             extraGem.position[1] = OBSTACLE_HEIGHT + 1.0;
+                             extraGem.position[2] = spawnZ;
+                             extraGem.active = true;
+                             extraGem.color = '#ffffff';
+                             extraGem.points = 100;
+
+                             currentObjects.push(extraGem);
                         }
                     }
                 }

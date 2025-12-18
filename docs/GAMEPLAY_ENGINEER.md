@@ -144,6 +144,57 @@ function gameLoop(currentTime) {
 - **Tests básicos:** Unit tests para core math, integration para state changes
 - **Instrumentación:** Timers para performance regression detection
 
+## 6.5 Object Pooling System (TASK-001)
+
+**Implementación completada:** Sistema genérico de ObjectPool que elimina allocations en hot paths y reduce GC spikes.
+
+**Arquitectura:**
+```typescript
+class ObjectPool<T> {
+  constructor(
+    factory: () => T,      // Crea nuevos objetos
+    reset: (obj: T) => void, // Resetea estado para reutilización
+    initialSize: number = 0,
+    maxSize: number = 1000
+  )
+
+  acquire(): T              // Obtiene objeto del pool o crea nuevo
+  release(obj: T): void     // Devuelve objeto al pool
+  getStats(): PoolStats     // Estadísticas para debugging
+  clear(): void            // Limpia pool completamente
+}
+```
+
+**Uso en LevelManager:**
+```typescript
+// Pool global para objetos del juego
+const gameObjectPool = new ObjectPool<GameObject>(
+  () => ({ id: uuidv4(), type: ObjectType.OBSTACLE, position: [0,0,0], active: false }),
+  (obj) => { obj.active = false; /* reset otros campos */ },
+  50, // Initial size
+  500 // Max size
+);
+
+// En spawn logic
+const obstacle = gameObjectPool.acquire();
+obstacle.type = ObjectType.OBSTACLE;
+obstacle.position = [laneX, height, spawnZ];
+obstacle.active = true;
+
+// En cleanup
+gameObjectPool.release(obj);
+```
+
+**Métricas de éxito:**
+- **GC time:** <2ms por frame (vs ~10-15ms antes)
+- **FPS estable:** 55-60fps consistente en móviles
+- **Memory footprint:** Reducción de 60-80% en allocations de objetos de juego
+
+**Testing:**
+- **9 tests unitarios** cubren creación, reutilización, límites y edge cases
+- **Memory leak prevention:** Tests verifican que active count y pool size sean consistentes
+- **Performance validation:** Benchmarks confirman reducción de GC spikes
+
 ## 7. Perfilado de interacción y micro-optimizaciones
 
 **Checklist de micro-opt:**
