@@ -21,3 +21,10 @@ Auditar y sincronizar la cobertura de especificaciones técnicas en `docs/DOCS_A
 
 **SALIDA ESPERADA:**
 Un reporte detallado en `docs/DOCS_AUDIT.md` que garantice la trazabilidad completa entre el backlog y la documentación técnica.
+
+**GIT (OBLIGATORIO):**
+Al finalizar, ejecutar:
+
+git add docs/DOCS_AUDIT.md
+git commit -m "docs: update DOCS_AUDIT after sync — [fecha]"
+git push
