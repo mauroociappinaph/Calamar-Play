@@ -33,18 +33,18 @@
 
 **Problemas típicos a señalar con evidencia:**
 - **Docs huérfanas:** Análisis nuevos sin referencias cruzadas ni actualización programada
-- **Duplicación contradictoria:** TASK.MD tiene versiones obsoletas vs análisis nuevos
+- **Riesgo de duplicación contradictoria:** Puede ocurrir si los análisis no se re-sincronizan periódicamente con [TASK.MD](./TASK.MD)
 - **Info crítica enterrada:** Decisiones técnicas dispersas en issues/PRs sin ADR centralizado
 - **Falta de entry points:** Sin índice maestro ni navegación clara entre docs
 
-**Tabla obligatoria:**
+**Tabla mínima:**
 Documento/Ruta | Propósito | Audiencia | Owner | Actualización | Problemas | Acción sugerida
 |---------------|----------|----------|-------|--------------|----------|----------------|
 | README.md | Portfolio & Overview | Stakeholders | Mauro | Manual | Ninguno | Mantener actualizado con TASK-024
 | [TASK.MD](./TASK.MD) | Fuente de Verdad | Team completo | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
-| [DEVOPS.md](./BUILD_ENGINEER_DEVOPS_GAMES.md) | Pipeline & Infra | DevOps | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
-| [GAME_DESIGN.md](./LEAD_GAME_DESIGNER.md) | Diseño de juego | Designers | Mauro | Manual | Ninguno | Linkear a TASK-017, 019, 021
-| [TECH_DIRECTOR.md](./TECHNICAL_DIRECTOR.md) | Arquitectura | Senior devs | Mauro | Manual | Ninguno | Linkear a TASK-001, 005, 006
+| [BUILD_ENGINE_DEVOPS_GAMES.md](./BUILD_ENGINE_DEVOPS_GAMES.md) | Pipeline & Infra | DevOps | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
+| [LEAD_GAME_DESIGNER.md](./LEAD_GAME_DESIGNER.md) | Diseño de juego | Designers | Mauro | Manual | Ninguno | Linkear a TASK-017, 019, 021
+| [TECHNICAL_DIRECTOR.md](./TECHNICAL_DIRECTOR.md) | Arquitectura | Senior devs | Mauro | Manual | Ninguno | Linkear a TASK-001, 005, 006
 | [QA_TEST_LEAD.md](./QA_TEST_LEAD.md) | Calidad & Tests | QA | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
 
 ## 3. Semántica y claridad
@@ -623,6 +623,7 @@ Object pooling was accidentally disabled in LevelManager refactor, causing massi
 - **Readability metrics:** Sin análisis de complejidad de texto
 - **Maintenance overhead:** Sin tracking de tiempo actualización docs
 - **Stakeholder needs:** Sin survey de qué docs se necesitan realmente
+
 > 📘 Más contexto general: [README.md](../README.md)
 
 ---
