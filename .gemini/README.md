@@ -13,8 +13,10 @@ Estos archivos contienen instrucciones estructuradas para ser utilizadas con el 
 - **`create-contributing.md`**: Genera o actualiza la guía de contribución del proyecto.
 
 ### 🛠️ Scripts
-- **`validate-links.cjs`**: Script de Node.js para verificar que no haya links internos rotos en los archivos Markdown.
+- **`validate-links.cjs`**: Verifica que no haya links internos rotos.
   - **Uso:** `node .gemini/validate-links.cjs`
+- **`audit-docs.cjs`**: Auditor de calidad documental (naming, TASK-ID, frontmatter, etc.).
+  - **Uso:** `node .gemini/audit-docs.cjs`
 
 ## 🚀 Flujo de Trabajo Recomendado
 
