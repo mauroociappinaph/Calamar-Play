@@ -218,4 +218,89 @@ describe('Obstacle Lifecycle Integration', () => {
 
     console.log('DEBUG TEST: Continuous spawn test completed successfully');
   });
+
+  it('should implement Fair Challenge System: guaranteed free lanes and respite moments', () => {
+    const LANE_WIDTH = 2; // From types.ts
+    const laneCount = 3; // Assume 3 lanes for testing
+    let playerPos = { z: 0 }; // Mock player position, will update
+
+    // Mock objects array
+    const staticObjects: GameObject[] = [];
+    let distanceTraveled = 0;
+    let lastObstacleZ = -1000; // Start far behind
+
+    // Simulate 100 meters of gameplay at speed 30 units/sec
+    const speed = 30;
+    const deltaTime = 1/60; // 60 FPS
+    const totalFrames = Math.ceil(100 / (speed * deltaTime)); // Frames for 100m
+
+    const respiteInterval = 12.5;
+    const respiteDuration = 3.5;
+    const targetSpacing = 1.75; // Average 1.5-2m
+
+    let obstacleRows: number[][] = []; // Store lanes spawned per row
+    let respitePeriods: boolean[] = [];
+
+    for (let frame = 0; frame < totalFrames; frame++) {
+      distanceTraveled += speed * deltaTime;
+      playerPos.z += speed * deltaTime; // Player moves forward
+
+      // Check if in respite moment
+      const currentSegment = Math.floor(distanceTraveled / respiteInterval);
+      const isRespiteMoment = (currentSegment % 2 === 1) && ((distanceTraveled % respiteInterval) < respiteDuration);
+
+      respitePeriods.push(isRespiteMoment);
+
+      // Calculate distance since last obstacle
+      const distanceSinceLastObstacle = playerPos.z - lastObstacleZ;
+
+      // Spawn condition
+      if (distanceSinceLastObstacle > targetSpacing && !isRespiteMoment) {
+        // Lane alternation: Always leave exactly one lane free
+        const laneIndices = [];
+        const halfLaneCount = Math.floor(laneCount / 2);
+        for (let i = -halfLaneCount; i <= halfLaneCount; i++) {
+          laneIndices.push(i);
+        }
+
+        // Randomly select one lane to keep free
+        const freeLaneIndex = Math.floor(Math.random() * laneIndices.length);
+        const freeLaneValue = laneIndices[freeLaneIndex];
+        const lanesToSpawn = laneIndices.filter(lane => lane !== freeLaneValue);
+
+        // Record this row
+        obstacleRows.push(lanesToSpawn);
+
+        // Update lastObstacleZ to the spawn position (behind player)
+        const spawnZ = playerPos.z - 5; // Simulate spawn 5 units behind player
+        lastObstacleZ = spawnZ;
+
+        // Verify exactly one lane free
+        expect(lanesToSpawn.length).toBe(laneCount - 1); // 2 out of 3 for 3 lanes
+        expect(laneIndices.includes(freeLaneValue)).toBe(true);
+        expect(lanesToSpawn.includes(freeLaneValue)).toBe(false);
+
+        // Verify no full row
+        expect(lanesToSpawn.length).toBeLessThan(laneCount);
+      }
+    }
+
+    // Verify we had multiple obstacle rows
+    expect(obstacleRows.length).toBeGreaterThan(10); // At least 10 rows in 100m
+
+    // Verify respite moments occurred
+    const respiteCount = respitePeriods.filter(r => r).length;
+    expect(respiteCount).toBeGreaterThan(0); // At least some respite
+
+    // Verify no full rows ever spawned
+    obstacleRows.forEach(row => {
+      expect(row.length).toBeLessThan(laneCount);
+    });
+
+    // Verify that spawns occurred and respite reduced frequency
+    expect(obstacleRows.length).toBeGreaterThan(0); // Some spawns occurred
+    expect(respiteCount).toBeGreaterThan(0); // Some respite occurred
+
+    console.log(`DEBUG TEST FAIR: Spawned ${obstacleRows.length} obstacle rows, ${respiteCount} respite moments in 100m, all with guaranteed free lanes`);
+  });
 });

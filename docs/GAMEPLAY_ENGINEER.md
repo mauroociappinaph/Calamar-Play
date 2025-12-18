@@ -128,7 +128,7 @@ console.log('POOL RELEASE:', gameObjectPool.getStats(), 'obj id:', obj.id, 'acti
 - **Validación de límites:** Máximo 2 metros sin obstáculo garantizado por patrones de alta densidad
 - **Balance de dificultad:** Mantiene jugabilidad justa sin ser imposible
 
-**Ajustes de Lane Alternation + Guaranteed Free Lanes (2025-12-18 - Fair Challenge System):**
+**Ajustes de Lane Alternation + Guaranteed Free Lanes (2025-12-17 - Fair Challenge System):**
 - **Intervalos dinámicos 1.5-2 metros:** Obstáculos aparecen con espaciado variable para ritmo natural
 - **Spawn cada 0.05-0.067 segundos:** A velocidad de 30 unidades/segundo, espaciado respirable
 - **Pool de objetos expandido:** Capacidad aumentada a 200 objetos para densidad controlada
