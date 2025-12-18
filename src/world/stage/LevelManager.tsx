@@ -343,55 +343,7 @@ export const LevelManager: React.FC = () => {
         furthestZ = -100; // Initialize to trigger initial spawn
     }
 
-    // CONTINUOUS SPAWN FALLBACK - Fair challenge: 1.5-2m spacing with guaranteed free lanes and respite moments
-    const lastObstacleZ = staticObjects
-        .filter(o => o.type === ObjectType.OBSTACLE)
-        .reduce((maxZ, obj) => Math.max(maxZ, obj.position[2]), -1000);
 
-    const distanceSinceLastObstacle = playerPos.z - lastObstacleZ;
-
-    // Check if we're in a "respite moment" (every 10-15 meters, no obstacles for 3-4 meters)
-    const respiteInterval = 12.5; // Every 12.5 meters
-    const respiteDuration = 3.5; // 3.5 meters of respite
-    const currentSegment = Math.floor(distanceTraveled.current / respiteInterval);
-    const isRespiteMoment = (currentSegment % 2 === 1) && ((distanceTraveled.current % respiteInterval) < respiteDuration);
-
-    // Dynamic spacing: 1.5-2 meters between obstacle rows
-    const targetSpacing = 1.5 + Math.random() * 0.5; // 1.5 to 2.0 meters
-
-    // If more than target spacing since last obstacle AND not in respite, spawn with guaranteed free lane
-    if (distanceSinceLastObstacle > targetSpacing && !isRespiteMoment) {
-        const spawnZ = Math.min(furthestZ - 2, -SPAWN_DISTANCE);
-
-        // Lane alternation: Always leave exactly one lane free (guaranteed path)
-        // Create lane indices centered around 0 (e.g., for 3 lanes: [-1, 0, 1])
-        const laneIndices = [];
-        const halfLaneCount = Math.floor(laneCount / 2);
-        for (let i = -halfLaneCount; i <= halfLaneCount; i++) {
-            laneIndices.push(i);
-        }
-
-        // Randomly select one lane to keep free
-        const freeLaneIndex = Math.floor(Math.random() * laneIndices.length);
-        const freeLaneValue = laneIndices[freeLaneIndex];
-        const lanesToSpawn = laneIndices.filter(lane => lane !== freeLaneValue);
-
-        // Spawn obstacles in all lanes except the free one
-        lanesToSpawn.forEach(laneOffset => {
-            const obj = gameObjectPool.acquire();
-            obj.type = ObjectType.OBSTACLE;
-            obj.position[0] = laneOffset * LANE_WIDTH;
-            obj.position[2] = spawnZ;
-            obj.active = true;
-            obj.position[1] = OBSTACLE_HEIGHT / 2;
-            obj.color = '#8b4513';
-
-            keptObjects.push(obj);
-        });
-
-        console.log(`SPAWN FAIR: OBSTACLES in lanes [${lanesToSpawn.join(',')}] (free: ${freeLaneValue}), z=${spawnZ.toFixed(1)}, gap=${distanceSinceLastObstacle.toFixed(1)}m, spacing=${targetSpacing.toFixed(1)}m, distance=${distanceTraveled.current.toFixed(1)}m, respite=${isRespiteMoment}, free_lanes=1, time=${Date.now()}`);
-        hasChanges = true;
-    }
 
     // PATTERN-BASED SPAWNING (TASK-003)
     const currentTime = Date.now();
@@ -401,13 +353,13 @@ export const LevelManager: React.FC = () => {
         const newPattern = patternManager.getNextPattern();
 
         // Spawn all objects from the new pattern
-        const spawnZ = Math.min(furthestZ - 15, -SPAWN_DISTANCE);
+        const spawnZ = Math.min(furthestZ - 8, -SPAWN_DISTANCE);
 
         for (const spawn of newPattern.spawns) {
             const obj = gameObjectPool.acquire();
             obj.type = spawn.type;
             obj.position[0] = spawn.lane * LANE_WIDTH;
-            obj.position[2] = spawnZ + spawn.zOffset;
+            obj.position[2] = spawnZ - (spawn.zOffset * 0.8);
             obj.active = true;
 
             // Set position Y based on object type

@@ -35,7 +35,7 @@ export const LEVEL_PATTERNS: LevelPattern[] = [
     id: 'respite_sparse',
     name: 'Respiro Ligero',
     type: 'RESPITE',
-    duration: 6,
+    duration: 2,
     spawns: [
       { type: ObjectType.OBSTACLE, lane: -1, zOffset: 2 },
       { type: ObjectType.BEER, lane: 0, zOffset: 3 },
@@ -53,7 +53,7 @@ export const LEVEL_PATTERNS: LevelPattern[] = [
     id: 'respite_bonanza',
     name: 'Bonanza de Cervezas',
     type: 'RESPITE',
-    duration: 6,
+    duration: 2,
     spawns: [
       { type: ObjectType.BEER, lane: -2, zOffset: 3 },
       { type: ObjectType.BEER, lane: -1, zOffset: 5 },
@@ -70,7 +70,7 @@ export const LEVEL_PATTERNS: LevelPattern[] = [
     id: 'tension_alternating',
     name: 'Alternancia de Amenazas',
     type: 'TENSION',
-    duration: 10,
+    duration: 3.5,
     spawns: [
       { type: ObjectType.OBSTACLE, lane: -2, zOffset: 3 },
       { type: ObjectType.ALIEN, lane: 2, zOffset: 5 },
@@ -87,7 +87,7 @@ export const LEVEL_PATTERNS: LevelPattern[] = [
     id: 'tension_zigzag',
     name: 'Zigzag de Obstáculos',
     type: 'TENSION',
-    duration: 12,
+    duration: 4,
     spawns: [
       { type: ObjectType.OBSTACLE, lane: -2, zOffset: 3 },
       { type: ObjectType.OBSTACLE, lane: 2, zOffset: 5 },
@@ -106,7 +106,7 @@ export const LEVEL_PATTERNS: LevelPattern[] = [
     id: 'peak_wall',
     name: 'Muro de Obstáculos',
     type: 'PEAK',
-    duration: 8,
+    duration: 2.5,
     spawns: [
       { type: ObjectType.OBSTACLE, lane: -2, zOffset: 3 },
       { type: ObjectType.OBSTACLE, lane: -1, zOffset: 4 },
@@ -126,7 +126,7 @@ export const LEVEL_PATTERNS: LevelPattern[] = [
     id: 'peak_homing',
     name: 'Misiles Perseguidores',
     type: 'PEAK',
-    duration: 10,
+    duration: 3,
     spawns: [
       { type: ObjectType.OBSTACLE, lane: 0, zOffset: 4 },
       { type: ObjectType.MISSILE, lane: -2, zOffset: 6 },
@@ -144,7 +144,7 @@ export const LEVEL_PATTERNS: LevelPattern[] = [
     id: 'variation_letter_rush',
     name: 'Carrera de Letras',
     type: 'VARIATION',
-    duration: 15,
+    duration: 5,
     spawns: [
       { type: ObjectType.LETTER, lane: -2, zOffset: 4, value: 'C', targetIndex: 0 },
       { type: ObjectType.OBSTACLE, lane: 0, zOffset: 5 },
@@ -164,7 +164,7 @@ export const LEVEL_PATTERNS: LevelPattern[] = [
     id: 'variation_missile_barrage',
     name: 'Barrage de Misiles',
     type: 'VARIATION',
-    duration: 12,
+    duration: 4,
     spawns: [
       { type: ObjectType.OBSTACLE, lane: 0, zOffset: 3 },
       { type: ObjectType.MISSILE, lane: -2, zOffset: 5 },
