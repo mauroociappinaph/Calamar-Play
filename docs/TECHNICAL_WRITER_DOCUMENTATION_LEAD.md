@@ -8,7 +8,7 @@
 
 **3 riesgos por falta de docs:** Onboarding lento de nuevos colaboradores sin entry points claros, bugs repetidos por falta de runbooks de troubleshooting, releases lentos sin checklists estandarizados.
 
-**3 problemas de consistencia:** Términos inconsistentes ("gameplay" vs "game play"), estructura heterogénea entre docs, duplicación contradictoria entre TASK.MD y análisis previos.
+**3 problemas de consistencia:** Términos inconsistentes ("gameplay" vs "game play"), estructura heterogénea entre docs, riesgo de duplicación contradictoria si no se re-sincronizan periódicamente con TASK.MD
 
 **3 oportunidades de alto impacto:** Establecer docs-as-code con trazabilidad TASK↔PR↔docs, implementar plantillas estandarizadas, crear sistema de ownership documental.
 
@@ -42,7 +42,7 @@ Documento/Ruta | Propósito | Audiencia | Owner | Actualización | Problemas | A
 |---------------|----------|----------|-------|--------------|----------|----------------|
 | README.md | Portfolio & Overview | Stakeholders | Mauro | Manual | Ninguno | Mantener actualizado con TASK-024
 | [TASK.MD](./TASK.MD) | Fuente de Verdad | Team completo | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
-| [BUILD_ENGINE_DEVOPS_GAMES.md](./BUILD_ENGINE_DEVOPS_GAMES.md) | Pipeline & Infra | DevOps | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
+| [BUILD_ENGINEER_DEVOPS_GAMES.md](./BUILD_ENGINEER_DEVOPS_GAMES.md) | Pipeline & Infra | DevOps | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
 | [LEAD_GAME_DESIGNER.md](./LEAD_GAME_DESIGNER.md) | Diseño de juego | Designers | Mauro | Manual | Ninguno | Linkear a TASK-017, 019, 021
 | [TECHNICAL_DIRECTOR.md](./TECHNICAL_DIRECTOR.md) | Arquitectura | Senior devs | Mauro | Manual | Ninguno | Linkear a TASK-001, 005, 006
 | [QA_TEST_LEAD.md](./QA_TEST_LEAD.md) | Calidad & Tests | QA | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
