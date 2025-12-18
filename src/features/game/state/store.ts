@@ -170,14 +170,32 @@ export const useStore = create<GameState>((set, get) => ({
   addScore: (amount) => set((state) => ({ score: state.score + amount })),
 
   collectGem: (value) => {
-    const { laneCount } = get();
+    const { laneCount, distance, speed } = get();
+
+    // VARIABLE REWARDS (TASK-019): Add multipliers based on performance
+    let multiplier = 1.0;
+
+    // Timing bonus: faster speed = higher multiplier (up to 1.5x)
+    const speedBonus = Math.min(speed / RUN_SPEED_BASE, 2.0) * 0.25;
+    multiplier += speedBonus;
+
+    // Distance milestone bonus: every 1000m = 1.2x
+    const milestoneBonus = Math.floor(distance / 1000) * 0.1;
+    multiplier = Math.min(multiplier + milestoneBonus, 2.0);
+
+    // Random variance (±20%)
+    const variance = 0.8 + Math.random() * 0.4;
+    multiplier *= variance;
+
+    const finalValue = Math.round(value * multiplier);
+
     set((state) => ({
-      score: state.score + value,
+      score: state.score + finalValue,
       gemsCollected: state.gemsCollected + 1
     }));
 
-    // Analytics: Track gem collection
-    trackGameEvent.collectItem('gem', value, Math.floor(Math.random() * laneCount));
+    // Analytics: Track gem collection with multiplier
+    trackGameEvent.collectItem('gem', finalValue, Math.floor(Math.random() * laneCount));
   },
 
   setDistance: (dist) => set({ distance: dist }),
@@ -188,9 +206,9 @@ export const useStore = create<GameState>((set, get) => ({
     if (!collectedLetters.includes(index)) {
       const newLetters = [...collectedLetters, index];
 
-      // LINEAR SPEED INCREASE: Add slight speed per letter
-      const speedIncrease = RUN_SPEED_BASE * 0.05;
-      const nextSpeed = speed + speedIncrease;
+      // BALANCED SPEED INCREASE (TASK-019): Cap per-letter speed increase
+      const speedIncrease = Math.min(RUN_SPEED_BASE * 0.05, 5); // Max 5 units per letter
+      const nextSpeed = Math.min(speed + speedIncrease, RUN_SPEED_BASE * 3); // Cap at 3x base speed
 
       set({
         collectedLetters: newLetters,
@@ -222,8 +240,9 @@ export const useStore = create<GameState>((set, get) => ({
       const { level, laneCount, speed, score, distance } = get();
       const nextLevel = level + 1;
 
-      const speedIncrease = RUN_SPEED_BASE * 0.30;
-      const newSpeed = speed + speedIncrease;
+      // BALANCED LEVEL SPEED INCREASE (TASK-019): Reduced from 30% to 20% with cap
+      const speedIncrease = RUN_SPEED_BASE * 0.20;
+      const newSpeed = Math.min(speed + speedIncrease, RUN_SPEED_BASE * 3); // Cap at 3x base speed
 
       set({
           level: nextLevel,
@@ -258,7 +277,9 @@ export const useStore = create<GameState>((set, get) => ({
                   set({ hasDoubleJump: true });
                   break;
               case 'MAX_LIFE':
-                  set({ maxLives: maxLives + 1, lives: lives + 1 });
+                  // SCALING COST (TASK-019): Max life costs increase with usage
+                  const lifeIncrease = Math.max(1, Math.floor(maxLives / 3)); // Scales with current max lives
+                  set({ maxLives: maxLives + lifeIncrease, lives: lives + lifeIncrease });
                   break;
               case 'HEAL':
                   set({ lives: Math.min(lives + 1, maxLives) });

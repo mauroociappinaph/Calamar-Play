@@ -85,8 +85,11 @@
     - [ ] Validar especificación en `docs/AUDIO_SPEC.md` `[ESTADO: 🔵]`
 
 - **TASK-019: Balance de Economía y Dificultad (🟡)**
-    - [ ] Ajustar curvas de velocidad y costes basándose en datos `[DEP: TASK-015]` `[ESTADO: 🔵]`
-    - [ ] Documentar tablas de balance en `docs/GAME_ECONOMY_DESIGNER.md` `[ESTADO: 🔵]`
+    - [x] Implementar rewards variables basados en velocidad/distancia en `store.ts` `[DEP: TASK-015]` `[ESTADO: ✅]`
+    - [x] Reducir costos de tienda (600-1500 pts) y agregar caps de velocidad (3x máximo) `[ESTADO: ✅]`
+    - [x] Implementar escalado para upgrades de vida máxima `[ESTADO: ✅]`
+    - [x] Crear tests de integración en `tests/integration/economy.test.ts` `[ESTADO: ✅]`
+    - [x] Documentar cambios en `docs/GAME_ECONOMY_DESIGNER.md` y actualizar `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 ---
 

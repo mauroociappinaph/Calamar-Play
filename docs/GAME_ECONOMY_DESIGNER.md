@@ -19,14 +19,20 @@ Lista de monedas/recursos (mínimo): soft currency (score/pts para tienda). No h
 Identifica metas: D0 (5 min): recolectar 3-5 letras + gemas; D1 (30-60 min): completar nivel 1 (11 letras); D7 (3-7 días): completar niveles 2-3. Si no datos: targets SUPUESTOS: tiempo level-up 1: 8-12 min; tiempo upgrade significativo (salto doble): 15-20 min; tiempo "build" completo: 30-45 min. Walls: velocidad crece 35% total por nivel (5% x11 letras +30%), costos shop requieren 10-30 gemas recolectadas; rewards no escalan (gemas siempre 50/100); falta sinks variados (solo tienda). Pacing plan: early (min 0-10): gemas frecuentes, letras espaciadas 150m; mid (min 10-30): obstáculos + aliens, rewards variables; late (min 30+): speed alta, shop frecuente.
 
 ## 5) Ratio moneda / upgrades y curvas de costos
-Auditoría upgrades: suben QoL (salto doble, inmortalidad) o poder (vida máxima); escalado lineal (costos fijos); impacto tangible bajo (inmortalidad temporal 5s, heal inmediato). Ratios: recompensas por run (gemas): 5-10 (SUPUESTO), costo upgrade: 1000-3000 pts; runs por upgrade: 10-60 (SUPUESTO). Curva recomendada: early: upgrades baratos (500-800 pts), frecuentes; mid: decisiones rutas (perks alternativos); late: sinks cosméticos (skins por 2000 pts). Tabla:
+**IMPLEMENTADO (TASK-019):** Balance económico aplicado con costos reducidos, rewards variables y caps de velocidad. Tabla actualizada con cambios implementados:
 
-| Upgrade | Nivel | Costo actual | Recompensa actual | Runs requeridos | Problema | Nuevo costo/reward | Objetivo |
-|---------|-------|--------------|-------------------|-----------------|----------|---------------------|----------|
-| Doble salto | 1 | 1000 | Perma | 10-20 | Costo alto vs earnings | 600 pts | 5-10 runs |
-| Vida máxima | 1 | 1500 | +1 vida perma | 15-30 | No escalado | 800 pts base, +200 por uso | 8-15 runs |
-| Heal | 1 | 1000 | +1 vida temp | N/A (repeat) | Infla vidas | 500 pts, limitado diario | 5-10 runs/día |
-| Inmortalidad | 1 | 3000 | Habilidad 5s | 30-60 | Muy caro | 1500 pts | 15-30 runs |
+| Upgrade | Nivel | Costo actual | Recompensa actual | Runs requeridos | Problema | Nuevo costo/reward | Objetivo | Estado |
+|---------|-------|--------------|-------------------|-----------------|----------|---------------------|----------|--------|
+| Doble salto | 1 | 600 | Perma | 5-10 | Costo alto vs earnings | 600 pts | 5-10 runs | ✅ IMPLEMENTADO |
+| Vida máxima | 1 | 800 | +1-2 vidas perma (escalado) | 8-15 | No escalado | 800 pts base, escalado por uso | 8-15 runs | ✅ IMPLEMENTADO |
+| Heal | 1 | 500 | +1 vida temp | 5-10 | Infla vidas | 500 pts, limitado diario | 5-10 runs/día | ✅ IMPLEMENTADO |
+| Inmortalidad | 1 | 1500 | Habilidad 5s | 15-30 | Muy caro | 1500 pts | 15-30 runs | ✅ IMPLEMENTADO |
+
+**Cambios implementados:**
+- **Costos reducidos:** Todos los items ahora más accesibles (reducción 33-50%)
+- **Rewards variables:** Gemas ahora tienen multiplicadores basados en velocidad y distancia
+- **Caps de velocidad:** Máximo 3x velocidad base para evitar death spirals
+- **Escalado vida máxima:** Costo aumenta con uso para prevenir farming infinito
 
 ## 6) Recompensas: estructura y variedad
 Tipos: fija (gemas 50/100), variable RNG baja (ubicación en obstáculos), por objetivos (letras dan speed-up), streaks/daily ausentes. Problemas: RNG frustra poco (siempre spawn), rewards invisibles (solo pts numérico), overjustification extrínseca (pts sin significado). Estructura propuesta: base + bonus (timing perfecto 2x, streak 1.5x), pity/garantías (letra garantizada cada 200m), milestones (bonus pts cada 1000m). 5 ideas: 1) multiplicadores por combos (3 gemas seguidas = 2x); 2) rewards por near-misses (bonus por esquivar cercano); 3) streaks diarios (login bonus 500 pts); 4) eventos aleatorios (multiplicador 3x por 30s); 5) coleccionables cosméticos (comprar con pts sobrantes).

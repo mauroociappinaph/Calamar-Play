@@ -10,13 +10,13 @@ import { useStore } from '@/features/game/state/store';
 import { GameStatus, GEMINI_COLORS, ShopItem, RUN_SPEED_BASE } from '@/shared/types/types';
 import { audio } from '@/systems/audio/AudioEngine';
 
-// Available Shop Items
+// Available Shop Items - BALANCED ECONOMY (TASK-019)
 const SHOP_ITEMS: ShopItem[] = [
     {
         id: 'DOUBLE_JUMP',
         name: 'DOBLE SALTO',
         description: 'Salta de nuevo en el aire. Vital para esquivar.',
-        cost: 1000,
+        cost: 600, // Reduced from 1000 for better accessibility
         icon: ArrowUpCircle,
         oneTime: true
     },
@@ -24,21 +24,21 @@ const SHOP_ITEMS: ShopItem[] = [
         id: 'MAX_LIFE',
         name: 'VIDA MÁXIMA',
         description: 'Añade un corazón permanente y te cura.',
-        cost: 1500,
+        cost: 800, // Reduced from 1500, scales with usage
         icon: Activity
     },
     {
         id: 'HEAL',
         name: 'PEZ FRESCO',
         description: 'Restaura 1 punto de vida al instante.',
-        cost: 1000,
+        cost: 500, // Reduced from 1000, daily limit applies
         icon: PlusCircle
     },
     {
         id: 'IMMORTAL',
         name: 'ESCUDO TINTA',
         description: 'Habilidad: Pulsa Espacio/Toca para ser invencible 5s.',
-        cost: 3000,
+        cost: 1500, // Reduced from 3000 for power/toughness ratio
         icon: Shield,
         oneTime: true
     }
