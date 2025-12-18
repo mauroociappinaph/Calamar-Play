@@ -63,17 +63,31 @@ class AudioEngine {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       this.audioContext = new AudioContextClass();
 
+      console.log('🎵 AudioEngine: Created AudioContext:', {
+        state: this.audioContext.state,
+        sampleRate: this.audioContext.sampleRate,
+        baseLatency: this.audioContext.baseLatency,
+        userAgent: navigator.userAgent
+      });
+
       // Create master gain node
       this.masterGain = this.audioContext.createGain();
       this.masterGain.connect(this.audioContext.destination);
       this.masterGain.gain.value = this.config.masterVolume;
 
+      console.log('🎵 AudioEngine: Created master gain node, volume:', this.config.masterVolume);
+
       // Create category gain nodes
       this.createGainNodes();
 
-      console.log('🎵 AudioEngine initialized:', this.audioContext.state);
+      console.log('🎵 AudioEngine initialized successfully:', this.audioContext.state);
     } catch (error) {
       console.error('❌ Failed to initialize AudioEngine:', error);
+      console.error('❌ Browser support:', {
+        hasAudioContext: !!window.AudioContext,
+        hasWebkitAudioContext: !!(window as any).webkitAudioContext,
+        userAgent: navigator.userAgent
+      });
     }
   }
 
@@ -96,13 +110,18 @@ class AudioEngine {
 
   // AUDIO UNLOCK: Handle browser audio policies
   public async unlock(): Promise<void> {
-    if (!this.audioContext) return;
+    if (!this.audioContext) {
+      console.error('❌ Cannot unlock: AudioContext not initialized');
+      return;
+    }
+
+    console.log('🔊 Audio unlock attempt. Context state before:', this.audioContext.state);
 
     if (this.audioContext.state === 'suspended') {
       try {
         await this.audioContext.resume();
         this.isUnlocked = true;
-        console.log('🔊 Audio unlocked successfully');
+        console.log('🔊 Audio unlocked successfully. Context state after:', this.audioContext.state);
 
         // Play a silent sound to confirm unlock
         await this.playSilentSound();
@@ -111,6 +130,7 @@ class AudioEngine {
         this.isUnlocked = false;
       }
     } else {
+      console.log('🔊 Audio already unlocked. Context state:', this.audioContext.state);
       this.isUnlocked = true;
     }
   }
@@ -149,15 +169,34 @@ class AudioEngine {
 
   // AUDIO LOADING
   public async loadAudio(id: string, url: string): Promise<boolean> {
-    if (!this.audioContext) return false;
+    if (!this.audioContext) {
+      console.error(`❌ Cannot load audio ${id}: AudioContext not initialized`);
+      return false;
+    }
+
+    console.log(`📦 Loading audio: ${id} from ${url}`);
 
     try {
       const response = await fetch(url);
+      console.log(`📦 Fetch response for ${id}:`, response.status, response.statusText);
+
+      if (!response.ok) {
+        console.error(`❌ HTTP error loading ${id}: ${response.status} ${response.statusText}`);
+        return false;
+      }
+
       const arrayBuffer = await response.arrayBuffer();
+      console.log(`📦 ArrayBuffer loaded for ${id}, size: ${arrayBuffer.byteLength} bytes`);
+
       const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+      console.log(`📦 Audio decoded for ${id}:`, {
+        duration: audioBuffer.duration,
+        sampleRate: audioBuffer.sampleRate,
+        numberOfChannels: audioBuffer.numberOfChannels
+      });
 
       this.audioBuffers.set(id, audioBuffer);
-      console.log(`📦 Audio loaded: ${id}`);
+      console.log(`📦 Audio loaded successfully: ${id}`);
       return true;
     } catch (error) {
       console.error(`❌ Failed to load audio ${id}:`, error);
@@ -211,13 +250,41 @@ class AudioEngine {
 
   // SFX PLAYBACK
   public async playSFX(id: string, options: SFXOptions = {}): Promise<void> {
-    if (!this.isAudioUnlocked() || !this.audioContext) return;
+    console.log(`🔊 playSFX called: ${id}`, {
+      isUnlocked: this.isAudioUnlocked(),
+      contextState: this.audioContext?.state,
+      hasBuffer: this.audioBuffers.has(id),
+      options
+    });
+
+    if (!this.audioContext) {
+      console.warn(`⚠️ Cannot play SFX ${id}: No audio context`);
+      return;
+    }
+
+    // Auto-unlock if not unlocked yet
+    if (!this.isAudioUnlocked()) {
+      console.log(`🔊 Auto-unlocking audio for SFX ${id}`);
+      await this.unlock();
+
+      // If still not unlocked after auto-unlock attempt, warn and return
+      if (!this.isAudioUnlocked()) {
+        console.warn(`⚠️ Cannot play SFX ${id}: Audio context still suspended after unlock attempt`);
+        return;
+      }
+    }
 
     const buffer = this.audioBuffers.get(id);
     if (!buffer) {
-      console.warn(`⚠️ SFX not loaded: ${id}`);
+      console.warn(`⚠️ SFX not loaded: ${id}. Available buffers:`, Array.from(this.audioBuffers.keys()));
       return;
     }
+
+    console.log(`✅ Playing SFX ${id}:`, {
+      bufferDuration: buffer.duration,
+      bufferSampleRate: buffer.sampleRate,
+      bufferNumberOfChannels: buffer.numberOfChannels
+    });
 
     const source = this.audioContext.createBufferSource();
     source.buffer = buffer;

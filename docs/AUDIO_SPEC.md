@@ -158,7 +158,60 @@ if (obj.type === ObjectType.GEM) {
 
 ---
 
-## 7. Changelog TASK-002
+## 7. Diagnóstico y Fix de Audio Post-Implementación
+
+### 🔍 **Problema Identificado (18/12/2025)**
+Después del refactor del sistema de audio, los sonidos no se reproducían. Los logs mostraron:
+
+```
+🎵 AudioEngine: Created AudioContext: { state: 'suspended', ... }
+🔊 playSFX called: jump { isUnlocked: false, contextState: 'suspended' }
+⚠️ Cannot play SFX jump: Audio not unlocked or no context
+```
+
+### 🛠️ **Causa Raíz**
+1. **Audio Context Suspendido**: Los navegadores modernos inician el AudioContext en estado "suspended"
+2. **Unlock Manual Requerido**: Se necesita interacción del usuario para desbloquear
+3. **SFX Sin Auto-Unlock**: Los métodos de audioEvents no intentaban unlock automático
+
+### ✅ **Solución Implementada**
+```typescript
+// En AudioEngine.playSFX() - Auto-unlock automático
+if (!this.isAudioUnlocked()) {
+  console.log(`🔊 Auto-unlocking audio for SFX ${id}`);
+  await this.unlock();
+  if (!this.isAudioUnlocked()) {
+    console.warn(`⚠️ Cannot play SFX ${id}: Audio context still suspended`);
+    return;
+  }
+}
+```
+
+### 📊 **Resultado Post-Fix**
+```
+🎵 AudioEngine initialized successfully: suspended
+🔊 playSFX called: jump { isUnlocked: false, contextState: 'suspended' }
+🔊 Auto-unlocking audio for SFX jump
+🔊 Audio unlocked successfully. Context state after: running
+✅ Playing SFX jump: { bufferDuration: 0.15, ... }
+🔊 SFX played: jump { volume: 0.7, pitch: 1.05 }
+```
+
+### 🧪 **Testing Mejorado**
+- ✅ Auto-unlock en playSFX
+- ✅ Logging comprehensivo en inicialización, unlock y playback
+- ✅ Panel de debug en desarrollo (`http://localhost:3000`)
+- ✅ Audio procedural generado para testing sin assets externos
+
+### 🎯 **Beneficios del Fix**
+- **Transparente al Usuario**: Los sonidos funcionan automáticamente tras primera interacción
+- **Robustez**: Sistema se recupera de estados suspendidos
+- **Debugging**: Logs detallados facilitan diagnóstico futuro
+- **Performance**: Sin impacto adicional en runtime
+
+---
+
+## 8. Changelog TASK-002
 
 ### ✅ **Completado: 18/12/2025**
 - ✅ Implementado AudioEngine completo con Web Audio API

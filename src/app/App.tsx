@@ -4,7 +4,7 @@
 */
 
 
-import React, { Suspense, useEffect, useRef } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Environment } from '@/world/stage/Environment';
@@ -15,6 +15,7 @@ import { HUD } from '@/features/ui/HUD';
 import { Onboarding } from '@/features/ui/onboarding';
 import { useStore } from '@/features/game/state/store';
 import { initAnalytics, cleanupAnalytics, trackGameEvent } from '@/shared/analytics';
+import { audio, audioEvents } from '@/systems/audio/AudioEngine';
 
 // Dynamic Camera Controller with Shake
 const CameraController = () => {
@@ -93,6 +94,9 @@ function Scene() {
 function App() {
     console.log('App component rendering');
 
+    const [audioDebug, setAudioDebug] = useState<any>(null);
+    const [showDebug, setShowDebug] = useState(false);
+
     // Initialize analytics on app load
     useEffect(() => {
         initAnalytics({
@@ -106,10 +110,111 @@ function App() {
         };
     }, []);
 
+    // Update audio debug info periodically
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setAudioDebug(audio.getDebugInfo());
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    // Load test audio on mount (development only)
+    useEffect(() => {
+        if (process.env.NODE_ENV === 'development') {
+            // Create test audio buffers programmatically for testing
+            const loadTestAudio = async () => {
+                try {
+                    // Create jump sound
+                    const jumpBuffer = audio['audioContext']?.createBuffer(1, audio['audioContext'].sampleRate * 0.15, audio['audioContext'].sampleRate);
+                    if (jumpBuffer) {
+                        const channelData = jumpBuffer.getChannelData(0);
+                        // Generate a jump-like sound (ascending pitch)
+                        for (let i = 0; i < jumpBuffer.length; i++) {
+                            const progress = i / jumpBuffer.length;
+                            const frequency = 300 + (progress * 200); // 300Hz to 500Hz
+                            channelData[i] = Math.sin(2 * Math.PI * frequency * i / audio['audioContext'].sampleRate) * (1 - progress) * 0.3;
+                        }
+                        audio['audioBuffers'].set('jump', jumpBuffer);
+                        console.log('✅ Test jump audio loaded');
+                    }
+
+                    // Create damage sound
+                    const damageBuffer = audio['audioContext']?.createBuffer(1, audio['audioContext'].sampleRate * 0.2, audio['audioContext'].sampleRate);
+                    if (damageBuffer) {
+                        const channelData = damageBuffer.getChannelData(0);
+                        // Generate a damage-like sound (descending pitch)
+                        for (let i = 0; i < damageBuffer.length; i++) {
+                            const progress = i / damageBuffer.length;
+                            const frequency = 400 - (progress * 150); // 400Hz to 250Hz
+                            channelData[i] = Math.sin(2 * Math.PI * frequency * i / audio['audioContext'].sampleRate) * (1 - progress) * 0.4;
+                        }
+                        audio['audioBuffers'].set('damage', damageBuffer);
+                        console.log('✅ Test damage audio loaded');
+                    }
+
+                    console.log('Test audio buffers created for debugging');
+                } catch (e) {
+                    console.log('Could not create test audio buffers:', e);
+                }
+            };
+
+            loadTestAudio();
+        }
+    }, []);
+
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden select-none">
       <HUD />
       <Onboarding />
+
+      {/* Audio Debug Panel (Development Only) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="absolute top-4 right-4 z-50">
+          <button
+            onClick={() => setShowDebug(!showDebug)}
+            className="bg-blue-600 text-white px-3 py-2 rounded text-sm font-mono"
+          >
+            🎵 Audio Debug
+          </button>
+
+          {showDebug && audioDebug && (
+            <div className="mt-2 bg-black/80 text-green-400 p-4 rounded text-xs font-mono max-w-xs">
+              <div>Unlocked: {audioDebug.isUnlocked ? '✅' : '❌'}</div>
+              <div>Context: {audioDebug.contextState}</div>
+              <div>Buffers: {audioDebug.loadedBuffers}</div>
+              <div>Sources: {audioDebug.activeSources}</div>
+              <div className="mt-2 space-y-1">
+                <div>Master: {(audioDebug.volumes?.master * 100) || 0}%</div>
+                <div>Music: {(audioDebug.volumes?.music * 100) || 0}%</div>
+                <div>SFX: {(audioDebug.volumes?.sfx * 100) || 0}%</div>
+                <div>Ambience: {(audioDebug.volumes?.ambience * 100) || 0}%</div>
+              </div>
+              <div className="mt-2 space-x-1">
+                <button
+                  onClick={() => audio.unlock()}
+                  className="bg-green-600 text-white px-2 py-1 rounded text-xs"
+                >
+                  Unlock
+                </button>
+                <button
+                  onClick={() => audioEvents.playJump()}
+                  className="bg-yellow-600 text-white px-2 py-1 rounded text-xs"
+                >
+                  Jump
+                </button>
+                <button
+                  onClick={() => audioEvents.playDamage()}
+                  className="bg-red-600 text-white px-2 py-1 rounded text-xs"
+                >
+                  Damage
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       <Canvas
         shadows
         dpr={[1, 1.5]}
