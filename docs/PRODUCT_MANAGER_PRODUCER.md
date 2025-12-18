@@ -12,7 +12,7 @@
 3. **Monetización ausente:** Sin estrategia IAP/ads, solo shop local limita LTV potencial
 
 **3 cuellos de botella principales del backlog:**
-1. **Falta de Infraestructura de Calidad y Datos:** Tareas de testing (TASK-010), benchmarks (TASK-011) y analytics (TASK-015) tienen prioridad baja, impidiendo la toma de decisiones informadas y la validación de hipótesis.
+1. **Falta de Infraestructura de Calidad y Datos:** Tareas de testing (TASK-010), benchmarks (TASK-011) y analytics (TASK-015) son **🔴 Alta** prioridad en la Fase 1 y bloqueantes para la toma de decisiones basadas en datos.
 2. **Core Loop Punitivo y Poco Atractivo:** La curva de dificultad (velocidad, falta de checkpoints) y la economía desbalanceada causan frustración y abandono temprano. Faltan tareas para solucionarlo.
 3. **Deuda Técnica Crítica en Performance:** Tareas como el Object Pooling (TASK-001) bloquean la estabilidad y la adición de contenido variado (TASK-003).
 
@@ -115,7 +115,7 @@ El backlog ahora está alineado con la estrategia de 3 fases definida en [TASK.M
 
 (Las estimaciones de coste y valor se mantienen, pero ahora están mapeadas a un backlog priorizado y más completo).
 
-## 8. Roadmap Recomendado y Capacidad (Alineado)
+
 
 ## 8. Roadmap Recomendado y Capacidad (Alineado con TASK.MD)
 
