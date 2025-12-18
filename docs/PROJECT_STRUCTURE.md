@@ -66,7 +66,7 @@ Para evitar el "acoplamiento spaghetti" y asegurar una API limpia por módulo:
 - **`src/shared/`**: Tipos globales, constantes físicas, utilidades matemáticas genéricas, hooks que no dependen de la lógica de negocio y componentes UI atómicos (botones, modales) que **no** dependen del store.
     - `src/shared/types/`: Tipos compartidos cross-feature (usados por más de un dominio).
 - **`src/features/`**: Orquestación de UI + Hooks de dominio + lógica de negocio específica (Game, Shop, Onboarding, Analytics, AI). Es donde vive el "comportamiento" del juego.
-    - `src/features/*/state/types`: Tipos privados del dominio (no exportar fuera salvo vía `public.ts`).
+    - `src/features/*/state/`: Estado del dominio (FSM, reducers/actions, types.ts o types/), exportado solo vía `public.ts`.
 - **`src/systems/`**: Lógica pura tipo "engine" (Pooling, Timestep Loop, Colisiones). Son agnósticos a React y ThreeFiber; procesan datos y cálculos puros.
 - **`src/world/`**: Grafo de escena R3F. Contiene las "Views" y "Entities" (el modelo 3D y su renderizado). No debe contener lógica de negocio, solo bindings al estado y rendering.
 
