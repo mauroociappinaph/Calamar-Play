@@ -1,5 +1,7 @@
 # GAMEPLAY_ENGINEER.md
 
+> 🎮 Documento de Ingeniería de Gameplay – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 ## 1. Diagnóstico ejecutivo en 10 líneas
 
 **Estado actual de la "sensación":** Gameplay loop React/Three.js con latencia variable por frame drops, sensación inconsistente entre sesiones por falta de fixed timestep y input buffering.
@@ -191,7 +193,7 @@ El rol del Ingeniero de Gameplay es crucial para traducir la visión de diseño 
 | **TASK-001: Object Pooling** | 🔴 Alta | Refactorizar el `LevelManager` para que utilice pools, eliminando las allocations en el `useFrame` y los GC spikes. |
 | **TASK-005: Memoización** | 🔴 Alta | Asegurar que todos los callbacks de `useFrame` y las geometrías complejas estén correctamente memoizados para prevenir re-renders y GC. |
 | **TASK-018: Máquina de Estados** | 🔴 Alta | Implementar o asistir en la implementación de una FSM para `GameStatus` en `store.ts` para prevenir bugs de estado. |
-| **Soporte a Performance** | 🔴 Alta | Colaborar con el Artista Técnico en la implementación de **LOD (TASK-006)** y la optimización de **partículas (TASK-007)**, asegurando que no impacten negativamente la lógica de colisiones o gameplay. |
+| **Soporte a Performance** | 🔴 Alta | Asegurar compatibilidad entre LOD/partículas (**TASK-006/007**) y lógica de gameplay/colisiones, garantizando que las optimizaciones visuales no afecten el feel del juego. |
 
 ### 🎯 FASE 2: RETENCIÓN (Diversión y Equidad)
 **Objetivo Principal:** Implementar los sistemas de diseño que hacen el juego más justo y motivador.
@@ -207,7 +209,7 @@ El rol del Ingeniero de Gameplay es crucial para traducir la visión de diseño 
 **Objetivo Principal:** Añadir nuevas mecánicas que expandan la experiencia de juego.
 
 | Tarea Clave | Prioridad | Objetivo de Ingeniería |
-| :--- | :- | :--- |
+| :--- | :--- | :--- |
 | **TASK-021: Sistema de Combate (MVP)** | 🟡 Media | Construir el sistema de proyectiles, la gestión de munición y la lógica de daño a enemigos. Requiere una base de colisiones y física estable (lograda en Fase 1). |
 | **Optimización de Colisiones** | 🟡 Media | Si es necesario por el aumento de entidades, implementar un sistema de "broadphase" (ej. Quadtree o Spatial Hash) para optimizar la detección de colisiones. |
 | **Nuevos Sistemas** | 🟢 Baja | Implementar sistemas adicionales según la evolución del diseño, como un árbol de perks o nuevos tipos de interacciones. |
@@ -217,6 +219,8 @@ El rol del Ingeniero de Gameplay es crucial para traducir la visión de diseño 
 - **Tareas Agregadas:** El plan ahora incluye **TASK-020 (Fixed Timestep)** como un pilar fundamental del trabajo de ingeniería.
 - **Dependencias Visibles:** Queda claro que las features de la Fase 2 y 3 (checkpoints, combate) no pueden ser implementadas de forma fiable sin una base de gameplay consistente (Fase 1).
 
+> 📘 Más contexto general: [README.md](../README.md)
+
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
 Última sincronización automática: 2025-12-17
