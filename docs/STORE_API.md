@@ -28,7 +28,36 @@ El Store es el cerebro reactivo de Calamar Loco. Utiliza **Zustand** para gestio
 
 ---
 
-## 3. Acciones (Public API)
+## 3. Máquina de Estados (FSM)
+
+<!-- Diagrama FSM de GameStatus (ver TASK-018 y [TASK.MD](./TASK.MD)) -->
+```mermaid
+stateDiagram-v2
+    [*] --> MENU
+
+    MENU --> PLAYING: START_GAME
+
+    PLAYING --> SHOP: ENTER_PORTAL (Level up)
+    SHOP --> PLAYING: EXIT_SHOP
+
+    PLAYING --> GAME_OVER: TAKE_DAMAGE (lives = 0)
+    GAME_OVER --> PLAYING: RETRY / RESTART
+
+    PLAYING --> VICTORY: COLLECT_LAST_LETTER (Full word)
+    VICTORY --> PLAYING: RETRY / RESTART
+
+    state PLAYING {
+        [*] --> RUNNING
+        RUNNING --> JUMPING: JUMP_INPUT
+        JUMPING --> RUNNING: LANDED
+        RUNNING --> DAMAGE_FLASH: TAKE_DAMAGE (lives > 0)
+        DAMAGE_FLASH --> RUNNING: FLASH_END
+    }
+```
+
+---
+
+## 4. Acciones (Public API)
 
 ### Lógica de Juego
 - `startGame()`: Transiciona a `PLAYING` y resetea temporizadores.
@@ -42,14 +71,14 @@ El Store es el cerebro reactivo de Calamar Loco. Utiliza **Zustand** para gestio
 
 ---
 
-## 4. Persistencia (Middleware)
+## 5. Persistencia (Middleware)
 El store utiliza el middleware `persist` de Zustand para sincronizar automáticamente el estado del jugador con el navegador.
 - **Key:** `calamar-loco-storage`
 - **Whitelist:** `gems`, `upgrades`, `highScore` (el estado de la partida no se persiste).
 
 ---
 
-## 5. Criterios de Calidad (TASK-012)
+## 6. Criterios de Calidad (TASK-012)
 - **Typed Actions:** Todas las acciones deben estar tipadas en TypeScript.
 - **Selector Pattern:** Los componentes deben consumir el store usando selectores para minimizar re-renders.
 - **Immutability:** Uso estricto de `set()` con patrones inmutables.
