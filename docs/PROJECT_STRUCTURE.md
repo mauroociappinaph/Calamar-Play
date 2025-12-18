@@ -63,12 +63,11 @@ Para evitar el "acoplamiento spaghetti" y asegurar una API limpia por módulo:
 
 ## 4. Reglas SRP por capas (qué va en cada lugar)
 
-- **`src/shared/`**: Tipos globales, constantes físicas, utilidades matemáticas genéricas, hooks que no dependen de la lógica de negocio y componentes UI atómicos (botones, modales) que **no** dependen del store.
-    - `src/shared/types/`: Tipos compartidos cross-feature (usados por más de un dominio).
-- **`src/features/`**: Orquestación de UI + Hooks de dominio + lógica de negocio específica (Game, Shop, Onboarding, Analytics, AI). Es donde vive el "comportamiento" del juego.
-    - `src/features/*/state/`: Estado del dominio (FSM, reducers/actions, types.ts o types/), exportado solo vía `public.ts`.
-- **`src/systems/`**: Lógica pura tipo "engine" (Pooling, Timestep Loop, Colisiones). Son agnósticos a React y ThreeFiber; procesan datos y cálculos puros.
-- **`src/world/`**: Grafo de escena R3F. Contiene las "Views" y "Entities" (el modelo 3D y su renderizado). No debe contener lógica de negocio, solo bindings al estado y rendering.
+- **`src/shared/`**: Código agnóstico al dominio. Utilidades matemáticas, constantes de configuración, hooks genéricos y componentes de UI atómicos que no conocen el estado global del juego.
+- **`src/features/`**: Dominios de negocio que encapsulan estado (Zustand/FSM) y lógica reactiva. Cada feature es un módulo independiente que expone una API vía `index.ts`.
+- **`src/systems/`**: El "motor" del juego. Lógica pura, imperativa y de alto rendimiento (Pooling, Audio Engine, Physics). No debe depender de React para su ejecución lógica interna.
+- **`src/world/`**: El grafo de escena R3F. Contiene las representaciones visuales (Views) y la composición de la escena 3D. Se comunica con los sistemas para el movimiento y con las features para el estado.
+- **`src/app/`**: Orquestación de alto nivel. Setup de providers, estilos globales y el componente raíz.
 
 ---
 
@@ -76,35 +75,41 @@ Para evitar el "acoplamiento spaghetti" y asegurar una API limpia por módulo:
 
 ```text
 /
-├── .github/workflows/      # CI/CD (TASK-016)
-├── docs/                   # Documentación maestra (TASK-023)
-├── public/                 # Assets estáticos (models, textures, audio)
-│   └── assets/
+├── .gemini/                # IA Tooling (Prompts, Validators, Generadores)
+├── .github/workflows/      # Automatización CI/CD (GitHub Actions)
+├── .husky/                 # Pre-commit hooks (Calidad local)
+├── docs/                   # Documentación estratégica (TASK.MD, Specs)
+├── public/                 # Assets pesados (.glb, .mp3, manifest.json)
 ├── src/
-│   ├── app/                # Bootstrap, Providers (StoreProvider), App.tsx
-│   ├── features/           # Módulos de negocio (Features)
-│   │   ├── game/           # Core loop, scoring, combat (TASK-021)
-│   │   │   └── state/      # FSM / Game Logic State (TASK-018)
-│   │   ├── shop/           # Sistema de compras y upgrades
+│   ├── app/                # Punto de entrada y configuraciones globales
+│   │   ├── App.tsx         # Orquestador principal (Scene + UI)
+│   │   ├── providers/      # Contextos o Providers globales
+│   │   └── styles/         # CSS Global y variables de diseño
+│   ├── features/           # Módulos de negocio (Estado + Comportamiento)
+│   │   ├── game/           # FSM, Score, Niveles (TASK-018)
+│   │   ├── combat/         # Lógica de disparo y munición (TASK-021)
+│   │   ├── shop/           # Upgrades, Economía, Persistencia
 │   │   ├── ui/             # HUD, Menús, Onboarding (TASK-022)
-│   │   └── analytics/      # Telemetría y eventos (TASK-015)
-│   ├── shared/             # Código compartido (Cross-cutting concerns)
-│   │   ├── components/     # UI Atómica (sin store)
-│   │   ├── constants/      # Precios, velocidades, IDs
-│   │   ├── hooks/          # Hooks genéricos
-│   │   ├── types/          # Definiciones de TS
-│   │   └── utils/          # Math, Random, Time
-│   ├── systems/            # Lógica pura (Engine-like)
-│   │   ├── pooling/        # Object Pooling (TASK-001)
-│   │   ├── physics/        # Colisiones AABB / Physics puros
-│   │   └── loop/           # Fixed Timestep Loop (TASK-020)
-│   ├── world/              # Grafo de Escena (React Three Fiber)
-│   │   ├── entities/       # Player, Obstacles (Views)
-│   │   ├── environment/    # Sky, Lights, Water
-│   │   └── effects/        # Post-processing (TASK-007)
-│   ├── index.css
-│   └── main.tsx
-├── tools/                  # Tooling (Benchmarks TASK-011, Scripts)
+│   │   ├── ai/             # Adaptive AI & TensorFlow (TASK-024)
+│   │   └── analytics/      # Telemetría y métricas (TASK-015)
+│   ├── systems/            # Lógica pura / Engine (Independiente de React)
+│   │   ├── pooling/        # Reciclaje de objetos (TASK-001)
+│   │   ├── audio/          # Motor de audio y efectos (TASK-002)
+│   │   ├── physics/        # Colisiones AABB / Raycasting
+│   │   └── loop/           # Fixed Timestep & Accumulator (TASK-020)
+│   ├── world/              # Escena 3D (Vistas R3F)
+│   │   ├── actors/         # Player, Enemigos, Coleccionables
+│   │   ├── stage/          # Piso, Cielo, Generadores de Pista
+│   │   └── fx/             # Post-pro y Partículas (TASK-007)
+│   ├── shared/             # Código compartido
+│   │   ├── components/     # UI Atómica
+│   │   ├── constants/      # Configuración y Balance
+│   │   ├── hooks/          # Hooks de utilidad
+│   │   └── types/          # Tipos globales
+│   ├── main.tsx            # Inicialización React
+│   └── types.ts            # (Temporal) hasta migración completa
+├── tests/                  # Tests de integración y E2E
+├── tools/                  # Scripts de Benchmarks y Tooling (TASK-011)
 ├── vite.config.ts
 └── tsconfig.json
 ```
