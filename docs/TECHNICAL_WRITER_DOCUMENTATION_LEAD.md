@@ -1,28 +1,35 @@
 # TECHNICAL_WRITER_DOCUMENTATION_LEAD.md
 
+> 📝 Documento de Technical Writing / Documentation Lead – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 ## 1. Diagnóstico ejecutivo en 10 líneas
 
-**Estado de la documentación:** Tribal knowledge predominante con documentación dispersa y falta de trazabilidad entre diseño, código y releases.
+**Estado de la documentación:** Documentación actualmente en proceso de estandarización y sincronización; se requiere consolidación final (**TASK-023**).
 
-**3 riesgos por falta de docs:** Onboarding lento de nuevos devs sin entry points claros, bugs repetidos por falta de runbooks de troubleshooting, releases lentos sin checklists estandarizados.
+**3 riesgos por falta de docs:** Onboarding lento de nuevos colaboradores sin entry points claros, bugs repetidos por falta de runbooks de troubleshooting, releases lentos sin checklists estandarizados.
 
-**3 problemas de consistencia:** Términos inconsistentes ("gameplay" vs "game play"), estructura heterogénea entre docs, duplicación contradictoria entre TASK.MD y análisis posteriores.
+**3 problemas de consistencia:** Términos inconsistentes ("gameplay" vs "game play"), estructura heterogénea entre docs, duplicación contradictoria entre TASK.MD y análisis previos.
 
 **3 oportunidades de alto impacto:** Establecer docs-as-code con trazabilidad TASK↔PR↔docs, implementar plantillas estandarizadas, crear sistema de ownership documental.
 
-**Chequeo TASK:** Tareas mencionan documentación (TASK-012/013) pero sin criterios de calidad ni trazabilidad; falta definición de "done" documental.
+**Chequeo TASK:** Se utiliza la **TASK-023 (Sistema de Documentación Unificado)** como vehículo de estandarización. Las tareas **TASK-012/013** sirven como base documental, pero se recomienda integrar criterios de aceptación documental como parte del Definition of Done (DoD).
 
 ## 2. Auditoría de inventario documental
 
-**Mapa de documentación actual (o SUPUESTO):**
-- **README.md:** Básico con setup instructions
-- **docs/TASK.MD:** Plan de ejecución estructurado
-- **docs/LEAD_GAME_DESIGNER.md:** Análisis de diseño de juego (nuevo)
-- **docs/TECHNICAL_DIRECTOR.md:** Análisis técnico (nuevo)
-- **docs/ART_DIRECTOR_TECH_ARTIST.md:** Análisis visual-tech (nuevo)
-- **docs/PRODUCT_MANAGER_PRODUCER.md:** Análisis de negocio (nuevo)
-- **docs/GAMEPLAY_ENGINEER.md:** Análisis de sistemas (nuevo)
-- **docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md:** Análisis UX (nuevo)
+**Mapa de documentación actual (Estado de sincronización):**
+- **README.md:** Overview, setup y links maestros.
+- **docs/TASK.MD:** Fuente de Verdad y Backlog unificado.
+- **docs/BUILD_ENGINEER_DEVOPS_GAMES.md:** Pipeline CI/CD y despliegue.
+- **docs/COMMUNITY_MANAGER_TECH.md:** Gestión de feedback y bugs.
+- **docs/DATA_ANALYST_GAME_INSIGHTS.md:** Eventos, métricas y dashboards.
+- **docs/GAME_ECONOMY_DESIGNER.md:** Balance económico y recompensas.
+- **docs/GAMEPLAY_ENGINEER.md:** Sistemas core y performance loop.
+- **docs/QA_TEST_LEAD.md:** Estrategia de testing y E2E.
+- **docs/LEAD_GAME_DESIGNER.md:** Diseño de juego y loop (TASK-017, 021).
+- **docs/TECHNICAL_DIRECTOR.md:** Arquitectura y presupuestos técnicos.
+- **docs/ART_DIRECTOR_TECH_ARTIST.md:** Performance visual y assets.
+- **docs/PRODUCT_MANAGER_PRODUCER.md:** Matriz de impacto y KPI.
+- **docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md:** Onboarding y HUD.
 
 **Problemas típicos a señalar con evidencia:**
 - **Docs huérfanas:** Análisis nuevos sin referencias cruzadas ni actualización programada
@@ -33,14 +40,12 @@
 **Tabla obligatoria:**
 Documento/Ruta | Propósito | Audiencia | Owner | Actualización | Problemas | Acción sugerida
 |---------------|----------|----------|-------|--------------|----------|----------------|
-| README.md | Portfolio & Overview | Stakeholders | Tech Lead | Manual | Ninguno | Mantener actualizado con TASK-024
-| docs/TASK.MD | Fuente de Verdad | Team completo | Tech Lead | Manual | Ninguno | Sincronizar con todos los docs
-| docs/LEAD_GAME_DESIGNER.md | Diseño de juego | Designers, PM | Game Designer | Ninguna | Ninguno | Linkear a TASK-017, 019, 021
-| docs/TECHNICAL_DIRECTOR.md | Arquitectura técnica | Devs seniors | Tech Director | Ninguna | Ninguno | Linkear a TASK-001, 005, 006
-| docs/ART_DIRECTOR_TECH_ARTIST.md | Performance visual | Artists, Tech artists | Art Director | Ninguna | Ninguno | Linkear a TASK-006, 007
-| docs/PRODUCT_MANAGER_PRODUCER.md | Plan de negocio | Stakeholders | PM | Ninguna | Ninguno | Referenciar TASK-015
-| docs/GAMEPLAY_ENGINEER.md | Sistemas gameplay | Gameplay devs | Gameplay Engineer | Ninguna | Ninguno | Referenciar TASK-020
-| docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md | Experiencia usuario | UX/UI devs | UX Specialist | Ninguna | Ninguno | Linkear a TASK-022
+| README.md | Portfolio & Overview | Stakeholders | Mauro | Manual | Ninguno | Mantener actualizado con TASK-024
+| [TASK.MD](./TASK.MD) | Fuente de Verdad | Team completo | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
+| [DEVOPS.md](./BUILD_ENGINEER_DEVOPS_GAMES.md) | Pipeline & Infra | DevOps | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
+| [GAME_DESIGN.md](./LEAD_GAME_DESIGNER.md) | Diseño de juego | Designers | Mauro | Manual | Ninguno | Linkear a TASK-017, 019, 021
+| [TECH_DIRECTOR.md](./TECHNICAL_DIRECTOR.md) | Arquitectura | Senior devs | Mauro | Manual | Ninguno | Linkear a TASK-001, 005, 006
+| [QA_TEST_LEAD.md](./QA_TEST_LEAD.md) | Calidad & Tests | QA | Mauro | Manual | Ninguno | Sincronizar bajo TASK-023
 
 ## 3. Semántica y claridad
 
@@ -58,7 +63,7 @@ Documento/Ruta | Propósito | Audiencia | Owner | Actualización | Problemas | A
 - **"Por si acaso":** Información adicional sin criterio de relevancia
 
 **Propuesta de mejoras: 10 cambios concretos de redacción/estructura**
-1. Cambiar "TASK.MD" por "TASK.MD" para consistencia mayúsculas
+1. Unificar referencias a `TASK.MD` (mayúsculas) y links relativos en todos los docs.
 2. Agregar glosario al inicio de docs técnicos
 3. Reemplazar "autoexplicativo" por "intuitivo en 2 segundos"
 4. Unificar formato de tablas (centrar headers)
@@ -618,6 +623,8 @@ Object pooling was accidentally disabled in LevelManager refactor, causing massi
 - **Readability metrics:** Sin análisis de complejidad de texto
 - **Maintenance overhead:** Sin tracking de tiempo actualización docs
 - **Stakeholder needs:** Sin survey de qué docs se necesitan realmente
+> 📘 Más contexto general: [README.md](../README.md)
+
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
 Última sincronización automática: 2025-12-17
