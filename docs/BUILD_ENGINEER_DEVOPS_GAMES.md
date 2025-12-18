@@ -70,10 +70,26 @@ jobs:
 ```
 
 ### Automatización Local (Husky)
-Se ha configurado **Husky** para ejecutar los tests unitarios antes de cada commit.
+Se ha configurado **Husky** para garantizar la calidad antes de subir código:
 - **Hook:** `.husky/pre-commit`
 - **Comando:** `npm run test` (ejecuta `vitest run`)
-- **Impacto:** Si los tests fallan localmente, el commit se aborta, garantizando que el repositorio siempre contenga código válido.
+- **Fallo:** Si los tests fallan localmente, el commit se aborta. Arregla los tests antes de intentar commitear de nuevo.
+
+### Validación en CI (GitHub Actions)
+El workflow valida tres pilares en cada ejecución:
+1. **Build:** Asegura que el proyecto compile correctamente (`npm run build`).
+2. **Tests:** Ejecuta la suite completa de Vitest.
+3. **Dependencias:** Verifica que el `package-lock.json` sea consistente.
+
+### Ramas y Protección
+- **Ramas:** `main`, `develop` y todas las ramas `feature/*` están monitoreadas.
+- **Merge Block:** El merge a `develop` o `main` está bloqueado si el CI no devuelve un status ✅ de éxito.
+
+### ¿Qué hacer si el CI falla?
+1. Haz clic en **Details** del job fallido en GitHub.
+2. Revisa el log de "Run tests" o "Install dependencies".
+3. Corrige el error en tu rama local, asegúrate de que `npm run test` pase.
+4. Haz `git commit` y `git push`. El CI se disparará automáticamente de nuevo.
 
 ## 5) Deploy a Vercel: preview, staging, production
 Estrategia de entornos:

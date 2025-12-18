@@ -69,6 +69,7 @@
 - Actualización de `docs/QA_TEST_LEAD.md` con estrategia de Testing (TASK-010) y Guía de Benchmarks (TASK-011).
 - Implementación de `docs/AUDIO_SPEC.md` (TASK-002), `docs/STORE_API.md` (TASK-012) y `docs/LEADERBOARD_SPEC.md` (TASK-014).
 - Creación de `CONTRIBUTING.md` (TASK-013) en la raíz del proyecto.
+- Implementación y validación del pipeline de CI/CD (TASK-016) con GitHub Actions.
 
 ---
 
