@@ -5,10 +5,10 @@
 ## 1) Diagnóstico ejecutivo en 10 líneas
 Estado actual inestable para release: sin suite de tests funcional, GC spikes causan stuttering en móviles, estados de juego no validados, colisiones físicas inexactas. 3 riesgos críticos: crashes por memoria en escenas densas (TASK-005), progreso perdido por estados inválidos (SHOP+PLAYING simultáneo), input lag en touch events móviles. 3 vacíos: tests unitarios ausentes (TASK-010), benchmarks performance faltantes (TASK-011), tests e2e no implementados. 3 quick wins: agregar limits velocidad (previene exploits), validar transiciones estado, implementar smoke tests manuales. **Chequeo TASK:** El diagnóstico original era correcto. El nuevo plan unificado ha corregido la priorización: **TASK-010 (Tests)** y **TASK-011 (Benchmarks)** han sido elevados a **prioridad 🔴 Alta** y son componentes centrales de la Fase 1. Además, se ha añadido **TASK-016 (CI/CD)** para automatizar la ejecución de estas validaciones de calidad.
 
-2) Estrategia de testing recomendada (pirámide)
+## 2) Estrategia de testing recomendada (pirámide)
 Pirámide objetivo: unit tests (80%) para lógica store (takeDamage, collectGem), físicas (colisiones), utilities; integration tests (15%) para flujos input→estado→render, audio triggers, UI state sync; E2E tests (5%) para critical path: start→play→fail/win→retry→progression. No testear: animaciones CSS (coste alto, bajo riesgo), assets loading (browser dependent), offline mode (no implementado). Compensar con smoke tests diarios (5 min manual: load→play 1 min→shop→restart).
 
-3) Auditoría de cobertura actual
+## 3) Auditoría de cobertura actual
 Suites existentes: ninguna suite funcional (SUPUESTO: TASK-010 menciona Vitest pero no implementado); ubicación: package.json scripts vacío de test; comandos: npm test no definido. Cobertura: módulos store.ts/UI.tsx/LevelManager.tsx sin tests; calidad asserts: nulo (no hay tests). Señales fragilidad: dependencias temporales (useFrame), estado global mutable (Zustand sin validaciones), closures recreados. Tabla:
 
 | Área | Tests existentes | Riesgo | Hueco | Test propuesto | Prioridad |
@@ -19,7 +19,7 @@ Suites existentes: ninguna suite funcional (SUPUESTO: TASK-010 menciona Vitest p
 | Performance | None (TASK-011) | Alto (GC spikes) | FPS/memoria leaks | Benchmarks | Alta |
 | UI state | None | Medio (sync issues) | shop→playing transitions | Integration tests | Media |
 
-4) Matriz de casos E2E (obligatoria)
+## 4) Matriz de casos E2E (obligatoria)
 Casos construidos para critical path: onboarding (menu→play), core loop (evasión→recolecta), failures (muerte→retry), progression (letras→level up→shop), settings (audio, controles). Automatable: sí para desktop, no para móviles (touch específico).
 
 | ID | Flujo | Precondición | Pasos | Resultado esperado | Severidad | Automatable | Notas |
@@ -45,10 +45,10 @@ Casos construidos para critical path: onboarding (menu→play), core loop (evasi
 | E2E-019 | LocalStorage | Restart game | Check saved scores | Leaderboard persists | Minor | Sí | localStorage API |
 | E2E-020 | Resolution change | Desktop, resize window | Continue playing | Camera adapts | Minor | Sí | Dynamic sizing |
 
-5) Casos límite y "nasty paths"
+## 5) Casos límite y "nasty paths"
 Input: multi-touch simultáneo (3+ fingers) causa input queue overflow; key rollover (WASD+A) procesa último; gamepad connect/disconnect durante gameplay no handled. Timing: lag spikes (>100ms) causan tunneling (objeto atraviesa player); background/foreground (>30s) pierde WebGL context; throttling CPU (6x slowdown) rompe físicas. Física/colisiones: high speed (velocidad >45) tunneling; stacking objetos (>10 concurrentes) performance drop; missile prediction inexacta. UI: resoluciones extremas (320x240) HUD cropped; safe areas iPhone notch; idioma largo (portugués) text overflow. Data: localStorage corrupto (manual edit) carga defaults; version mismatch (old data) migra gracefully; cache stale (old assets) loads current. Network: offline during load (PWA) usa cache; latencia variable (no realtime); retries failed loads (3 attempts).
 
-6) Benchmarks y performance testing (estabilidad + regresión)
+## 6) Benchmarks y performance testing (estabilidad + regresión)
 Benchmarks mínimos: FPS p95 >50 móvil / >55 desktop; long tasks <100ms count <5/minuto; memoria crecimiento <10MB/sesión, leaks <1MB/hora; bundle <500KB gzipped; TTI <3s. Perf smoke: escenario nivel 1, 30s gameplay, outputs: FPS logs, memoria heap, console errors. Tabla:
 
 | Métrica | Objetivo (rango) | Cómo medir | Frecuencia | Gate de release |
@@ -59,10 +59,10 @@ Benchmarks mínimos: FPS p95 >50 móvil / >55 desktop; long tasks <100ms count <
 | Load time | <3s TTI | Lighthouse | Build | Sí (>3s = block) |
 | JS errors | 0 por sesión | Console logs | E2E | Sí (>0 = fail) |
 
-7) Métricas de estabilidad y calidad
+## 7) Métricas de estabilidad y calidad
 Crash-free sessions: >95%; error rate JS exceptions <0.1%; ANR/long task rate <5%; bug escape rate <10% (pre-prod vs prod); flakiness rate tests <5%; MTTR <4h. Instrumentación: error tracking (Sentry), logging (console.error + custom events), performance monitoring (Web Vitals).
 
-8) Checklist de release (obligatorio)
+## 8) Checklist de release (obligatorio)
 Build/config: envs válidos (API_KEY placeholder), version bump (package.json), sourcemaps enabled (vite.config), feature flags off (no dev code). Smoke tests: manual (load→play 1min→shop→game over→retry) + automatizados (E2E-001 to E2E-003). Compatibilidad: browsers (Chrome 90+, Safari 14+, Firefox 88+), dispositivos (iPhone 12+, Android Snapdragon 865+), resolutions (360x640 min). Performance gates: FPS >50 móvil, memoria <100MB, load <3s. Seguridad: CSP headers (no inline scripts), permisos minimal (no geolocation), secrets not exposed. Rollback: git tags, Vercel deploy history, feature toggles ready. Post-release: monitor 24h (analytics crashes, user feedback), hotfix pipeline ready.
 
 ## 9. Plan de Acción de QA (Alineado con TASK.MD)
