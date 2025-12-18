@@ -34,7 +34,7 @@ Para cada pregunta:
 
 ## 3) Definiciones de métricas (evitar ambigüedad)
 Define (o valida) definiciones canónicas:
-Usuario: ID anónimo generado por browser fingerprint/localStorage (SUPUESTO - no backend). Sesión: Periodo continuo de interacción, timeout 30 min inactividad (SUPUESTO). Run/Partida: Desde game_start hasta game_over/victory. Score: Suma total de gems + bonuses (incluye multiplicadores por letters).
+Usuario: ID anónimo persistente generado con `crypto.randomUUID()` y guardado en `localStorage` (sin PII, sin backend). Sesión: Periodo continuo de interacción, timeout 30 min inactividad (SUPUESTO). Run/Partida: Desde game_start hasta game_over/victory. Score: Suma total de gems + bonuses (incluye multiplicadores por letters).
 
 Retención: D1 y D7 (día siguiente al primer play, basado en fecha local). Cohortes (por semana de primera sesión).
 
@@ -55,7 +55,7 @@ Tabla obligatoria:
 | session_start | Inicio sesión | user_id, timestamp, device | No existe | Sin baseline | Agregar en App load | Alta |
 | game_start | Inicio partida | level, lane_count | No existe | Funnel roto | Agregar en startGame | Alta |
 | level_start | Inicio nivel | level, collected_letters | No existe | Progreso opaco | Agregar en advanceLevel | Media |
-| collect_item | Colección | type (gem/letter), value, position | No existe | Engagement invisible | Agregar en collectGem/Letter | Media |
+| collect_item | Colección | type (gem/letter), value, lane, distance_bucket | No existe | Engagement invisible | Agregar en collectGem/Letter | Media |
 | game_end | Fin partida | outcome (win/lose), score, duration | No existe | KPIs imposibles | Agregar en GAME_OVER/VICTORY | Alta |
 | error_captured | Errores | error_type, stack_trace (truncated) | No existe | Bugs invisibles | Global error handler | Baja |
 
@@ -126,7 +126,7 @@ Eventos obligatorios:
 - session_start: user_id (anon), timestamp, device_type, referrer
 - game_start: level, lane_count, has_upgrades
 - run_start: run_id, level, collected_letters
-- collect_item: item_type (gem/letter), value, position_x
+- collect_item: item_type (gem/letter), value, lane, distance_bucket
 - level_complete: level, score, duration, attempts
 - fail: reason (obstacle/alien/missile), level, position
 - game_end: outcome (win/lose), final_score, total_duration
@@ -157,7 +157,7 @@ El rol del Analista de Datos es transformar el comportamiento del jugador en ins
   - **Analizar el Funnel de Retención:** Usar los datos de la Fase 1 para analizar en profundidad dónde y por qué los usuarios abandonan el juego después del primer día.
   - **Medir Impacto de Features de Retención:** Cuantificar cómo afectan los **Checkpoints (TASK-017)** y el **Balance de Dificultad (TASK-019)** a la duración de la sesión y la tasa de finalización de niveles.
   - **Crear Dashboard de Gameplay:** Desarrollar el dashboard "Gameplay & Difficulty" para visualizar las muertes por nivel, la distribución de scores y los puntos de fricción.
-  - **Soportar A/B Testing:** Preparar la infraestructura de análisis para medir los resultados de los A/B tests que según decisiones de producto se decidan ejecutar.
+  - **Soportar A/B Testing:** Preparar la infraestructura de análisis para medir los resultados de los A/B testing client‑side (feature flags locales) que según decisiones de producto se decidan ejecutar.
 
 ### 🌟 FASE 3: EXPANSIÓN (Profundidad y Contenido)
 **Objetivo:** Analizar el engagement con el nuevo contenido y encontrar patrones en segmentos de jugadores a largo plazo.
