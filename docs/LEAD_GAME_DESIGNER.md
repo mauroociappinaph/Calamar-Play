@@ -1,10 +1,12 @@
 # LEAD_GAME_DESIGNER.md
 
+> 🎯 Documento de Lead Game Design – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 ## 1. Diagnóstico en 10 líneas
 
 **Fortalezas reales:** Sistema de coleccionables con progresión visual clara (letras "CALAMARLOCO"), shop monetización bien integrada, feedback táctil/háptico funcional, variedad objetiva en obstáculos (estáticos, aliens móviles, misiles), arquitectura Three.js/React bien optimizada según TASK-001/005/006.
 
-**Cuellos de botella:** Loop principal demasiado lineal (evasión binaria sin decisiones estratégicas), curva dificultad exponencial sin checkpoints (TASK-005 alta prioridad), economía desbalanceada (ratio 20:1 desfavorable), falta de combate ofensivo (solo evasión pasiva), progresión determinística sin ramificación.
+**Cuellos de botella:** Loop principal demasiado lineal (evasión binaria sin decisiones estratégicas), curva dificultad exponencial sin checkpoints (**TASK-017** alta prioridad), economía desbalanceada (ratio 20:1 desfavorable), falta de combate ofensivo (solo evasión pasiva), progresión determinística sin ramificación.
 
 **3 riesgos principales para retención:**
 1. **Burnout temprano:** Sesiones <2 minutos por velocidad lineal creciente sin pausas garantizadas
@@ -233,9 +235,9 @@
 - **Payoff:** Supervivencia extendida, puntuación récord personal
 - **Prevención injusticia:** Shop siempre aparece con tiempo suficiente para decidir
 
-## 9. Plan de Acción y Rol de Diseño (Alineado con Roadmap Maestro)
+## 9. Plan de Acción y Rol de Diseño (Alineado con TASK.MD)
 
-El rol del Lead Game Designer es guiar la visión del producto para asegurar que el juego sea, ante todo, divertido y justo. El plan de acción se alinea con las fases estratégicas definidas en `docs/TASK.MD`.
+El rol del Lead Game Designer es guiar la visión del producto para asegurar que el juego sea, ante todo, divertido y justo. El plan de acción se alinea con las fases estratégicas definidas en [TASK.MD](./TASK.MD).
 
 ### 🚀 FASE 1: FUNDACIÓN (Estabilización y Medición)
 El rol de diseño en esta fase es principalmente de **consulta y validación**.
@@ -243,7 +245,7 @@ El rol de diseño en esta fase es principalmente de **consulta y validación**.
 - **Acciones de Diseño:**
   - **Validar el "feel" del juego:** Jugar builds después de la implementación del **Fixed Timestep (TASK-020)** para confirmar que la sensación de control es consistente y predecible.
   - **Supervisar optimizaciones:** Revisar el impacto visual del **LOD (TASK-006)** y la reducción de partículas **(TASK-007)** para garantizar que no se pierda la identidad artística.
-  - **Definir eventos de Analytics:** Trabajar con el Data Analyst para definir qué interacciones específicas (saltos, colisiones, near-misses) se deben medir en **TASK-015** para poder balancear el juego en la siguiente fase.
+  - **Definir eventos de Analytics:** Definir los eventos a instrumentar en **TASK-015** (ver [DATA_ANALYST_GAME_INSIGHTS.md](./DATA_ANALYST_GAME_INSIGHTS.md)) para qué interacciones específicas (saltos, colisiones, near-misses) se deben medir y poder balancear el juego en la siguiente fase.
 
 ### 🎯 FASE 2: RETENCIÓN (Diversión y Equidad)
 Esta es la fase **crítica** para Diseño. El objetivo es arreglar el core loop.
@@ -251,7 +253,7 @@ Esta es la fase **crítica** para Diseño. El objetivo es arreglar el core loop.
 - **Acciones de Diseño:**
   - **Diseñar Sistema de Checkpoints (TASK-017):** Definir la lógica, frecuencia y presentación de los checkpoints para eliminar la frustración por pérdida de progreso.
   - **Balancear Dificultad y Economía (TASK-019):** Rediseñar la curva de velocidad, el valor de las recompensas y el coste de los ítems para crear un ciclo de progresión justo y satisfactorio.
-  - **Diseñar Onboarding y UX (TASK-022):** Trabajar con el UX Specialist para crear un tutorial implícito y un HUD que comuniquen claramente las mecánicas del juego.
+  - **Diseñar Onboarding y UX (TASK-022):** Definir y aplicar mejoras de UX para crear un tutorial implícito y un HUD que comuniquen claramente las mecánicas del juego.
   - **Crear Patrones de Nivel (TASK-003):** Diseñar secuencias de obstáculos que creen un ritmo de tensión y respiro, en lugar de un caos constante.
 
 ### 🌟 FASE 3: EXPANSIÓN (Profundidad y Contenido)
@@ -267,6 +269,8 @@ Con una base estable y un loop divertido, el foco es añadir profundidad y rejug
 - **Prioridades Claras:** El foco del diseño está en la **Fase 2 (Retención)**, que depende directamente de la estabilidad que se logrará en la **Fase 1 (Fundación)**.
 - **Rol Definido:** El Game Designer supervisa la integridad de la experiencia durante la Fase 1, lidera la reconstrucción del core loop en la Fase 2, y expande el universo del juego en la Fase 3.
 
+> 📘 Más contexto general: [README.md](../README.md)
+
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
 Última sincronización automática: 2025-12-17
