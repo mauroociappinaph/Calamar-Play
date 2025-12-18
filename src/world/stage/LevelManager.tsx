@@ -158,8 +158,8 @@ const gameObjectPool = new ObjectPool<GameObject>(
         obj.hasFired = undefined;
         // reuse the same ID to avoid generating new UUIDs
     },
-    50, // Initial size
-    100 // Max size - reduced for performance
+    100, // Initial size - increased for denser spawning
+    200 // Max size - increased for denser spawning (5x closer obstacles)
 );
 
 export const LevelManager: React.FC = () => {
@@ -341,6 +341,31 @@ export const LevelManager: React.FC = () => {
         furthestZ = Math.min(...staticObjects.map(o => o.position[2]));
     } else {
         furthestZ = -100; // Initialize to trigger initial spawn
+    }
+
+    // CONTINUOUS SPAWN FALLBACK - Ensure no more than 0.4 meters without obstacles (5x closer)
+    const lastObstacleZ = staticObjects
+        .filter(o => o.type === ObjectType.OBSTACLE)
+        .reduce((maxZ, obj) => Math.max(maxZ, obj.position[2]), -1000);
+
+    const distanceSinceLastObstacle = playerPos.z - lastObstacleZ;
+
+    // If more than 0.4 meters since last obstacle, spawn one immediately (5x closer density)
+    if (distanceSinceLastObstacle > 0.4 && furthestZ < -SPAWN_DISTANCE) {
+        const spawnZ = Math.min(furthestZ - 2, -SPAWN_DISTANCE);
+        const lane = getRandomLane(laneCount);
+
+        const obj = gameObjectPool.acquire();
+        obj.type = ObjectType.OBSTACLE;
+        obj.position[0] = lane * LANE_WIDTH;
+        obj.position[2] = spawnZ;
+        obj.active = true;
+        obj.position[1] = OBSTACLE_HEIGHT / 2;
+        obj.color = '#8b4513';
+
+        keptObjects.push(obj);
+        console.log(`SPAWN FALLBACK: OBSTACLE at lane ${lane}, z=${obj.position[2].toFixed(1)}, gap=${distanceSinceLastObstacle.toFixed(1)}m, time=${Date.now()}`);
+        hasChanges = true;
     }
 
     // PATTERN-BASED SPAWNING (TASK-003)
