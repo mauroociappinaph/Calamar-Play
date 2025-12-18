@@ -1,5 +1,7 @@
 # TECHNICAL_DIRECTOR.md
 
+> 🧠 Documento de Dirección Técnica – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 ## 1. Diagnóstico ejecutivo en 10 líneas
 
 **Estado general:** Arquitectura Three.js/React funcional pero con deuda técnica crítica en performance móvil y escalabilidad - viable para MVP pero requiere optimizaciones antes de crecimiento.
@@ -7,10 +9,10 @@
 **3 cuellos de botella técnicos que afectan rendimiento o delivery:**
 1. **Object pooling ausente:** LevelManager crea/destruye objetos constantemente causando GC spikes (TASK-001 alta prioridad)
 2. **Memoización incompleta:** Geometrías se recrean en re-renders afectando 60fps estable (TASK-005)
-3. **PWA sin implementar:** Sin caching offline ni instalación nativa limita distribución (TASK-008)
+3. **CI/CD ausente:** sin gates automatizados aumenta el riesgo de regresiones y errores de integración (TASK-016)
 
 **3 riesgos de escalabilidad (contenido, usuarios, integraciones):**
-1. **Bundle size:** 250KB actual sin code splitting limita crecimiento de features
+1. **Bundle size:** presupuesto objetivo <500KB (ideal ~250KB); sin code splitting limita crecimiento
 2. **Estado global Zustand:** Sin validaciones permite bugs críticos en edge cases
 3. **Dependencias pesadas:** Three.js + React + Postprocessing sin tree-shaking óptimo
 
@@ -264,9 +266,7 @@ El rol del Director Técnico es garantizar la salud, escalabilidad y rendimiento
   - **Establecer Observabilidad:** Integrar **Analytics (TASK-015)** para las métricas de producto y un sistema de **Error Tracking** (ej. Sentry) para monitorear la salud del build en producción.
 - **Señal de Éxito:** Releases automáticos a staging, crash rate < 1%, y un dashboard de performance funcional.
 
----
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
-Última sincronización automática: 2025-12-17
+
 
 ### 🎯 FASE 2: RETENCIÓN (Arquitectura para Gameplay)
 **Objetivo Técnico:** Garantizar que la arquitectura soporte las nuevas mecánicas de juego de forma limpia y escalable, sin introducir nueva deuda técnica.
@@ -283,3 +283,9 @@ El rol del Director Técnico es garantizar la salud, escalabilidad y rendimiento
   - **Robustecer el Pipeline de Assets:** Trabajar con el Artista Técnico para automatizar la optimización y compresión de assets en el pipeline de CI/CD.
   - **Preparar para Integraciones:** Diseñar "adapters" y usar feature flags para futuras integraciones (líderes globales, login, monetización) de forma que no acoplen el core del juego a servicios de terceros.
 - **Señal de Éxito:** El sistema puede soportar el doble de contenido (patrones, enemigos) sin requerir un rediseño arquitectónico.
+
+> 📘 Más contexto general: [README.md](../README.md)
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
+Última sincronización automática: 2025-12-17
