@@ -343,15 +343,15 @@ export const LevelManager: React.FC = () => {
         furthestZ = -100; // Initialize to trigger initial spawn
     }
 
-    // CONTINUOUS SPAWN FALLBACK - Ensure no more than 0.4 meters without obstacles (5x closer)
+    // CONTINUOUS SPAWN FALLBACK - Ensure no more than 0.4 meters without obstacles (always active)
     const lastObstacleZ = staticObjects
         .filter(o => o.type === ObjectType.OBSTACLE)
         .reduce((maxZ, obj) => Math.max(maxZ, obj.position[2]), -1000);
 
     const distanceSinceLastObstacle = playerPos.z - lastObstacleZ;
 
-    // If more than 0.4 meters since last obstacle, spawn one immediately (5x closer density)
-    if (distanceSinceLastObstacle > 0.4 && furthestZ < -SPAWN_DISTANCE) {
+    // If more than 0.4 meters since last obstacle, spawn one immediately (continuous density)
+    if (distanceSinceLastObstacle > 0.4) {
         const spawnZ = Math.min(furthestZ - 2, -SPAWN_DISTANCE);
         const lane = getRandomLane(laneCount);
 
