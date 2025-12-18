@@ -245,7 +245,7 @@ El rol de diseño en esta fase es principalmente de **consulta y validación**.
 - **Acciones de Diseño:**
   - **Validar el "feel" del juego:** Jugar builds después de la implementación del **Fixed Timestep (TASK-020)** para confirmar que la sensación de control es consistente y predecible.
   - **Supervisar optimizaciones:** Revisar el impacto visual del **LOD (TASK-006)** y la reducción de partículas **(TASK-007)** para garantizar que no se pierda la identidad artística.
-  - **Definir eventos de Analytics:** Definir los eventos a instrumentar en **TASK-015** (ver [DATA_ANALYST_GAME_INSIGHTS.md](./DATA_ANALYST_GAME_INSIGHTS.md)) para qué interacciones específicas (saltos, colisiones, near-misses) se deben medir y poder balancear el juego en la siguiente fase.
+  - **Definir eventos de Analytics:** Definir los eventos a instrumentar en **TASK-015** (ver [DATA_ANALYST_GAME_INSIGHTS.md](./DATA_ANALYST_GAME_INSIGHTS.md)) para medir interacciones específicas (saltos, colisiones, near-misses) y poder balancear el juego en la siguiente fase.
 
 ### 🎯 FASE 2: RETENCIÓN (Diversión y Equidad)
 Esta es la fase **crítica** para Diseño. El objetivo es arreglar el core loop.

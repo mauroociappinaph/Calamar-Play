@@ -180,7 +180,7 @@ function gameLoop(currentTime) {
 - **Freeze frame:** Pause/resume con step frame por frame
 - **Input replay:** Record/playback input sequences para debugging
 
-## 9. Plan de Acción de Ingeniería de Gameplay (Alineado)
+## 9. Plan de Acción de Ingeniería de Gameplay (Alineado con TASK.MD)
 
 El rol del Ingeniero de Gameplay es crucial para traducir la visión de diseño en una experiencia jugable, estable y satisfactoria. El plan de acción se alinea con las fases estratégicas del `TASK.MD` unificado.
 

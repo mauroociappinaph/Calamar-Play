@@ -1,5 +1,7 @@
 # BUILD_ENGINEER_DEVOPS_GAMES.md
 
+> 🧰 Documento de Ingeniería de Build y DevOps – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 ## 1) Diagnóstico ejecutivo
 Estado actual de CI/CD: Build manual via npm run build, deploy automático Vercel desde main, sin staging explícito. Versionado semántico básico (0.0.0), ramas main/develop sin CI formal. 3 riesgos críticos: Sin rollback automático, assets no cacheados eficientemente, sin monitorización crash rate. 3 cuellos de botella: Tiempo de build, flakiness, falta de previews. 3 quick wins: Implementar GitHub Actions CI/CD con staging, agregar caching assets y rollback automático, configurar alerts crash rate >1%. Chequeo TASK: El plan unificado ahora prioriza la infraestructura de CI/CD y monitoreo. **TASK-016** se ha añadido como tarea de **alta prioridad** en la Fase 1 para construir el pipeline, y las tareas existentes de build (**TASK-009**) y PWA (**TASK-008**) se integran en las fases posteriores de optimización.
 
@@ -169,7 +171,7 @@ Dependabot: Recomendado para security updates.
 
 SAST: npm audit en CI gate.
 
-## 10. Plan de Acción de DevOps (Alineado con Roadmap Maestro)
+## 10. Plan de Acción de DevOps (Alineado con TASK.MD)
 
 El rol de Build/DevOps es crear y mantener las autopistas por las que el equipo desarrolla y entrega el software. El plan de acción se centra en la automatización, la seguridad y la fiabilidad.
 
@@ -191,7 +193,9 @@ El rol de Build/DevOps es crear y mantener las autopistas por las que el equipo 
 - **Acciones:**
   - **Documentación y Sistemas (TASK-023):** Formalizar los playbooks para la gestión de incidentes y mantenimiento del sistema.
 
+> 📘 Más contexto general: [README.md](../README.md)
+
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
 Última sincronización automática: 2025-12-17
 

@@ -2,7 +2,7 @@
 
 > 💰 Documento de Diseño de Economía – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
 
-1) Diagnóstico ejecutivo en 10 líneas
+## 1) Diagnóstico ejecutivo en 10 líneas
 Economía básica con score como moneda única, sin hard currency ni IAP. Fuentes limitadas (solo gemas 50-100 pts), sinks débiles (tienda post-nivel con items 1000-3000 pts). Inflación de velocidad lineal sin caps (5% por letra +30% por nivel). Grind alto para progresión (11 letras para level-up). Motivación extrínseca pobre: sin metas D0/D1, rewards fijos sin varianza. 3 riesgos: inflación sin control, grind monótono, falta de sinks recurrentes. 3 fricciones: costos shop altos vs earnings bajos, speed-up obliga reaprendizaje, sin checkpoints. 3 quick wins: agregar caps velocidad, sinks diarios/semanal, rewards variables por desempeño. **Chequeo TASK:** El diagnóstico es acertado. El nuevo plan unificado aborda estos huecos directamente: **TASK-015 (Analytics)**, que incluye la telemetría económica, es ahora una prioridad de **Fase 1**. El balance de la economía y la progresión se abordarán en **TASK-019 (Balance)**, una tarea clave de la **Fase 2**.
 
 ## 2) Loop económico y motivación del progreso
