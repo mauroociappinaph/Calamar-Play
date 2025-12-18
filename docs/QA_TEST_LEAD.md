@@ -59,6 +59,20 @@ Benchmarks mínimos: FPS p95 >50 móvil / >55 desktop; long tasks <100ms count <
 | Load time | <3s TTI | Lighthouse | Build | Sí (>3s = block) |
 | JS errors | 0 por sesión | Console logs | E2E | Sí (>0 = fail) |
 
+### 6.2 Guía de Ejecución de Benchmarks (TASK-011)
+El sistema de benchmarks permite detectar regresiones de performance mediante métricas estandarizadas en cada Build/PR.
+
+**Pipeline de Medición:**
+1. **Instrumentación (Code side):** Uso de `performance.mark()` y `performance.measure()` en el core loop para medir latencia de frames y tiempo de CPU por sistema (Physics vs Render).
+2. **Extracción (Automated):** Utilizar `Playwright` o `Puppeteer` para navegar al juego en modo headless, ejecutar una sesión controlada de 30s de gameplay simulado, y extraer las métricas de `window.performance`.
+3. **Thresholds de Auditoría:**
+   - `FPS_MEAN`: < 55 -> Error
+   - `FPS_P95`: < 50 -> Error
+   - `JS_HEAP_DELTA`: > 10MB -> Warning / Error (leak detectado)
+
+**Comando de ejecución:**
+`npm run test:perf` (Ejecuta el script de benchmark y genera un reporte JSON para el CI).
+
 ## 7) Métricas de estabilidad y calidad
 Crash-free sessions: >95%; error rate JS exceptions <0.1%; ANR/long task rate <5%; bug escape rate <10% (pre-prod vs prod); flakiness rate tests <5%; MTTR <4h. Instrumentación: error tracking (Sentry), logging (console.error + custom events), performance monitoring (Web Vitals).
 

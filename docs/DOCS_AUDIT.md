@@ -11,6 +11,10 @@
 | `docs/TASK.MD` | **Fuente de Verdad**. Backlog, fases y métricas. | Global | ✅ OK |
 | `docs/PROJECT_STRUCTURE.md` | Arquitectura objetivo (SRP/DRY/Barrels). | Global | ✅ OK |
 | `docs/AI_SPEC.md` | Spec IA Ligera (DDA, TF.js, Presupuestos). | TASK-024 | ✅ OK |
+| `docs/AUDIO_SPEC.md` | Spec de Audio (Música, SFX, Desbloqueo). | TASK-002 | ✅ OK |
+| `docs/STORE_API.md` | API del Store global (Zustand, Slices). | TASK-012 | ✅ OK |
+| `docs/LEADERBOARD_SPEC.md` | Spec del Sistema de Leaderboard local/global. | TASK-014 | ✅ OK |
+| `CONTRIBUTING.md` | Guía de contribución y estándares de código. | TASK-013 | ✅ OK |
 | `docs/GAMEPLAY_ENGINEER.md` | Especificación de loop, input y físicas. | TASK-020, TASK-001, TASK-004 | ✅ OK |
 | `docs/QA_TEST_LEAD.md` | Estrategia de testing y aseguramiento. | TASK-010, TASK-011, TASK-016 | ✅ OK |
 | `docs/TECHNICAL_DIRECTOR.md` | Roadmap técnico, budgets y escalabilidad. | TASK-001, 005, 006, 016, 018 | ✅ OK |
@@ -29,7 +33,7 @@
 | TASK ID | Nombre | Doc Principal de Spec | Estado Spec |
 | :--- | :--- | :--- | :--- |
 | **TASK-001** | Object Pooling | `docs/GAMEPLAY_ENGINEER.md` | ✅ OK |
-| **TASK-002** | Sistema de Audio | `docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md` | ⚠️ Mínimo |
+| **TASK-002** | Sistema de Audio | `docs/AUDIO_SPEC.md` | ✅ OK |
 | **TASK-003** | Patrones de Nivel | `docs/LEAD_GAME_DESIGNER.md` | ✅ OK |
 | **TASK-004** | Haptic Feedback | `docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md` | ✅ OK |
 | **TASK-005** | Optimizar Geometrías | `docs/TECHNICAL_DIRECTOR.md` | ✅ OK |
@@ -39,9 +43,9 @@
 | **TASK-009** | Build Optimizado | `docs/TECHNICAL_DIRECTOR.md` | ✅ OK |
 | **TASK-010** | Infraestructura Testing | `docs/QA_TEST_LEAD.md` | ✅ OK |
 | **TASK-011** | Benchmarks Performance | `docs/QA_TEST_LEAD.md` | ✅ OK |
-| **TASK-012** | Documentar API Store | `docs/STORE_API.md` (Pendiente) | ⚠️ Pendiente |
-| **TASK-013** | Guía de Contribución | `CONTRIBUTING.md` (Pendiente) | ⚠️ Pendiente |
-| **TASK-014** | Leaderboard | `docs/COMMUNITY_MANAGER_TECH.md` | ⚠️ Mínimo |
+| **TASK-012** | Documentar API Store | `docs/STORE_API.md` | ✅ OK |
+| **TASK-013** | Guía de Contribución | `CONTRIBUTING.md` | ✅ OK |
+| **TASK-014** | Leaderboard | `docs/LEADERBOARD_SPEC.md` | ✅ OK |
 | **TASK-015** | Analytics y Telemetría | `docs/DATA_ANALYST_GAME_INSIGHTS.md` | ✅ OK |
 | **TASK-016** | CI/CD | `docs/BUILD_ENGINEER_DEVOPS_GAMES.md` | ✅ OK |
 | **TASK-017** | Sistema Checkpoints | `docs/LEAD_GAME_DESIGNER.md` | ✅ OK |
@@ -62,16 +66,17 @@
 - Generación de `docs/AI_SPEC.md` para la especificación técnica de la IA (TASK-024).
 - Normalización de `docs/AI_SPEC.md` (bundle realista, dependencias y footer unificado).
 - Actualización de `docs/TECHNICAL_DIRECTOR.md` con especificaciones de FSM (TASK-018) y Budgets técnicos.
-- Actualización de `docs/QA_TEST_LEAD.md` con estrategia de Testing (TASK-010).
+- Actualización de `docs/QA_TEST_LEAD.md` con estrategia de Testing (TASK-010) y Guía de Benchmarks (TASK-011).
+- Implementación de `docs/AUDIO_SPEC.md` (TASK-002), `docs/STORE_API.md` (TASK-012) y `docs/LEADERBOARD_SPEC.md` (TASK-014).
+- Creación de `CONTRIBUTING.md` (TASK-013) en la raíz del proyecto.
 
 ---
 
 ## 4. Pendientes Recomendados (Siguiente Ciclo)
 
-1. **Audio Spec Detallado (TASK-002):** Crear un documento dedicado a la mezcla, políticas de desbloqueo y assets de audio.
-2. **API Docs Store (TASK-012):** Crear `docs/STORE_API.md` para documentar la estructura del Store una vez comience el refactor.
-3. **Guía de Contribución (TASK-013):** Crear `CONTRIBUTING.md` con los estándares de branch naming, commits y flujo de PRs.
-4. **Benchmarks implementation guide (TASK-011):** Detallar los scripts específicos de medición dentro de `docs/QA_TEST_LEAD.md`.
+1. **Implementación de Benchmarks (TASK-011):** Iniciar la codificación de los scripts de Playwright/Puppeteer.
+2. **Refactor de Store (TASK-012):** Ejecutar la migración a Slices según `docs/STORE_API.md`.
+3. **PWA Assets (TASK-008):** Generar iconos y manifest una vez se finalice el branding.
 
 ---
 🔗 Referencia principal: [TASK.MD](./TASK.MD) | [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
