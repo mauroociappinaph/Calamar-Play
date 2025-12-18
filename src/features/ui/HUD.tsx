@@ -63,7 +63,7 @@ const ShopScreen: React.FC = () => {
              <div className="flex flex-col items-center justify-center min-h-full py-8 px-4">
                  <h2 className="text-3xl md:text-4xl font-black text-yellow-400 mb-2 font-cyber tracking-widest text-center">TIENDA PLAYERA</h2>
                  <div className="flex items-center text-white mb-6 md:mb-8">
-                     <span className="text-base md:text-lg mr-2">PERLAS DISPONIBLES:</span>
+                     <span className="text-base md:text-lg mr-2">CERVEZAS DISPONIBLES:</span>
                      <span className="text-xl md:text-2xl font-bold">{score.toLocaleString()}</span>
                  </div>
 
@@ -102,7 +102,7 @@ const ShopScreen: React.FC = () => {
 };
 
 export const HUD: React.FC = () => {
-  const { score, lives, maxLives, collectedLetters, status, level, restartGame, restartFromCheckpoint, startGame, gemsCollected, distance, isImmortalityActive, speed, hasCheckpoint } = useStore();
+  const { score, lives, maxLives, collectedLetters, status, level, restartGame, restartFromCheckpoint, startGame, beersCollected, distance, isImmortalityActive, speed, hasCheckpoint } = useStore();
   const target = ['C', 'A', 'L', 'A', 'M', 'A', 'R', 'L', 'O', 'C', 'O'];
   const [checkpointMessage, setCheckpointMessage] = useState<string | null>(null);
 
@@ -174,8 +174,8 @@ export const HUD: React.FC = () => {
                         <div className="text-xl md:text-2xl font-bold font-mono">{level} / 3</div>
                     </div>
                     <div className="bg-white/10 p-3 md:p-4 rounded-lg border border-white/10 flex items-center justify-between">
-                        <div className="flex items-center text-cyan-400 text-sm md:text-base"><Diamond className="mr-2 w-4 h-4 md:w-5 md:h-5"/> PERLAS</div>
-                        <div className="text-xl md:text-2xl font-bold font-mono">{gemsCollected}</div>
+                        <div className="flex items-center text-cyan-400 text-sm md:text-base"><Diamond className="mr-2 w-4 h-4 md:w-5 md:h-5"/> CERVEZAS</div>
+                        <div className="text-xl md:text-2xl font-bold font-mono">{beersCollected}</div>
                     </div>
                     <div className="bg-white/10 p-3 md:p-4 rounded-lg border border-white/10 flex items-center justify-between">
                         <div className="flex items-center text-purple-400 text-sm md:text-base"><MapPin className="mr-2 w-4 h-4 md:w-5 md:h-5"/> DISTANCIA</div>
@@ -247,7 +247,7 @@ export const HUD: React.FC = () => {
                     {score.toLocaleString()}
                 </div>
                 <div className="text-sm md:text-lg text-yellow-400 font-mono">
-                    PERLAS
+                    CERVEZAS
                 </div>
             </div>
 

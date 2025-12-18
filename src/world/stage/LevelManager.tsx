@@ -161,6 +161,7 @@ export const LevelManager: React.FC = () => {
     status,
     speed,
     collectGem,
+    collectBeer,
     collectLetter,
     collectedLetters,
     laneCount,
@@ -287,6 +288,10 @@ export const LevelManager: React.FC = () => {
                                 collectGem(obj.points || 50);
                                 audioEvents.playGemCollect();
                             }
+                            if (obj.type === ObjectType.BEER) {
+                                collectBeer(obj.points || 50);
+                                audioEvents.playGemCollect(); // TODO: Change to beer_collect when sound is added
+                            }
                             if (obj.type === ObjectType.LETTER && obj.targetIndex !== undefined) {
                                 collectLetter(obj.targetIndex);
                                 audioEvents.playLetterCollect();
@@ -360,7 +365,7 @@ export const LevelManager: React.FC = () => {
             } else if (spawn.type === ObjectType.MISSILE) {
                 obj.position[1] = 1.0;
                 obj.color = '#ffffff';
-            } else if (spawn.type === ObjectType.GEM) {
+            } else if (spawn.type === ObjectType.GEM || spawn.type === ObjectType.BEER) {
                 obj.position[1] = 1.2;
                 obj.color = '#ffffff';
                 obj.points = 50;
@@ -563,7 +568,7 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
 
     const shadowGeo = useMemo(() => {
         if (data.type === ObjectType.LETTER) return SHADOW_LETTER_GEO;
-        if (data.type === ObjectType.GEM) return SHADOW_GEM_GEO;
+        if (data.type === ObjectType.GEM || data.type === ObjectType.BEER) return SHADOW_GEM_GEO;
         if (data.type === ObjectType.SHOP_PORTAL) return null;
         if (data.type === ObjectType.ALIEN) return SHADOW_ALIEN_GEO;
         return SHADOW_DEFAULT_GEO;
@@ -627,6 +632,17 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
                             color="#ffffff"
                             roughness={0.2}
                             metalness={0.8}
+                        />
+                    </mesh>
+                )}
+
+                {/* --- BEER --- */}
+                {data.type === ObjectType.BEER && (
+                    <mesh castShadow geometry={GEMINI_TARGET_INDEX_GEO || GEM_GEOMETRY}>
+                        <meshStandardMaterial
+                            color="#ffdd44"
+                            roughness={0.3}
+                            metalness={0.2}
                         />
                     </mesh>
                 )}

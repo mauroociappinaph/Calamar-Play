@@ -163,7 +163,7 @@ describe('Level Patterns System (TASK-003)', () => {
       const sortedSpawns = [...pattern.spawns].sort((a, b) => a.zOffset - b.zOffset);
 
       // First spawn should be at reasonable distance
-      expect(sortedSpawns[0].zOffset).toBeGreaterThanOrEqual(8);
+      expect(sortedSpawns[0].zOffset).toBeGreaterThanOrEqual(6);
       expect(sortedSpawns[0].zOffset).toBeLessThanOrEqual(15);
 
       // Check that spawns are spaced reasonably (only for non-same-position spawns)
@@ -175,5 +175,55 @@ describe('Level Patterns System (TASK-003)', () => {
         }
       }
     });
+  });
+
+  it('should validate obstacle density (density requirement)', () => {
+    const allPatterns = patternManager.getAllPatterns();
+
+    allPatterns.forEach(pattern => {
+      // Get obstacle spawns grouped by zOffset to check clustering
+      const obstacleByZ = new Map<number, number>();
+
+      pattern.spawns
+        .filter(s => s.type === 'OBSTACLE')
+        .forEach(spawn => {
+          obstacleByZ.set(spawn.zOffset, (obstacleByZ.get(spawn.zOffset) || 0) + 1);
+        });
+
+      // Check that no single z-position has too many obstacles (max 2 per z-level)
+      obstacleByZ.forEach((count, z) => {
+        expect(count).toBeLessThanOrEqual(2);
+      });
+
+      // Check that obstacles are reasonably spaced (at least 2 units apart)
+      const zOffsets = Array.from(obstacleByZ.keys()).sort((a, b) => a - b);
+      for (let i = 1; i < zOffsets.length; i++) {
+        const gap = zOffsets[i] - zOffsets[i-1];
+        expect(gap).toBeGreaterThanOrEqual(2); // Minimum 2 units between obstacle groups
+        expect(gap).toBeLessThanOrEqual(20); // Maximum 20 units between obstacle groups
+      }
+    });
+  });
+
+  it('should use BEER instead of GEM in patterns', () => {
+    const allPatterns = patternManager.getAllPatterns();
+
+    // Check that no GEM spawns exist
+    allPatterns.forEach(pattern => {
+      const gemSpawns = pattern.spawns.filter(s => s.type === 'GEM');
+      expect(gemSpawns.length).toBe(0);
+
+      // Check that BEER spawns exist in appropriate patterns
+      const beerSpawns = pattern.spawns.filter(s => s.type === 'BEER');
+      if (pattern.type === 'RESPITE') {
+        expect(beerSpawns.length).toBeGreaterThan(0); // Respite patterns should have beers
+      }
+    });
+  });
+
+  it('should have updated pattern names for beer theme', () => {
+    const respitePatterns = patternManager.getPatternsByType('RESPITE');
+    const hasBonanzaPattern = respitePatterns.some(p => p.name.includes('Cervezas'));
+    expect(hasBonanzaPattern).toBe(true);
   });
 });

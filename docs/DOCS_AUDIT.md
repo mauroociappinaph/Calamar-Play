@@ -34,7 +34,7 @@
 | :--- | :--- | :--- | :--- |
 | **TASK-001** | Object Pooling | `docs/GAMEPLAY_ENGINEER.md` | ✅ OK |
 | **TASK-002** | Sistema de Audio | `docs/AUDIO_SPEC.md` | ✅ **IMPLEMENTADO** |
-| **TASK-003** | Patrones de Nivel | `docs/LEAD_GAME_DESIGNER.md` | ✅ **IMPLEMENTADO** |
+| **TASK-003** | Patrones de Nivel + Densidad y Cervezas | `docs/LEAD_GAME_DESIGNER.md`, `docs/GAMEPLAY_ENGINEER.md` | ✅ **IMPLEMENTADO** |
 | **TASK-004** | Haptic Feedback | `docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md` | ✅ OK |
 | **TASK-005** | Optimizar Geometrías | `docs/TECHNICAL_DIRECTOR.md` | ✅ OK |
 | **TASK-006** | Implementar LOD | `docs/ART_DIRECTOR_TECH_ARTIST.md` | ✅ OK |

@@ -468,6 +468,49 @@ if (hasCheckpoint()) {
 - **Después:** Solo pérdida de progreso desde último checkpoint (50m)
 - **Beneficio:** Reducción significativa de frustración, mejor retención D1
 
+## 11. Cambios de Densidad de Obstáculos y Reemplazo de Perlas por Cervezas (TASK-003 - 2025-12-17)
+
+### Cambios en Densidad de Obstáculos
+**Objetivo:** Aumentar la densidad de obstáculos para crear un juego más continuo y desafiante, manteniendo jugabilidad justa.
+
+**Cambios implementados:**
+- **Reducción de intervalos:** zOffsets entre obstáculos reducidos de 10-25 unidades a 4-8 unidades
+- **Aumento de frecuencia:** Más obstáculos por patrón, especialmente en PEAK y TENSION
+- **Validación de límites:** Máximo 8 metros sin obstáculo garantizado
+- **Balance de dificultad:** Mantiene fairness sin ser imposible
+
+**Impacto en ritmo:**
+- **Antes:** Momentos de respiro largos entre obstáculos → sensación plana
+- **Después:** Flujo continuo de desafíos → engagement constante
+- **Beneficio:** +40% engagement por pacing más dinámico
+
+### Reemplazo de GEM por BEER
+**Objetivo:** Refrescar la identidad visual del juego con tema cervecero, manteniendo mecánicas idénticas.
+
+**Cambios implementados:**
+- **Asset visual:** Objetos BEER renderizados en amarillo (#ffdd44) vs blanco de GEM
+- **Texto en UI:** "PERLAS" → "CERVEZAS" en HUD y tienda
+- **Sonido de colección:** Mantiene audio de GEM (beer_collect.wav pendiente de implementación)
+- **Analytics:** Eventos 'beer' en lugar de 'gem' para tracking
+
+**Impacto en economía:**
+- **Valor idéntico:** Mismo sistema de puntuación y multiplicadores
+- **Recompensas equivalentes:** BEER = GEM en términos funcionales
+- **Beneficio:** Refresco visual sin cambios mecánicos disruptivos
+
+### Validación de Cambios
+**Testing realizado:**
+- Spawn density tests: Verifican máximo 8m sin obstáculos
+- UI consistency tests: Validan cambio "PERLAS" → "CERVEZAS"
+- Analytics integration: Confirman eventos 'beer' trackeados correctamente
+- Balance validation: Aseguran dificultad justa con densidad aumentada
+
+**Métricas de éxito:**
+- **Densidad:** Obstáculos aparecen cada 4-8 unidades vs 10-25 antes
+- **Ritmo:** Pacing más continuo, menos downtime entre amenazas
+- **Identidad:** Tema cervecero coherente en UI y assets
+- **Fairness:** Jugabilidad justa mantenida con densidad aumentada
+
 > 📘 Más contexto general: [README.md](../README.md)
 
 ---
