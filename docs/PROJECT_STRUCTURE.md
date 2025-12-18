@@ -28,7 +28,7 @@ Actualmente, el proyecto presenta una estructura simplificada con lógica disper
 
 - `components/World/` → `src/world/`
 - `components/UI/` → `src/features/ui/` (o `src/shared/components/` para componentes atómicos)
-- `components/System/Audio.ts` → `src/systems/audio/` (lógica pura tipo engine para manejo de sonidos)
+- `components/System/Audio.ts` → `src/systems/audio/` (scheduler/engine de audio sin React; integra Web Audio API y assets)
 
 ---
 
@@ -124,6 +124,7 @@ Para evitar el "acoplamiento spaghetti" y asegurar una API limpia por módulo:
 // Exportaciones explícitas (API Pública)
 export { GameLoop } from './components/GameLoop';
 export { useGameState } from './hooks/useGameState';
+// Nota: state/ contiene sus propios types (ej. types.ts) y solo se exponen vía public.ts
 export type { GameStatus } from './state/types';
 ```
 
