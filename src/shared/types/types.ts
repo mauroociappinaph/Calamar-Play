@@ -64,3 +64,30 @@ export interface ShopItem {
     icon: any; // Lucide icon component
     oneTime?: boolean; // If true, remove from pool after buying
 }
+
+// AI System Types
+export enum DifficultyTier {
+  RELAX = 'RELAX',
+  FLOW = 'FLOW',
+  HARDCORE = 'HARDCORE'
+}
+
+export interface AIMetrics {
+  deaths: number;
+  score: number;
+  sessionLength: number; // in seconds
+  reactionTime: number; // average reaction time in ms
+  distance: number;
+  currentSpeed: number;
+  obstacleDensity: number;
+  timestamp: number;
+}
+
+export interface AIState {
+  confidence: number; // 0-100
+  currentTier: DifficultyTier;
+  difficultyMultiplier: number; // 0.5-2.0
+  isUsingHeuristics: boolean;
+  isUsingNeural: boolean;
+  lastAdjustment: number; // timestamp
+}

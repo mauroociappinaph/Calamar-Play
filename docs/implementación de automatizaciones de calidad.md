@@ -6,7 +6,7 @@
 > **Prioridad:** 🔴 Alta (Bloquea calidad de código y escalabilidad)
 > **Timeline Estimado:** 2-3 sprints (1 semana por automatización)
 > **Propietario:** QA Engineer & DevOps Lead
-> **Referencias:** [QA_TEST_LEAD.md](./docs/QA_TEST_LEAD.md), [BUILD_ENGINEER_DEVOPS_GAMES.md](./docs/BUILD_ENGINEER_DEVOPS_GAMES.md), [TECHNICAL_DIRECTOR.md](./docs/TECHNICAL_DIRECTOR.md)
+> **Referencias:** [QA_TEST_LEAD.md](./QA_TEST_LEAD.md), [BUILD_ENGINEER_DEVOPS_GAMES.md](./BUILD_ENGINEER_DEVOPS_GAMES.md), [TECHNICAL_DIRECTOR.md](./TECHNICAL_DIRECTOR.md)
 
 ---
 
@@ -321,10 +321,10 @@
 
 ## 📚 **Referencias y Recursos**
 
-- **Especificaciones:** [QA_TEST_LEAD.md](./docs/QA_TEST_LEAD.md)
-- **CI/CD:** [BUILD_ENGINEER_DEVOPS_GAMES.md](./docs/BUILD_ENGINEER_DEVOPS_GAMES.md)
-- **Arquitectura:** [TECHNICAL_DIRECTOR.md](./docs/TECHNICAL_DIRECTOR.md)
-- **Documentación:** [CONTRIBUTING.md](./CONTRIBUTING.md)
+- **Especificaciones:** [QA_TEST_LEAD.md](./QA_TEST_LEAD.md)
+- **CI/CD:** [BUILD_ENGINEER_DEVOPS_GAMES.md](./BUILD_ENGINEER_DEVOPS_GAMES.md)
+- **Arquitectura:** [TECHNICAL_DIRECTOR.md](./TECHNICAL_DIRECTOR.md)
+- **Documentación:** [CONTRIBUTING.md](../CONTRIBUTING.md)
 
 ---
 *Checklist generado automáticamente el 18/12/2025. Actualizar estado de checkboxes según progreso de implementación.*

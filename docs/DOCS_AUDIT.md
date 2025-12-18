@@ -55,7 +55,7 @@
 | **TASK-021** | Sistema de Combate | `docs/LEAD_GAME_DESIGNER.md` | ✅ OK |
 | **TASK-022** | Onboarding y UX | `docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md` | ✅ OK |
 | **TASK-023** | Docs Unificado | `docs/TECHNICAL_WRITER_DOCUMENTATION_LEAD.md` | ✅ OK |
-| **TASK-024** | IA Ligera | `docs/AI_SPEC.md` | ✅ OK |
+| **TASK-024** | IA Ligera | `docs/AI_SPEC.md` | ✅ **IMPLEMENTADO** |
 
 ---
 

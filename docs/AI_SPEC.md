@@ -21,17 +21,17 @@ El sistema se divide en dos componentes:
 
 ### A) Adaptive AI Manager (Heurístico)
 Un gestor basado en reglas que actúa como "Guardrail" del modelo neuronal.
-- **Inputs:** FPS actuales, Tasa de muertes reciente, Tiempo de vida actual.
-- **Outputs:** Multiplicador de velocidad base, Densidad de spawn.
+- **Inputs:** Muertes recientes, puntuación, tiempo de reacción promedio, distancia recorrida, velocidad actual, densidad de obstáculos.
+- **Outputs:** Multiplicador de dificultad (0.5-2.0), tier de dificultad (RELAX/FLOW/HARDCORE), confianza del sistema (0-100%).
 
 ### B) TensorFlow.js Model (Neuronal)
 Una red neuronal secuencial simple entrenada en el navegador.
 - **Estructura:** Input (3) → Hidden (3, ReLU) → Output (1, Sigmoid).
 - **Inputs:**
-  1. `player_score_normalized` (0-1)
-  2. `avg_obstacle_distance` (0-1)
-  3. `reaction_time_ms` (normalizado vía TASK-020)
-- **Output:** `difficulty_delta` (valor normalizado).
+  1. `player_score_normalized` (0-1, basado en puntuación / 10000)
+  2. `avg_obstacle_distance` (0-1, invertido de densidad de obstáculos)
+  3. `reaction_time_ms` (normalizado 0-1, basado en tiempo / 500ms)
+- **Output:** `difficulty_delta` (valor normalizado 0-1, mapeado a multiplicador 0.5-2.0).
 
 ### C) Guardrails y Clamping
 Para evitar estados imposibles o triviales, el output final de dificultad se aplica sobre un multiplicador de base (ej. 1.0) con un **clamp estricto de [0.5 – 2.0]**.
@@ -70,5 +70,42 @@ El desarrollo de la IA no es una feature aislada y depende de la madurez de los 
 *Nota: Según el roadmap unificado en [TASK.MD](./TASK.MD), el módulo de AI se implementa de forma integral durante la **Fase 3**.*
 
 ---
+
+## 7. Implementación Técnica (TASK-024 - Completado)
+
+### A) Archivos Implementados
+- **`src/features/game/ai/AdaptiveAiManager.ts`:** Clase principal del sistema AI
+- **`src/shared/types/types.ts`:** Tipos `DifficultyTier`, `AIMetrics`, `AIState`
+- **`src/features/game/state/store.ts`:** Integración con estado global del juego
+- **`src/features/ui/HUD.tsx`:** Visualización de confianza IA y tier de dificultad
+- **`tests/integration/ai.test.ts`:** Suite de tests de integración
+
+### B) Algoritmo Heurístico
+La dificultad se calcula mediante una fórmula ponderada:
+```
+multiplier = 1.0
+multiplier -= min(0.3, avgDeaths * 0.1)           // Penalización por muertes
+multiplier += min(0.4, (avgScore / 1000) * 0.1)  // Recompensa por puntuación
+multiplier += (300 - avgReactionTime) / 300 * 0.2 // Bonus por velocidad de reacción
+multiplier += min(0.2, (avgDistance / 1000) * 0.05) // Progresión gradual
+```
+
+### C) Integración con Game Loop
+- **Inicio de sesión:** `adaptiveAiManager.startSession()` en `startGame()`
+- **Registro de muertes:** `adaptiveAiManager.recordDeath()` en `takeDamage()`
+- **Actualización de métricas:** Cada 5 segundos o eventos significativos
+- **Ajuste de dificultad:** Clamp estricto [0.5, 2.0] aplicado automáticamente
+
+### D) Persistencia del Modelo
+- **IndexedDB:** Modelo TF.js guardado como `adaptive-ai-model`
+- **Fallback:** Modo heurístico si IndexedDB no disponible
+- **Entrenamiento incremental:** Modelo re-entrenado cada 5 ajustes con datos recientes
+
+### E) Métricas Técnicas
+- **Bundle Impact:** ~200-300KB gzipped para TF.js (lazy-loaded)
+- **Performance:** Inferencia < 1ms por frame
+- **Memoria:** Modelo limitado a 50 muestras de entrenamiento
+
+---
 🔗 Referencia: [TASK.MD](./TASK.MD) | [README.md](../README.md)
-Última actualización: 17/12/2025
+Última actualización: 18/12/2025

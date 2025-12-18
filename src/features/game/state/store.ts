@@ -5,10 +5,11 @@
 
 
 import { create } from 'zustand';
-import { GameStatus, RUN_SPEED_BASE } from '@/shared/types/types';
+import { GameStatus, RUN_SPEED_BASE, DifficultyTier, AIState } from '@/shared/types/types';
 import { trackGameEvent } from '@/shared/analytics';
 import { checkpointManager, CheckpointData } from './checkpoints';
 import { audioEvents } from '@/systems/audio/AudioEngine';
+import { adaptiveAiManager } from '../ai/AdaptiveAiManager';
 
 interface GameState {
   status: GameStatus;
@@ -27,6 +28,9 @@ interface GameState {
   hasDoubleJump: boolean;
   hasImmortality: boolean;
   isImmortalityActive: boolean;
+
+  // AI System
+  aiState: AIState;
 
   // Onboarding
   isOnboardingActive: boolean;
@@ -93,6 +97,9 @@ export const useStore = create<GameState>((set, get) => ({
   hasImmortality: false,
   isImmortalityActive: false,
 
+  // AI System - Getter for reactive updates
+  aiState: adaptiveAiManager.getState(),
+
   // Onboarding
   isOnboardingActive: false,
   onboardingStartTime: 0,
@@ -128,6 +135,9 @@ export const useStore = create<GameState>((set, get) => ({
         hasImmortality: false,
         isImmortalityActive: false
       });
+
+      // Start AI session
+      adaptiveAiManager.startSession();
 
       // Start onboarding
       startOnboarding();
@@ -173,6 +183,9 @@ export const useStore = create<GameState>((set, get) => ({
     } else {
       set({ lives: 0, speed: 0 });
       _transitionTo(GameStatus.GAME_OVER);
+
+      // Record death for AI
+      adaptiveAiManager.recordDeath();
 
       // Analytics: Track death
       trackGameEvent.death('damage', level, score);

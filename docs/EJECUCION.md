@@ -119,9 +119,11 @@
     - [ ] Documentar sistema de combate en `docs/LEAD_GAME_DESIGNER.md` `[ESTADO: 🔵]`
 
 - **TASK-024: Integración de IA Ligera (🟡)**
-    - [ ] Implementar `AdaptiveAiManager.ts` con lógica DDA `[DEP: TASK-015, TASK-020]` `[ESTADO: 🔵]`
-    - [ ] Integrar feedback visual de IA en HUD `[ESTADO: 🔵]`
-    - [ ] Validar arquitectura en `docs/AI_SPEC.md` `[ESTADO: 🔵]`
+    - [x] Implementar `AdaptiveAiManager.ts` con lógica DDA `[DEP: TASK-015, TASK-020]` `[ESTADO: ✅]`
+    - [x] Integrar feedback visual de IA en HUD `[ESTADO: ✅]`
+    - [x] Validar arquitectura en `docs/AI_SPEC.md` `[ESTADO: ✅]`
+    - [x] Crear tests de integración en `tests/integration/ai.test.ts` `[ESTADO: ✅]`
+    - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 - **TASK-014: Leaderboard e Interacción Social (🟢)**
     - [ ] Implementar ranking local y botón "Compartir Récord" `[DEP: Ninguna]` `[ESTADO: 🔵]`

@@ -102,7 +102,7 @@ const ShopScreen: React.FC = () => {
 };
 
 export const HUD: React.FC = () => {
-  const { score, lives, maxLives, collectedLetters, status, level, restartGame, restartFromCheckpoint, startGame, beersCollected, distance, isImmortalityActive, speed, hasCheckpoint } = useStore();
+  const { score, lives, maxLives, collectedLetters, status, level, restartGame, restartFromCheckpoint, startGame, beersCollected, distance, isImmortalityActive, speed, hasCheckpoint, aiState } = useStore();
   const target = ['C', 'A', 'L', 'A', 'M', 'A', 'R', 'L', 'O', 'C', 'O'];
   const [checkpointMessage, setCheckpointMessage] = useState<string | null>(null);
 
@@ -308,6 +308,34 @@ export const HUD: React.FC = () => {
                             </div>
                         );
                     })}
+                </div>
+            </div>
+        </div>
+
+        {/* AI Status Bar */}
+        <div className="absolute bottom-20 left-4 right-4 md:left-8 md:right-8">
+            <div className="bg-black/60 rounded-lg px-3 py-2 backdrop-blur-sm border border-white/20">
+                <div className="flex items-center justify-between mb-1">
+                    <div className="text-xs md:text-sm text-white/80 font-mono flex items-center">
+                        <Activity className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                        IA CONFIDENCE
+                    </div>
+                    <div className={`text-xs md:text-sm font-bold px-2 py-0.5 rounded ${
+                        aiState.currentTier === 'RELAX' ? 'bg-green-500/80 text-white' :
+                        aiState.currentTier === 'FLOW' ? 'bg-blue-500/80 text-white' :
+                        'bg-red-500/80 text-white'
+                    }`}>
+                        {aiState.currentTier}
+                    </div>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div
+                        className="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${aiState.confidence}%` }}
+                    ></div>
+                </div>
+                <div className="text-right text-xs text-white/60 font-mono mt-0.5">
+                    {Math.round(aiState.confidence)}%
                 </div>
             </div>
         </div>
