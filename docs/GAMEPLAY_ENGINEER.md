@@ -128,14 +128,15 @@ console.log('POOL RELEASE:', gameObjectPool.getStats(), 'obj id:', obj.id, 'acti
 - **Validación de límites:** Máximo 2 metros sin obstáculo garantizado por patrones de alta densidad
 - **Balance de dificultad:** Mantiene jugabilidad justa sin ser imposible
 
-**Ajustes de Ultra-Densidad (2025-12-18 - Always Active Fallback):**
-- **Intervalos ultra-reducidos a 0.4 metros:** Máximo 0.4 metros entre obstáculos (5x más cercano)
-- **Spawn cada 0.13-0.15 segundos:** A velocidad de 30 unidades/segundo, obstáculos aparecen continuamente
-- **Pool de objetos expandido:** Capacidad aumentada a 200 objetos para densidad extrema
-- **Logging detallado de spawn:** Consola registra cada spawn con timestamp, posición y distancia desde último obstáculo
-- **Test de integración:** Simulación de 100 metros verifica nunca más de 0.5 metros sin obstáculo
-- **Validación de densidad:** Máximo gap garantizado de 0.4 metros para flujo continuo extremo
-- **Fallback siempre activo:** Sin restricción de `furthestZ < -SPAWN_DISTANCE` para spawn continuo garantizado
+**Ajustes de Densidad Balanceada (2025-12-18 - Lane Alternation + Respite):**
+- **Intervalos balanceados a 1.2 metros:** Obstáculos aparecen cada 1-1.5 metros para desafío jugable
+- **Spawn cada 0.04 segundos:** A velocidad de 30 unidades/segundo, ritmo desafiante pero justo
+- **Pool de objetos expandido:** Capacidad aumentada a 200 objetos para densidad balanceada
+- **Lane alternation:** Patrón [true, false, true] para 3 lanes, 60% probabilidad random para más lanes
+- **Momentos de respiro:** Cada 10-15 metros, 3-4 metros sin obstáculos para recuperación
+- **Validación de jugabilidad:** Nunca menos de 1 metro entre obstáculos, siempre al menos un lane libre
+- **Logging detallado:** Registra lanes spawneados, distancia recorrida y momentos de respiro
+- **Test de integración:** Simulación de 100 metros verifica balance entre desafío y jugabilidad
 
 **Reemplazo de GEM por BEER:**
 - **Nuevo ObjectType.BEER:** Agregado al enum ObjectType

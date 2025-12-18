@@ -227,12 +227,13 @@ describe('Level Patterns System (TASK-003)', () => {
     expect(hasBonanzaPattern).toBe(true);
   });
 
-  it('should simulate 100 meters of gameplay with continuous obstacle flow', () => {
-    // Mock the LevelManager behavior for 100 meters simulation
+  it('should simulate 100 meters of gameplay with balanced obstacle density and respite moments', () => {
+    // Mock the LevelManager behavior for 100 meters simulation with balanced density
     let currentZ = 0;
     let lastObstacleZ = -2; // Start with an obstacle close behind
-    let maxGapWithoutObstacle = 0;
+    let maxNormalGap = 0; // Max gap during normal play (non-respite)
     let obstaclesSpawned = 1; // Count initial obstacle
+    let respiteGaps: number[] = []; // Track respite moment gaps
 
     // Simulate player movement at speed 30 units/second
     const playerSpeed = 30;
@@ -245,27 +246,45 @@ describe('Level Patterns System (TASK-003)', () => {
       const deltaTime = frameTime;
       currentZ += playerSpeed * deltaTime;
 
-      // CONTINUOUS SPAWN FALLBACK: Check every frame if we need to spawn (5x closer)
+      // Check if we're in a "respite moment" (every 10-15 meters, no obstacles for 3-4 meters)
+      const distanceTraveled = currentZ; // Simplified for test
+      const isRespiteMoment = Math.floor(distanceTraveled / 12) % 2 === 1 && (distanceTraveled % 12) < 3.5;
+
+      // CONTINUOUS SPAWN FALLBACK: Check every frame if we need to spawn (balanced 1.2m spacing)
       const distanceSinceLastObstacle = currentZ - lastObstacleZ;
-      if (distanceSinceLastObstacle > 0.4) {
-        // Spawn obstacle at current position + 0.4 (ahead of player)
-        const spawnZ = currentZ + 0.4;
+      if (distanceSinceLastObstacle > 1.2 && !isRespiteMoment) {
+        // Spawn obstacle at current position + 1.2 (ahead of player) with lane alternation
+        const spawnZ = currentZ + 1.2;
         obstaclesSpawned++;
         lastObstacleZ = spawnZ;
-        console.log(`FALLBACK SPAWN: OBSTACLE at z=${spawnZ.toFixed(1)}, gap was ${distanceSinceLastObstacle.toFixed(1)}m`);
+        console.log(`FALLBACK SPAWN: OBSTACLE at z=${spawnZ.toFixed(1)}, gap was ${distanceSinceLastObstacle.toFixed(1)}m, respite=${isRespiteMoment}, distance=${distanceTraveled.toFixed(1)}m`);
       }
 
       // Check gap between current position and last obstacle
       const gap = currentZ - lastObstacleZ;
-      maxGapWithoutObstacle = Math.max(maxGapWithoutObstacle, gap);
 
-      // Verify no gap exceeds 0.5 meters (5x closer - stricter requirement)
-      expect(gap).toBeLessThanOrEqual(0.5);
+      // Track max gap only during normal play (not during respite moments)
+      if (!isRespiteMoment) {
+        maxNormalGap = Math.max(maxNormalGap, gap);
+        // Verify no gap exceeds 1.5 meters during normal play
+        expect(gap).toBeLessThanOrEqual(1.5);
+      }
+
+      // Track respite gaps separately
+      if (isRespiteMoment) {
+        respiteGaps.push(gap);
+      }
     }
 
     // Final verification
-    expect(maxGapWithoutObstacle).toBeLessThanOrEqual(0.5);
-    expect(obstaclesSpawned).toBeGreaterThan(100); // Should have spawned dense obstacles (5x closer density)
-    console.log(`Simulation complete: ${obstaclesSpawned} obstacles spawned, max gap: ${maxGapWithoutObstacle.toFixed(2)} meters`);
+    expect(maxNormalGap).toBeLessThanOrEqual(1.5); // Max gap during normal play
+    expect(obstaclesSpawned).toBeGreaterThan(30); // Should have spawned balanced obstacles (accounting for respite moments)
+    expect(obstaclesSpawned).toBeLessThan(80); // Should not be ultra-dense
+
+    // Check that respite moments exist (some gaps > 1.2m during respite)
+    const largeGaps = respiteGaps.filter(gap => gap > 1.2);
+    expect(largeGaps.length).toBeGreaterThan(0); // Should have respite moments
+
+    console.log(`Simulation complete: ${obstaclesSpawned} obstacles spawned, max normal gap: ${maxNormalGap.toFixed(2)} meters, respite moments: ${largeGaps.length}`);
   });
 });
