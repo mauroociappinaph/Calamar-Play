@@ -74,12 +74,13 @@ El rol de QA es garantizar la calidad, estabilidad y performance del producto en
   - **Crear Suite de Tests Unitarios Core:** Escribir tests para la lógica de estado en `store.ts` (cálculo de score, daño, etc.). El objetivo es una cobertura > 80% del store.
   - **Desarrollar Benchmarks de Performance (TASK-011):** Crear scripts para medir FPS, uso de memoria y TTI de forma consistente.
   - **Integrar con CI/CD (TASK-016):** Añadir los tests y benchmarks como un paso obligatorio en el pipeline de CI. Un PR no se puede mergear si rompe los tests o degrada la performance más allá de un umbral.
+  - **Refactor de Máquina de Estados (TASK-018):** Validar las transiciones de estado para evitar bugs de UI/Gameplay.
   - **Definir Procesos:** Establecer el checklist de release, el proceso de triage de bugs y las métricas de estabilidad.
 
 ### 🎯 FASE 2: RETENCIÓN (Diversión y Equidad)
 **Objetivo de QA:** Asegurar que las nuevas mecánicas de gameplay sean robustas y no introduzcan regresiones.
 - **Acciones:**
-  - **Tests de Integración:** Escribir tests para los nuevos sistemas como **Checkpoints (TASK-017)** y la **Máquina de Estados (TASK-018)**. Validar que el estado del juego se guarda y restaura correctamente.
+  - **Tests de Integración:** Escribir tests para los nuevos sistemas como **Checkpoints (TASK-017)**. Validar que el estado del juego se guarda y restaura correctamente.
   - **Testing de Balance:** Ejecutar los casos de la matriz E2E de forma manual y automatizada para validar el impacto del **Balance de Economía y Dificultad (TASK-019)**.
   - **Validación de UX:** Realizar pruebas manuales en múltiples dispositivos para verificar las mejoras de **Onboarding y UX (TASK-022)**, prestando especial atención a los touch targets y la claridad del HUD.
 
@@ -89,3 +90,7 @@ El rol de QA es garantizar la calidad, estabilidad y performance del producto en
   - **Testing de Nuevas Features:** Crear planes de test y casos E2E para el **Sistema de Combate (TASK-021)** y futuros sistemas como el árbol de perks.
   - **Testing Exploratorio:** Realizar testing exploratorio en nuevos biomas o modos de juego para encontrar bugs no obvios.
   - **Ampliar Regresión Automatizada:** Añadir los flujos críticos de las nuevas features a la suite de regresión automatizada para protegerlos a futuro.
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17

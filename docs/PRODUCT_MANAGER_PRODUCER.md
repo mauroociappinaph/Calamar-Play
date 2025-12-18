@@ -62,7 +62,7 @@
 
 ## 4. Backlog Unificado por Fases Estratégicas
 
-El backlog ahora está alineado con la estrategia de 3 fases definida en `docs/task.MD`. La priorización ha sido actualizada para reflejar un enfoque en la estabilidad y la medición antes de la expansión de contenido.
+El backlog ahora está alineado con la estrategia de 3 fases definida en `docs/TASK.MD`. La priorización ha sido actualizada para reflejar un enfoque en la estabilidad y la medición antes de la expansión de contenido.
 
 **🔴 FASE 1: FUNDACIÓN (Estabilización y Medición)**
 - **Objetivo:** Lograr un juego estable, medible y con un proceso de desarrollo confiable.
@@ -145,7 +145,7 @@ El backlog ahora está alineado con la estrategia de 3 fases definida en `docs/t
 
 ## 10. Integración con TASK: Estado Actual de la Planificación
 
-**Estado:** El backlog ha sido unificado y re-priorizado en `docs/task.MD`. Todas las propuestas de los diferentes roles han sido integradas en un único plan de acción.
+**Estado:** El backlog ha sido unificado y re-priorizado en `docs/TASK.MD`. Todas las propuestas de los diferentes roles han sido integradas en un único plan de acción.
 
 **Acciones Realizadas:**
 - **Prioridades Alineadas:** Las tareas de performance, testing y analytics (TASK-001, 005, 010, 015, etc.) han sido elevadas a **🔴 Alta** prioridad como parte de la Fase 1.
@@ -155,4 +155,8 @@ El backlog ahora está alineado con la estrategia de 3 fases definida en `docs/t
 **Próximos Pasos:**
 1. **Ejecutar Fase 1:** El equipo de desarrollo debe enfocarse exclusivamente en las tareas de la Fase 1.
 2. **Validar con Datos:** Utilizar la infraestructura de analytics (TASK-015) para validar el impacto de los cambios de la Fase 2.
-3. **Comunicación Continua:** Mantener todos los documentos de análisis sincronizados con el progreso del `task.MD` unificado.
+3. **Comunicación Continua:** Mantener todos los documentos de análisis sincronizados con el progreso del `TASK.MD` unificado.
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17

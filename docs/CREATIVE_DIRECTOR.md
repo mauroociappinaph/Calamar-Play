@@ -173,3 +173,7 @@ El rol del Director Creativo es ser el guardián de la "fantasía" y el "tono" d
   - **Concepto y Naming:** Definir el concepto creativo para el **Sistema de Combate (TASK-021)**, nombrando armas y enemigos de forma divertida (ej. "Lanzador de conchas", "Peces globo gruñones").
   - **Diseño de Nuevos Biomas:** Crear el concepto visual y narrativo para futuros niveles o biomas.
   - **Guía de Estilo para Contenido Futuro:** Mantener y expandir la guía de estilo para que todo el contenido nuevo (personajes, enemigos, escenarios) mantenga la coherencia visual y tonal.
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17

@@ -16,7 +16,7 @@
 
 **Mapa de documentación actual (o SUPUESTO):**
 - **README.md:** Básico con setup instructions
-- **docs/task.MD:** Plan de ejecución estructurado
+- **docs/TASK.MD:** Plan de ejecución estructurado
 - **docs/LEAD_GAME_DESIGNER.md:** Análisis de diseño de juego (nuevo)
 - **docs/TECHNICAL_DIRECTOR.md:** Análisis técnico (nuevo)
 - **docs/ART_DIRECTOR_TECH_ARTIST.md:** Análisis visual-tech (nuevo)
@@ -33,14 +33,14 @@
 **Tabla obligatoria:**
 Documento/Ruta | Propósito | Audiencia | Owner | Actualización | Problemas | Acción sugerida
 |---------------|----------|----------|-------|--------------|----------|----------------|
-| README.md | Getting started | New devs, stakeholders | Tech Lead | Manual | Básico, sin arquitectura | Expandir con overview + setup
-| docs/task.MD | Plan de ejecución | Team completo | Tech Lead | Manual | Versionado inconsistente | Implementar changelog automático
-| docs/LEAD_GAME_DESIGNER.md | Diseño de juego | Designers, PM | Game Designer | Ninguna | Sin trazabilidad TASK | Linkear a TASK-003/004
-| docs/TECHNICAL_DIRECTOR.md | Arquitectura técnica | Devs seniors | Tech Director | Ninguna | Sin versionado | Agregar frontmatter + owners
-| docs/ART_DIRECTOR_TECH_ARTIST.md | Performance visual | Artists, Tech artists | Art Director | Ninguna | Sin checklist assets | Crear ADR para decisiones visuales
-| docs/PRODUCT_MANAGER_PRODUCER.md | Plan de negocio | Stakeholders | PM | Ninguna | Sin métricas actuales | Linkear a TASK-014/015
-| docs/GAMEPLAY_ENGINEER.md | Sistemas gameplay | Gameplay devs | Gameplay Engineer | Ninguna | Sin debugging tools | Crear runbook troubleshooting
-| docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md | Experiencia usuario | UX/UI devs | UX Specialist | Ninguna | Sin plantillas componentes | Crear style guide UI
+| README.md | Portfolio & Overview | Stakeholders | Tech Lead | Manual | Ninguno | Mantener actualizado con TASK-024
+| docs/TASK.MD | Fuente de Verdad | Team completo | Tech Lead | Manual | Ninguno | Sincronizar con todos los docs
+| docs/LEAD_GAME_DESIGNER.md | Diseño de juego | Designers, PM | Game Designer | Ninguna | Ninguno | Linkear a TASK-017, 019, 021
+| docs/TECHNICAL_DIRECTOR.md | Arquitectura técnica | Devs seniors | Tech Director | Ninguna | Ninguno | Linkear a TASK-001, 005, 006
+| docs/ART_DIRECTOR_TECH_ARTIST.md | Performance visual | Artists, Tech artists | Art Director | Ninguna | Ninguno | Linkear a TASK-006, 007
+| docs/PRODUCT_MANAGER_PRODUCER.md | Plan de negocio | Stakeholders | PM | Ninguna | Ninguno | Referenciar TASK-015
+| docs/GAMEPLAY_ENGINEER.md | Sistemas gameplay | Gameplay devs | Gameplay Engineer | Ninguna | Ninguno | Referenciar TASK-020
+| docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md | Experiencia usuario | UX/UI devs | UX Specialist | Ninguna | Ninguno | Linkear a TASK-022
 
 ## 3. Semántica y claridad
 
@@ -58,7 +58,7 @@ Documento/Ruta | Propósito | Audiencia | Owner | Actualización | Problemas | A
 - **"Por si acaso":** Información adicional sin criterio de relevancia
 
 **Propuesta de mejoras: 10 cambios concretos de redacción/estructura**
-1. Cambiar "TASK.MD" por "Task.MD" para consistencia mayúsculas
+1. Cambiar "TASK.MD" por "TASK.MD" para consistencia mayúsculas
 2. Agregar glosario al inicio de docs técnicos
 3. Reemplazar "autoexplicativo" por "intuitivo en 2 segundos"
 4. Unificar formato de tablas (centrar headers)
@@ -582,7 +582,7 @@ Object pooling was accidentally disabled in LevelManager refactor, causing massi
 ## 11. Bitácora detallada del proceso realizado
 
 **Material revisado:**
-- **docs/task.MD:** TASK completas con estructura, prioridades, dependencias
+- **docs/TASK.MD:** TASK completas con estructura, prioridades, dependencias
 - **package.json:** Proyecto básico sin docs tooling
 - **README.md:** Setup básico, sin estructura docs
 - **docs/ varios .MD:** Análisis nuevos sin estructura ni convenciones
@@ -618,3 +618,6 @@ Object pooling was accidentally disabled in LevelManager refactor, causing massi
 - **Readability metrics:** Sin análisis de complejidad de texto
 - **Maintenance overhead:** Sin tracking de tiempo actualización docs
 - **Stakeholder needs:** Sin survey de qué docs se necesitan realmente
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17

@@ -163,3 +163,7 @@ El rol del Analista de Datos es transformar el comportamiento del jugador en ins
   - **Medir Engagement de Nuevas Features:** Analizar el uso del **Sistema de Combate (TASK-021)** y otras features de expansión.
   - **Desarrollar Segmentación Avanzada:** Crear el dashboard de "Segments" para encontrar diferencias de comportamiento entre jugadores nuevos vs. recurrentes, móvil vs. desktop, etc.
   - **Generar Informes de Insights:** Comenzar a generar los informes semanales con recomendaciones accionables para el equipo de producto y diseño.
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17

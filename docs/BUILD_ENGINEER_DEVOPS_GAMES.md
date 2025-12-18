@@ -176,22 +176,22 @@ El rol de Build/DevOps es crear y mantener las autopistas por las que el equipo 
 ### 🚀 FASE 1: FUNDACIÓN (Estabilización y Medición)
 **Objetivo:** Automatizar el proceso de build, test y deploy. Crear un entorno de desarrollo seguro y predecible.
 - **Acciones:**
-  - **Implementar CI/CD Pipeline (TASK-016, Prioridad 🔴 Alta):** Crear el workflow de GitHub Actions que automáticamente compile, testee ( de TASK-010), y verifique el código en cada PR. Esto incluye generar previews de Vercel.
-  - **Establecer Quality Gates:** Integrar los benchmarks de performance (TASK-011) y los análisis de tamaño de bundle como pasos obligatorios en el CI. Un PR que degrade la performance o aumente el bundle size por encima del umbral será bloqueado.
-  - **Configurar Monitoreo y Alertas:** Implementar Sentry para el seguimiento de errores y configurar alertas básicas para fallos de build y altas tasas de crash.
-  - **Versionado Automático:** Configurar  para gestionar el versionado semántico y la generación de changelogs automáticamente.
+  - **Implementar CI/CD Pipeline (TASK-016, Prioridad 🔴 Alta):** Crear el workflow de GitHub Actions que automáticamente compile, testee (de TASK-010), y verifique el código en cada PR. Esto incluye generar previews de Vercel.
+  - **Establecer Quality Gates:** Integrar los benchmarks de performance (TASK-011) y los análisis de tamaño de bundle como pasos obligatorios en el CI.
+  - **Configurar Monitoreo:** Implementar Sentry y Analytics (TASK-015) para el seguimiento de errores y métricas.
 
-### 🎯 FASE 2: RETENCIÓN (Optimización de Delivery)
-**Objetivo:** Mejorar la velocidad con la que el juego llega a los usuarios finales y asegurar la estabilidad de los entornos.
+### 🎯 FASE 2: RETENCIÓN (Diversión y Equidad)
+**Objetivo:** Mejorar la velocidad con la que el juego llega a los usuarios finales y asegurar la estabilidad.
 - **Acciones:**
-  - **Optimizar el Build de Producción (TASK-009):** Implementar las optimizaciones de Vite (code splitting, tree-shaking) en el pipeline de producción.
-  - **Implementar Estrategia de Caching:** Configurar los headers de caché en  y ajustar la estrategia del Service Worker de la **PWA (TASK-008)** para un rendimiento de carga óptimo.
-  - **Crear Entorno de Staging:** Formalizar un entorno de  con protección por contraseña para pruebas de pre-producción.
+  - **Optimizar Build de Producción (TASK-009):** Implementar las optimizaciones de Vite (code splitting, tree-shaking).
+  - **Configurar PWA (TASK-008):** Habilitar Service Workers y caching offline para mejorar la distribución web.
 
-### 🌟 FASE 3: EXPANSIÓN (Escalabilidad y Seguridad)
-**Objetivo:** Robustecer la infraestructura para soportar un producto en crecimiento y con más integraciones.
+### 🌟 FASE 3: EXPANSIÓN (Profundidad y Contenido)
+**Objetivo:** Robustecer la infraestructura para soportar un producto en crecimiento.
 - **Acciones:**
-  - **Seguridad del Pipeline:** Implementar  para actualizaciones de seguridad automáticas y found 0 vulnerabilities en el CI.
-  - **Gestión de Features y Rollbacks:** Introducir un sistema de feature flags (ej. LaunchDarkly o similar) para permitir lanzamientos graduales y rollbacks instantáneos sin necesidad de re-deploy.
-  - **Documentar Runbooks:** Formalizar los playbooks para la gestión de incidentes, rollbacks y hotfixes.
+  - **Documentación y Sistemas (TASK-023):** Formalizar los playbooks para la gestión de incidentes y mantenimiento del sistema.
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17
 

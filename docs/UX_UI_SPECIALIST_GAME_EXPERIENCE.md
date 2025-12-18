@@ -221,3 +221,7 @@ El rol del especialista en UX/UI es asegurar que el juego sea intuitivo, accesib
 - **Tarea Central:** **TASK-022** se convierte en la tarea principal para el especialista en UX/UI durante la Fase 2, agrupando las mejoras de onboarding, HUD y flujo de juego.
 - **Colaboración:** El rol de UX/UI colabora estrechamente con el Game Designer en la Fase 2 para el balance y con el Art Director para la consistencia visual.
 - **Prioridad Clara:** La prioridad es arreglar la experiencia del primer minuto (Fase 2) antes de diseñar interfaces para contenido avanzado (Fase 3).
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17

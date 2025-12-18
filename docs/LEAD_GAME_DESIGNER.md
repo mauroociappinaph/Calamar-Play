@@ -16,7 +16,7 @@
 2. **Progresión ramificada:** Árbol de perks persistentes vs upgrades temporales únicos
 3. **Pacing dinámico:** Patrones de nivel predefinidos vs spawn 100% procedural
 
-**Chequeo TASK:** Las tareas técnicas existentes (TASK-001, 005, 006) abordan correctamente la performance. El nuevo plan unificado en `task.MD` ahora incluye las tareas de diseño críticas que faltaban, como el sistema de checkpoints (TASK-017), el combate ofensivo (TASK-021) y el balance de dificultad (TASK-019).
+**Chequeo TASK:** Las tareas técnicas existentes (TASK-001, 005, 006) abordan correctamente la performance. El nuevo plan unificado en `TASK.MD` ahora incluye las tareas de diseño críticas que faltaban, como el sistema de checkpoints (TASK-017), el combate ofensivo (TASK-021) y el balance de dificultad (TASK-019).
 
 ## 2. Loop de juego y pilares
 
@@ -235,7 +235,7 @@
 
 ## 9. Plan de Acción y Rol de Diseño (Alineado con Roadmap Maestro)
 
-El rol del Lead Game Designer es guiar la visión del producto para asegurar que el juego sea, ante todo, divertido y justo. El plan de acción se alinea con las fases estratégicas definidas en `docs/task.MD`.
+El rol del Lead Game Designer es guiar la visión del producto para asegurar que el juego sea, ante todo, divertido y justo. El plan de acción se alinea con las fases estratégicas definidas en `docs/TASK.MD`.
 
 ### 🚀 FASE 1: FUNDACIÓN (Estabilización y Medición)
 El rol de diseño en esta fase es principalmente de **consulta y validación**.
@@ -266,3 +266,7 @@ Con una base estable y un loop divertido, el foco es añadir profundidad y rejug
 - **Tareas Críticas Añadidas:** El backlog ahora incluye las tareas fundamentales de diseño que faltaban: **TASK-017 (Checkpoints)**, **TASK-019 (Balance)**, **TASK-021 (Combate)** y **TASK-022 (Onboarding)**.
 - **Prioridades Claras:** El foco del diseño está en la **Fase 2 (Retención)**, que depende directamente de la estabilidad que se logrará en la **Fase 1 (Fundación)**.
 - **Rol Definido:** El Game Designer supervisa la integridad de la experiencia durante la Fase 1, lidera la reconstrucción del core loop en la Fase 2, y expande el universo del juego en la Fase 3.
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17

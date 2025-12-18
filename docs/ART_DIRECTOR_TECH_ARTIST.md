@@ -1,5 +1,7 @@
 # ART_DIRECTOR_TECH_ARTIST.md
 
+> 🎨 Documento de Dirección de Arte y Tech‑Art – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 ## 1. Diagnóstico ejecutivo en 10 líneas
 
 **Coherencia visual general:** Estilo "tropical marino cartoon" estático pero sin dirección estética clara - colores vivos pero geometrías simples sin jerarquía visual consistente.
@@ -219,7 +221,7 @@ Assets/
 - **Presets export:** Maya/Blender templates con settings optimizados
 - **Guías:** "How to make a coral prop" con templates y limits
 
-## 10. Roadmap Visual y Técnico (Alineado)
+## 10. Roadmap Visual y Técnico (Alineado con TASK.MD)
 
 El plan de acción de arte y tech-art se integra en la estrategia de producto general, enfocándose primero en la estabilidad y luego en el pulido y la expansión.
 
@@ -247,3 +249,9 @@ El plan de acción de arte y tech-art se integra en la estrategia de producto ge
   - **Desarrollar Shaders Avanzados:** Implementar el **toon shader** para el personaje y otros shaders "lite" para optimizar y estilizar el juego.
   - **Crear Assets para el Sistema de Combate (TASK-021):** Diseñar y modelar proyectiles, impactos y nuevos enemigos.
   - **Diseñar Nuevos Biomas:** Expandir el universo visual con nuevos entornos que sigan la dirección de arte establecida pero ofrezcan variedad.
+
+> 📘 Más contexto general: [README.md](../README.md)
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
+Última sincronización automática: 2025-12-17

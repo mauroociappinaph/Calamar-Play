@@ -264,6 +264,10 @@ El rol del Director Técnico es garantizar la salud, escalabilidad y rendimiento
   - **Establecer Observabilidad:** Integrar **Analytics (TASK-015)** para las métricas de producto y un sistema de **Error Tracking** (ej. Sentry) para monitorear la salud del build en producción.
 - **Señal de Éxito:** Releases automáticos a staging, crash rate < 1%, y un dashboard de performance funcional.
 
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17
+
 ### 🎯 FASE 2: RETENCIÓN (Arquitectura para Gameplay)
 **Objetivo Técnico:** Garantizar que la arquitectura soporte las nuevas mecánicas de juego de forma limpia y escalable, sin introducir nueva deuda técnica.
 - **Acciones:**

@@ -180,7 +180,7 @@ function gameLoop(currentTime) {
 
 ## 9. Plan de Acción de Ingeniería de Gameplay (Alineado)
 
-El rol del Ingeniero de Gameplay es crucial para traducir la visión de diseño en una experiencia jugable, estable y satisfactoria. El plan de acción se alinea con las fases estratégicas del `task.MD` unificado.
+El rol del Ingeniero de Gameplay es crucial para traducir la visión de diseño en una experiencia jugable, estable y satisfactoria. El plan de acción se alinea con las fases estratégicas del `TASK.MD` unificado.
 
 ### 🚀 FASE 1: FUNDACIÓN (Estabilización y Medición)
 **Objetivo Principal:** Eliminar la inestabilidad técnica y la inconsistencia del "feel" del juego. Esta es la fase de mayor carga para la ingeniería de gameplay.
@@ -216,3 +216,7 @@ El rol del Ingeniero de Gameplay es crucial para traducir la visión de diseño 
 - **Foco claro:** La prioridad absoluta es la **Fase 1**. Las tareas de esta fase (especialmente TASK-020, 001, 005) son bloqueantes para la calidad del producto.
 - **Tareas Agregadas:** El plan ahora incluye **TASK-020 (Fixed Timestep)** como un pilar fundamental del trabajo de ingeniería.
 - **Dependencias Visibles:** Queda claro que las features de la Fase 2 y 3 (checkpoints, combate) no pueden ser implementadas de forma fiable sin una base de gameplay consistente (Fase 1).
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17

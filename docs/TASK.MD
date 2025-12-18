@@ -8,7 +8,7 @@ changelog: |
   - v1.3: Añadido bloque meta YAML, resumen ejecutivo y campos de seguimiento.
 ---
 
-# 📋 Task.MD - Plan Maestro de Ejecución Unificado
+# 📋 TASK.MD - Plan Maestro de Ejecución Unificado
 ## Proyecto: Calamar Loco
 
 **Última actualización:** 17/12/2025

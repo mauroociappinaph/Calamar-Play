@@ -76,3 +76,7 @@ El rol del Diseñador de Economía es construir un sistema de progresión que se
   - **Diseñar Economía para Nuevos Sistemas:** Crear el modelo económico para el **Sistema de Combate (TASK-021)**, incluyendo la obtención de munición y el costo de sus mejoras.
   - **Diseñar la Estrategia de Monetización:** Modelar el impacto de la publicidad recompensada y los IAPs (Initial App Purchases) en la economía del juego, asegurando que no se convierta en un "pay-to-win".
   - **Planificar la Economía a Largo Plazo:** Diseñar sistemas económicos para features futuras, como crafteo, clanes o eventos de temporada.
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+Última sincronización automática: 2025-12-17
