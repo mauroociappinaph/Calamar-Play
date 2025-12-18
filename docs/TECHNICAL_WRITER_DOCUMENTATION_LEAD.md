@@ -241,12 +241,12 @@ npm run dev
 ```
 
 ## 📚 Documentation
-- [Getting Started](docs/01_getting_started/)
-- [Architecture](docs/02_architecture/)
-- [Game Design](docs/03_game_design/)
+- Getting Started (docs/01_getting_started/)
+- Architecture (docs/02_architecture/)
+- Game Design (docs/03_game_design/)
 
 ## 🤝 Contributing
-Ver [CONTRIBUTING.md](CONTRIBUTING.md)
+Ver CONTRIBUTING.md
 ```
 
 **Getting Started:**
