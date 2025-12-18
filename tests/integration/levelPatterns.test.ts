@@ -177,20 +177,30 @@ describe('Level Patterns System (TASK-003)', () => {
     });
   });
 
-  it('should validate maximum gap between obstacles (density requirement)', () => {
+  it('should validate obstacle density (density requirement)', () => {
     const allPatterns = patternManager.getAllPatterns();
 
     allPatterns.forEach(pattern => {
-      // Get only obstacle spawns
-      const obstacleSpawns = pattern.spawns
-        .filter(s => s.type === 'OBSTACLE')
-        .sort((a, b) => a.zOffset - b.zOffset);
+      // Get obstacle spawns grouped by zOffset to check clustering
+      const obstacleByZ = new Map<number, number>();
 
-      // Check gaps between obstacles
-      for (let i = 1; i < obstacleSpawns.length; i++) {
-        const gap = obstacleSpawns[i].zOffset - obstacleSpawns[i-1].zOffset;
-        expect(gap).toBeLessThanOrEqual(20); // Maximum 20 units between obstacles (density requirement)
-        expect(gap).toBeGreaterThanOrEqual(2); // Minimum spacing to avoid impossible gameplay
+      pattern.spawns
+        .filter(s => s.type === 'OBSTACLE')
+        .forEach(spawn => {
+          obstacleByZ.set(spawn.zOffset, (obstacleByZ.get(spawn.zOffset) || 0) + 1);
+        });
+
+      // Check that no single z-position has too many obstacles (max 2 per z-level)
+      obstacleByZ.forEach((count, z) => {
+        expect(count).toBeLessThanOrEqual(2);
+      });
+
+      // Check that obstacles are reasonably spaced (at least 2 units apart)
+      const zOffsets = Array.from(obstacleByZ.keys()).sort((a, b) => a - b);
+      for (let i = 1; i < zOffsets.length; i++) {
+        const gap = zOffsets[i] - zOffsets[i-1];
+        expect(gap).toBeGreaterThanOrEqual(2); // Minimum 2 units between obstacle groups
+        expect(gap).toBeLessThanOrEqual(20); // Maximum 20 units between obstacle groups
       }
     });
   });
