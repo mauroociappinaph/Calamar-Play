@@ -163,7 +163,7 @@ describe('Level Patterns System (TASK-003)', () => {
       const sortedSpawns = [...pattern.spawns].sort((a, b) => a.zOffset - b.zOffset);
 
       // First spawn should be at reasonable distance
-      expect(sortedSpawns[0].zOffset).toBeGreaterThanOrEqual(8);
+      expect(sortedSpawns[0].zOffset).toBeGreaterThanOrEqual(6);
       expect(sortedSpawns[0].zOffset).toBeLessThanOrEqual(15);
 
       // Check that spawns are spaced reasonably (only for non-same-position spawns)
@@ -175,5 +175,45 @@ describe('Level Patterns System (TASK-003)', () => {
         }
       }
     });
+  });
+
+  it('should validate maximum gap between obstacles (density requirement)', () => {
+    const allPatterns = patternManager.getAllPatterns();
+
+    allPatterns.forEach(pattern => {
+      // Get only obstacle spawns
+      const obstacleSpawns = pattern.spawns
+        .filter(s => s.type === 'OBSTACLE')
+        .sort((a, b) => a.zOffset - b.zOffset);
+
+      // Check gaps between obstacles
+      for (let i = 1; i < obstacleSpawns.length; i++) {
+        const gap = obstacleSpawns[i].zOffset - obstacleSpawns[i-1].zOffset;
+        expect(gap).toBeLessThanOrEqual(10); // Maximum 10 units between obstacles (density requirement)
+        expect(gap).toBeGreaterThanOrEqual(2); // Minimum spacing to avoid impossible gameplay
+      }
+    });
+  });
+
+  it('should use BEER instead of GEM in patterns', () => {
+    const allPatterns = patternManager.getAllPatterns();
+
+    // Check that no GEM spawns exist
+    allPatterns.forEach(pattern => {
+      const gemSpawns = pattern.spawns.filter(s => s.type === 'GEM');
+      expect(gemSpawns.length).toBe(0);
+
+      // Check that BEER spawns exist in appropriate patterns
+      const beerSpawns = pattern.spawns.filter(s => s.type === 'BEER');
+      if (pattern.type === 'RESPITE') {
+        expect(beerSpawns.length).toBeGreaterThan(0); // Respite patterns should have beers
+      }
+    });
+  });
+
+  it('should have updated pattern names for beer theme', () => {
+    const respitePatterns = patternManager.getPatternsByType('RESPITE');
+    const hasBonanzaPattern = respitePatterns.some(p => p.name.includes('Cervezas'));
+    expect(hasBonanzaPattern).toBe(true);
   });
 });

@@ -15,6 +15,7 @@ export enum GameStatus {
 export enum ObjectType {
   OBSTACLE = 'OBSTACLE',
   GEM = 'GEM',
+  BEER = 'BEER',
   LETTER = 'LETTER',
   SHOP_PORTAL = 'SHOP_PORTAL',
   ALIEN = 'ALIEN',

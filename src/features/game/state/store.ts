@@ -20,6 +20,7 @@ interface GameState {
   level: number;
   laneCount: number;
   gemsCollected: number;
+  beersCollected: number;
   distance: number;
 
   // Inventory / Abilities
@@ -40,6 +41,7 @@ interface GameState {
   takeDamage: () => void;
   addScore: (amount: number) => void;
   collectGem: (value: number) => void;
+  collectBeer: (value: number) => void;
   collectLetter: (index: number) => void;
   setStatus: (status: GameStatus) => void;
   setDistance: (dist: number) => void;
@@ -84,6 +86,7 @@ export const useStore = create<GameState>((set, get) => ({
   level: 1,
   laneCount: 3,
   gemsCollected: 0,
+  beersCollected: 0,
   distance: 0,
 
   hasDoubleJump: false,
@@ -119,6 +122,7 @@ export const useStore = create<GameState>((set, get) => ({
         level: 1,
         laneCount: 3,
         gemsCollected: 0,
+        beersCollected: 0,
         distance: 0,
         hasDoubleJump: false,
         hasImmortality: false,
@@ -151,6 +155,7 @@ export const useStore = create<GameState>((set, get) => ({
         level: 1,
         laneCount: 3,
         gemsCollected: 0,
+        beersCollected: 0,
         distance: 0,
         hasDoubleJump: false,
         hasImmortality: false,
@@ -203,6 +208,35 @@ export const useStore = create<GameState>((set, get) => ({
 
     // Analytics: Track gem collection with multiplier
     trackGameEvent.collectItem('gem', finalValue, Math.floor(Math.random() * laneCount));
+  },
+
+  collectBeer: (value) => {
+    const { laneCount, distance, speed } = get();
+
+    // VARIABLE REWARDS (TASK-019): Add multipliers based on performance
+    let multiplier = 1.0;
+
+    // Timing bonus: faster speed = higher multiplier (up to 1.5x)
+    const speedBonus = Math.min(speed / RUN_SPEED_BASE, 2.0) * 0.25;
+    multiplier += speedBonus;
+
+    // Distance milestone bonus: every 1000m = 1.2x
+    const milestoneBonus = Math.floor(distance / 1000) * 0.1;
+    multiplier = Math.min(multiplier + milestoneBonus, 2.0);
+
+    // Random variance (±20%)
+    const variance = 0.8 + Math.random() * 0.4;
+    multiplier *= variance;
+
+    const finalValue = Math.round(value * multiplier);
+
+    set((state) => ({
+      score: state.score + finalValue,
+      beersCollected: state.beersCollected + 1
+    }));
+
+    // Analytics: Track beer collection with multiplier
+    trackGameEvent.collectItem('beer', finalValue, Math.floor(Math.random() * laneCount));
   },
 
   setDistance: (dist) => set({ distance: dist }),

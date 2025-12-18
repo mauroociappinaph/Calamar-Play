@@ -67,12 +67,18 @@
 
 ### 🎮 Gameplay Loops (🔴 Alta / 🟡 Media)
 
-- **TASK-003: Patrones de Nivel (🟡)**
+- **TASK-003: Patrones de Nivel + Densidad y Cervezas (🟡)**
     - [x] Definir estructuras de datos para patrones predefinidos en `src/features/game/levelPatterns.ts` `[DEP: Ninguna]` `[ESTADO: ✅]`
     - [x] Implementar lógica para alternar entre patrones en `src/world/stage/LevelManager.tsx` `[ESTADO: ✅]`
     - [x] Crear 8 patrones con momentos de respiro y picos de tensión `[ESTADO: ✅]`
+    - [x] Reducir zOffsets entre obstáculos (4-8 unidades) para densidad aumentada `[ESTADO: ✅]`
+    - [x] Reemplazar GEM por BEER en todos los patrones y lógica de spawn `[ESTADO: ✅]`
+    - [x] Actualizar UI para mostrar "CERVEZAS" en lugar de "PERLAS" `[ESTADO: ✅]`
+    - [x] Implementar collectBeer con mismos multiplicadores que collectGem `[ESTADO: ✅]`
+    - [x] Actualizar analytics para trackear eventos 'beer' `[ESTADO: ✅]`
     - [x] Crear tests de integración en `tests/integration/levelPatterns.test.ts` `[ESTADO: ✅]`
-    - [x] Documentar sistema completo en `docs/LEAD_GAME_DESIGNER.md` y actualizar `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
+    - [x] Documentar sistema completo en `docs/LEAD_GAME_DESIGNER.md` y `docs/GAMEPLAY_ENGINEER.md` `[ESTADO: ✅]`
+    - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 - **TASK-017: Sistema de Checkpoints (🔴)**
     - [ ] Implementar lógica de guardado/carga de progreso en runtime `[DEP: TASK-018]` `[ESTADO: 🔵]`

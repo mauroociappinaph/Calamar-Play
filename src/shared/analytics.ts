@@ -238,7 +238,7 @@ export const trackGameEvent = {
   death: (reason: string, level: number, score: number) => analytics?.track('death', { reason, level, score }),
   shopOpen: (availableItems: string[]) => analytics?.track('shop_open', { available_items: availableItems }),
   itemPurchase: (itemType: string, cost: number, remainingScore: number) => analytics?.track('item_purchase', { item_type: itemType, cost, remaining_score: remainingScore }),
-  collectItem: (type: 'gem' | 'letter', value: number, lane: number) => analytics?.track('collect_item', { type, value, lane }),
+  collectItem: (type: 'gem' | 'beer' | 'letter', value: number, lane: number) => analytics?.track('collect_item', { type, value, lane }),
   performanceSnapshot: (fps: number, memoryUsage: number) => analytics?.track('performance_snapshot', { fps, memory_usage: memoryUsage }),
   errorCaptured: (errorType: string, message: string) => analytics?.track('error_captured', { error_type: errorType, message: message.substring(0, 500) })
 };
