@@ -15,6 +15,7 @@ import { GameObject, ObjectType, LANE_WIDTH, SPAWN_DISTANCE, REMOVE_DISTANCE, Ga
 import { audio } from '@/systems/audio/AudioEngine';
 import { ObjectPool } from '@/systems/pooling/ObjectPool';
 import { FixedTimestepLoop, InputState } from '@/systems/core/FixedTimestepLoop';
+import { patternManager, LevelPattern, PatternType } from '@/features/game/levelPatterns';
 import { Tronco, ForcedTronco } from '@/world/obstacles/Tronco';
 
 // Geometry Constants
@@ -333,152 +334,79 @@ export const LevelManager: React.FC = () => {
         furthestZ = -100; // Initialize to trigger initial spawn
     }
 
-    if (furthestZ > -SPAWN_DISTANCE) {
-         const minGap = 12 + (speed * 0.4);
-         const spawnZ = Math.min(furthestZ - minGap, -SPAWN_DISTANCE);
+    // PATTERN-BASED SPAWNING (TASK-003)
+    const currentTime = Date.now();
 
-         console.log('DEBUG SPAWN: Spawning logic triggered, furthestZ:', furthestZ, 'spawnZ:', spawnZ);
+    // Check if we need to switch patterns
+    if (patternManager.shouldSwitchPattern(currentTime)) {
+        const newPattern = patternManager.getNextPattern();
+        console.log(`🎯 LevelManager: Switching to pattern-based spawning`);
 
-         const isLetterDue = distanceTraveled.current >= nextLetterDistance.current;
+        // Spawn all objects from the new pattern
+        const spawnZ = Math.min(furthestZ - 15, -SPAWN_DISTANCE);
 
-         console.log('DEBUG SPAWN: isLetterDue:', isLetterDue, 'distanceTraveled:', distanceTraveled.current, 'nextLetterDistance:', nextLetterDistance.current);
+        for (const spawn of newPattern.spawns) {
+            const obj = gameObjectPool.acquire();
+            obj.type = spawn.type;
+            obj.position[0] = spawn.lane * LANE_WIDTH;
+            obj.position[2] = spawnZ + spawn.zOffset;
+            obj.active = true;
 
-         if (isLetterDue) {
-             const lane = getRandomLane(laneCount);
-             // CALAMARLOCO
-             const target = ['C', 'A', 'L', 'A', 'M', 'A', 'R', 'L', 'O', 'C', 'O'];
-
-             // Simple sequential logic for multi-repeating letters
-             const availableIndices = target.map((_, i) => i).filter(i => !collectedLetters.includes(i));
-
-             if (availableIndices.length > 0) {
-                 // Prioritize earliest uncollected letter to help spelling "C-A-L..." naturally,
-                 // though random pickup is also fine. Let's do random.
-                 const chosenIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
-                 const val = target[chosenIndex];
-                 const color = GEMINI_COLORS[chosenIndex];
-
-                 keptObjects.push({
-                    id: uuidv4(),
-                    type: ObjectType.LETTER,
-                    position: [lane * LANE_WIDTH, 1.0, spawnZ],
-                    active: true,
-                    color: color,
-                    value: val,
-                    targetIndex: chosenIndex
-                 });
-
-                 nextLetterDistance.current += getLetterInterval(level);
-                 hasChanges = true;
-             } else {
-                keptObjects.push({
-                    id: uuidv4(),
-                    type: ObjectType.GEM,
-                    position: [lane * LANE_WIDTH, 1.2, spawnZ],
-                    active: true,
-                    color: '#ffffff',
-                    points: 50
-                });
-                hasChanges = true;
-             }
-
-         } else if (Math.random() > 0.1) {
-            const spawnRandom = Math.random();
-            console.log('DEBUG SPAWN: Attempting spawn, spawnRandom:', spawnRandom, 'threshold: 0.1, will spawn:', spawnRandom > 0.1);
-
-            const randomValue = Math.random();
-            const isObstacle = randomValue > 0.5; // TEMP: Increased from 0.20 to 0.5 for testing
-            console.log('DEBUG SPAWN: Spawning branch entered, randomValue:', randomValue, 'isObstacle:', isObstacle);
-
-            if (isObstacle) {
-                const spawnAlien = level >= 2 && Math.random() < 0.2;
-
-                if (spawnAlien) {
-                    const availableLanes = [];
-                    const maxLane = Math.floor(laneCount / 2);
-                    for (let i = -maxLane; i <= maxLane; i++) availableLanes.push(i);
-                    availableLanes.sort(() => Math.random() - 0.5);
-
-                    let alienCount = 1;
-                    if (Math.random() > 0.7) alienCount = Math.min(2, availableLanes.length);
-
-                    for (let k = 0; k < alienCount; k++) {
-                        const lane = availableLanes[k];
-                        const alienObj = gameObjectPool.acquire();
-                        console.log('POOL ACQUIRE ALIEN:', gameObjectPool.getStats(), 'frame:', performance.now());
-                        alienObj.type = ObjectType.ALIEN;
-                        alienObj.position[0] = lane * LANE_WIDTH;
-                        alienObj.position[1] = 1.5;
-                        alienObj.position[2] = spawnZ;
-                        alienObj.active = true;
-                        alienObj.color = '#00ff00';
-                        alienObj.hasFired = false;
-
-                        keptObjects.push(alienObj);
-                        console.log('SPAWN ALIEN', alienObj.id, alienObj.position, alienObj.active);
-                        console.log('POOL AFTER ACQUIRE ALIEN:', gameObjectPool.getStats());
-                    }
-                } else {
-                    const availableLanes = [];
-                    const maxLane = Math.floor(laneCount / 2);
-                    for (let i = -maxLane; i <= maxLane; i++) availableLanes.push(i);
-                    availableLanes.sort(() => Math.random() - 0.5);
-
-                    let countToSpawn = 1;
-                    const p = Math.random();
-
-                    if (p > 0.80) {
-                        countToSpawn = Math.min(3, availableLanes.length);
-                    } else if (p > 0.50) {
-                        countToSpawn = Math.min(2, availableLanes.length);
-                    }
-
-                    for (let i = 0; i < countToSpawn; i++) {
-                        const lane = availableLanes[i];
-                        const laneX = lane * LANE_WIDTH;
-
-                        const obstacleObj = gameObjectPool.acquire();
-                        console.log('POOL ACQUIRE OBSTACLE:', gameObjectPool.getStats(), 'frame:', performance.now());
-                        obstacleObj.type = ObjectType.OBSTACLE;
-                        obstacleObj.position[0] = laneX;
-                        obstacleObj.position[1] = OBSTACLE_HEIGHT / 2;
-                        obstacleObj.position[2] = spawnZ;
-                        obstacleObj.active = true;
-                        obstacleObj.color = '#8b4513';
-
-                        console.log('SPAWN TRONCO', obstacleObj.id, obstacleObj.position, obstacleObj.active);
-                        console.log('DEBUG SPAWN: Created obstacle at lane', lane, 'position', laneX, spawnZ);
-                        keptObjects.push(obstacleObj);
-                        console.log('POOL AFTER ACQUIRE OBSTACLE:', gameObjectPool.getStats());
-
-                        if (Math.random() < 0.3) {
-                             const extraGem = gameObjectPool.acquire();
-                             extraGem.type = ObjectType.GEM;
-                             extraGem.position[0] = laneX;
-                             extraGem.position[1] = OBSTACLE_HEIGHT + 1.0;
-                             extraGem.position[2] = spawnZ;
-                             extraGem.active = true;
-                             extraGem.color = '#ffffff';
-                             extraGem.points = 100;
-
-                             keptObjects.push(extraGem);
-                        }
-                    }
-                }
-
-            } else {
-                const lane = getRandomLane(laneCount);
-                keptObjects.push({
-                    id: uuidv4(),
-                    type: ObjectType.GEM,
-                    position: [lane * LANE_WIDTH, 1.2, spawnZ],
-                    active: true,
-                    color: '#ffffff',
-                    points: 50
-                });
+            // Set position Y based on object type
+            if (spawn.type === ObjectType.OBSTACLE) {
+                obj.position[1] = OBSTACLE_HEIGHT / 2;
+                obj.color = '#8b4513';
+            } else if (spawn.type === ObjectType.ALIEN) {
+                obj.position[1] = 1.5;
+                obj.color = '#00ff00';
+                obj.hasFired = false;
+            } else if (spawn.type === ObjectType.MISSILE) {
+                obj.position[1] = 1.0;
+                obj.color = '#ffffff';
+            } else if (spawn.type === ObjectType.GEM) {
+                obj.position[1] = 1.2;
+                obj.color = '#ffffff';
+                obj.points = 50;
+            } else if (spawn.type === ObjectType.LETTER) {
+                obj.position[1] = 1.0;
+                obj.value = spawn.value;
+                obj.targetIndex = spawn.targetIndex;
+                obj.color = GEMINI_COLORS[spawn.targetIndex || 0];
             }
+
+            console.log(`🎯 Pattern spawn: ${spawn.type} at lane ${spawn.lane}, z=${obj.position[2]}`);
+            keptObjects.push(obj);
+        }
+
+        hasChanges = true;
+    }
+
+    // FALLBACK: Still handle letter spawning if needed
+    const isLetterDue = distanceTraveled.current >= nextLetterDistance.current;
+    if (isLetterDue && furthestZ > -SPAWN_DISTANCE) {
+        const spawnZ = Math.min(furthestZ - 12, -SPAWN_DISTANCE);
+        const lane = getRandomLane(laneCount);
+        const target = ['C', 'A', 'L', 'A', 'M', 'A', 'R', 'L', 'O', 'C', 'O'];
+        const availableIndices = target.map((_, i) => i).filter(i => !collectedLetters.includes(i));
+
+        if (availableIndices.length > 0) {
+            const chosenIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+            const val = target[chosenIndex];
+            const color = GEMINI_COLORS[chosenIndex];
+
+            keptObjects.push({
+                id: uuidv4(),
+                type: ObjectType.LETTER,
+                position: [lane * LANE_WIDTH, 1.0, spawnZ],
+                active: true,
+                color: color,
+                value: val,
+                targetIndex: chosenIndex
+            });
+
+            nextLetterDistance.current += getLetterInterval(level);
             hasChanges = true;
-         }
+        }
     }
 
     if (hasChanges) {

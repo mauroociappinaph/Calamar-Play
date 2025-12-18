@@ -1,0 +1,189 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { LEVEL_PATTERNS, PatternManager, PatternType } from '@/features/game/levelPatterns';
+
+// Mock performance.now for consistent timing
+const mockNow = vi.fn();
+global.performance.now = mockNow;
+
+describe('Level Patterns System (TASK-003)', () => {
+  let patternManager: PatternManager;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    patternManager = new PatternManager();
+    mockNow.mockReturnValue(0);
+  });
+
+  it('should initialize with proper pattern queue', () => {
+    expect(patternManager.getCurrentPattern()).toBeNull();
+
+    // Should have 8 patterns in queue initially
+    const allPatterns = patternManager.getAllPatterns();
+    expect(allPatterns.length).toBe(8);
+  });
+
+  it('should switch patterns when duration expires', () => {
+    mockNow.mockReturnValue(0);
+
+    // First call should switch to first pattern
+    const pattern1 = patternManager.getNextPattern();
+    expect(pattern1.type).toBe('RESPITE');
+    expect(pattern1.duration).toBeGreaterThan(0);
+
+    // Before duration expires, should not switch
+    mockNow.mockReturnValue(pattern1.duration * 1000 - 1000);
+    expect(patternManager.shouldSwitchPattern(mockNow())).toBe(false);
+
+    // After duration expires, should switch
+    mockNow.mockReturnValue(pattern1.duration * 1000 + 1000);
+    expect(patternManager.shouldSwitchPattern(mockNow())).toBe(true);
+
+    // Get next pattern
+    const pattern2 = patternManager.getNextPattern();
+    expect(pattern2.type).toBe('TENSION');
+    expect(pattern2).not.toBe(pattern1);
+  });
+
+  it('should cycle through pattern types correctly', () => {
+    const expectedSequence: PatternType[] = [
+      'RESPITE', 'TENSION', 'PEAK', 'VARIATION',
+      'RESPITE', 'TENSION', 'PEAK', 'VARIATION'
+    ];
+
+    for (let i = 0; i < expectedSequence.length; i++) {
+      const pattern = patternManager.getNextPattern();
+      expect(pattern.type).toBe(expectedSequence[i]);
+    }
+
+    // Should cycle back to beginning
+    const nextPattern = patternManager.getNextPattern();
+    expect(nextPattern.type).toBe('RESPITE');
+  });
+
+  it('should provide patterns by type', () => {
+    const respitePatterns = patternManager.getPatternsByType('RESPITE');
+    expect(respitePatterns.length).toBe(2);
+    expect(respitePatterns.every(p => p.type === 'RESPITE')).toBe(true);
+
+    const tensionPatterns = patternManager.getPatternsByType('TENSION');
+    expect(tensionPatterns.length).toBe(2);
+    expect(tensionPatterns.every(p => p.type === 'TENSION')).toBe(true);
+
+    const peakPatterns = patternManager.getPatternsByType('PEAK');
+    expect(peakPatterns.length).toBe(2);
+
+    const variationPatterns = patternManager.getPatternsByType('VARIATION');
+    expect(variationPatterns.length).toBe(2);
+  });
+
+  it('should calculate pattern progress correctly', () => {
+    mockNow.mockReturnValue(0);
+    const pattern = patternManager.getNextPattern();
+
+    // At start, progress should be 0
+    expect(patternManager.getPatternProgress(0)).toBe(0);
+
+    // At halfway point
+    const halfwayTime = (pattern.duration * 1000) / 2;
+    mockNow.mockReturnValue(halfwayTime);
+    expect(patternManager.getPatternProgress(halfwayTime)).toBeCloseTo(0.5, 1);
+
+    // At end
+    const endTime = pattern.duration * 1000;
+    mockNow.mockReturnValue(endTime);
+    expect(patternManager.getPatternProgress(endTime)).toBe(1);
+  });
+
+  it('should have valid pattern structures', () => {
+    const allPatterns = patternManager.getAllPatterns();
+
+    allPatterns.forEach(pattern => {
+      // Basic structure validation
+      expect(pattern.id).toBeDefined();
+      expect(pattern.name).toBeDefined();
+      expect(['RESPITE', 'TENSION', 'PEAK', 'VARIATION']).toContain(pattern.type);
+      expect(pattern.duration).toBeGreaterThan(0);
+      expect(Array.isArray(pattern.spawns)).toBe(true);
+      expect(pattern.spawns.length).toBeGreaterThan(0);
+      expect(pattern.description).toBeDefined();
+
+      // Validate spawn instructions
+      pattern.spawns.forEach(spawn => {
+        expect(spawn.type).toBeDefined();
+        expect(typeof spawn.lane).toBe('number');
+        expect(spawn.lane).toBeGreaterThanOrEqual(-2);
+        expect(spawn.lane).toBeLessThanOrEqual(2);
+        expect(typeof spawn.zOffset).toBe('number');
+
+        // Type-specific validation
+        if (spawn.type === 'LETTER') {
+          expect(spawn.value).toBeDefined();
+          expect(typeof spawn.targetIndex).toBe('number');
+        }
+      });
+    });
+  });
+
+  it('should have balanced pattern difficulty', () => {
+    const respitePatterns = patternManager.getPatternsByType('RESPITE');
+    const tensionPatterns = patternManager.getPatternsByType('TENSION');
+    const peakPatterns = patternManager.getPatternsByType('PEAK');
+    const variationPatterns = patternManager.getPatternsByType('VARIATION');
+
+    // Respite should have fewer obstacles
+    respitePatterns.forEach(pattern => {
+      const obstacleCount = pattern.spawns.filter(s => s.type === 'OBSTACLE').length;
+      expect(obstacleCount).toBeLessThanOrEqual(4);
+    });
+
+    // Peak should have more obstacles
+    peakPatterns.forEach(pattern => {
+      const obstacleCount = pattern.spawns.filter(s => s.type === 'OBSTACLE').length;
+      expect(obstacleCount).toBeGreaterThanOrEqual(5);
+    });
+
+    // Variation patterns should include letters
+    variationPatterns.forEach(pattern => {
+      const hasLetters = pattern.spawns.some(s => s.type === 'LETTER');
+      expect(hasLetters).toBe(true);
+    });
+  });
+
+  it('should maintain consistent lane usage', () => {
+    const allPatterns = patternManager.getAllPatterns();
+
+    allPatterns.forEach(pattern => {
+      pattern.spawns.forEach(spawn => {
+        // Lanes should be integers between -2 and 2
+        expect(Number.isInteger(spawn.lane)).toBe(true);
+        expect(spawn.lane).toBeGreaterThanOrEqual(-2);
+        expect(spawn.lane).toBeLessThanOrEqual(2);
+      });
+    });
+  });
+
+  it('should have reasonable spawn timing', () => {
+    const allPatterns = patternManager.getAllPatterns();
+
+    allPatterns.forEach(pattern => {
+      // Sort spawns by zOffset to check timing
+      const sortedSpawns = [...pattern.spawns].sort((a, b) => a.zOffset - b.zOffset);
+
+      // First spawn should be at reasonable distance
+      expect(sortedSpawns[0].zOffset).toBeGreaterThanOrEqual(8);
+      expect(sortedSpawns[0].zOffset).toBeLessThanOrEqual(15);
+
+      // Check that spawns are spaced reasonably
+      for (let i = 1; i < sortedSpawns.length; i++) {
+        const gap = sortedSpawns[i].zOffset - sortedSpawns[i-1].zOffset;
+        expect(gap).toBeGreaterThanOrEqual(2); // Minimum spacing
+        expect(gap).toBeLessThanOrEqual(25); // Maximum reasonable gap
+      }
+    });
+  });
+});

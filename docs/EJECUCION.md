@@ -67,6 +67,13 @@
 
 ### 🎮 Gameplay Loops (🔴 Alta / 🟡 Media)
 
+- **TASK-003: Patrones de Nivel (🟡)**
+    - [x] Definir estructuras de datos para patrones predefinidos en `src/features/game/levelPatterns.ts` `[DEP: Ninguna]` `[ESTADO: ✅]`
+    - [x] Implementar lógica para alternar entre patrones en `src/world/stage/LevelManager.tsx` `[ESTADO: ✅]`
+    - [x] Crear 8 patrones con momentos de respiro y picos de tensión `[ESTADO: ✅]`
+    - [x] Crear tests de integración en `tests/integration/levelPatterns.test.ts` `[ESTADO: ✅]`
+    - [x] Documentar sistema completo en `docs/LEAD_GAME_DESIGNER.md` y actualizar `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
+
 - **TASK-017: Sistema de Checkpoints (🔴)**
     - [ ] Implementar lógica de guardado/carga de progreso en runtime `[DEP: TASK-018]` `[ESTADO: 🔵]`
     - [ ] Crear UI de feedback "Checkpoint Alcanzado" `[ESTADO: 🔵]`
