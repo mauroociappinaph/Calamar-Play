@@ -33,6 +33,9 @@ Usamos **Conventional Commits** para generar changelogs automáticos y mantener 
 - **Barrel Files:** No importes archivos internos de un componente; usa el `public.ts` o `index.ts` del directorio (ver [PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md)).
 - **Memoización:** Es obligatorio el uso de `useMemo` para geometrías y materiales pesados.
 - **Hoisting:** Mantén los componentes Three.js pequeños y enfocados en una sola responsabilidad.
+- **Linting y Formateo:** Todo código debe pasar ESLint y Prettier. Se ejecuta automáticamente en cada commit.
+  - Si hay errores de lint o formato, el commit se bloquea.
+  - Para forzar un commit (no recomendado), usar `git commit --no-verify`.
 
 ---
 
