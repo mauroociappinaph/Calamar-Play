@@ -7,20 +7,20 @@
 import React, { Suspense, useEffect, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Environment } from './components/World/Environment';
-import { Player } from './components/World/Player';
-import { LevelManager } from './components/World/LevelManager';
-import { Effects } from './components/World/Effects';
-import { HUD } from './components/UI/HUD';
-import { useStore } from './store';
+import { Environment } from '@/world/stage/Environment';
+import { Player } from '@/world/actors/Player';
+import { LevelManager } from '@/world/stage/LevelManager';
+import { Effects } from '@/world/fx/Effects';
+import { HUD } from '@/features/ui/HUD';
+import { useStore } from '@/features/game/state/store';
 
 // Dynamic Camera Controller with Shake
 const CameraController = () => {
   const { camera, size } = useThree();
   const { laneCount } = useStore();
-  
+
   const shakeIntensity = useRef(0);
-  
+
   useEffect(() => {
       const onLand = () => {
           shakeIntensity.current = 0.3; // Set initial shake intensity
@@ -49,7 +49,7 @@ const CameraController = () => {
     const targetZ = 8.0 + (extraLanes * distFactor);
 
     const targetPos = new THREE.Vector3(0, targetY, targetZ);
-    
+
     // Smoothly interpolate camera position
     camera.position.lerp(targetPos, delta * 2.0);
 
@@ -59,16 +59,16 @@ const CameraController = () => {
         const ry = (Math.random() - 0.5) * shakeIntensity.current;
         camera.position.x += rx;
         camera.position.y += ry;
-        
+
         // Decay shake
         shakeIntensity.current = THREE.MathUtils.lerp(shakeIntensity.current, 0, delta * 8.0);
     }
-    
+
     // Look further down the track to see the end of lanes
     // Adjust look target slightly based on height to maintain angle
-    camera.lookAt(0, 0, -30); 
+    camera.lookAt(0, 0, -30);
   });
-  
+
   return null;
 };
 
@@ -95,7 +95,7 @@ function App() {
       <HUD />
       <Canvas
         shadows
-        dpr={[1, 1.5]} 
+        dpr={[1, 1.5]}
         gl={{ antialias: false, stencil: false, depth: true, powerPreference: "high-performance" }}
         // Initial camera, matches the controller base
         camera={{ position: [0, 5.5, 8], fov: 60 }}

@@ -6,9 +6,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Heart, Zap, Trophy, MapPin, Diamond, Rocket, ArrowUpCircle, Shield, Activity, PlusCircle, Play } from 'lucide-react';
-import { useStore } from '../../store';
-import { GameStatus, GEMINI_COLORS, ShopItem, RUN_SPEED_BASE } from '../../types';
-import { audio } from '../System/Audio';
+import { useStore } from '@/features/game/state/store';
+import { GameStatus, GEMINI_COLORS, ShopItem, RUN_SPEED_BASE } from '@/shared/types/types';
+import { audio } from '@/systems/audio/AudioEngine';
 
 // Available Shop Items
 const SHOP_ITEMS: ShopItem[] = [

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useStore } from './store';
-import { GameStatus, RUN_SPEED_BASE } from './types';
+import { useStore } from '@/features/game/state/store';
+import { GameStatus, RUN_SPEED_BASE } from '@/shared/types/types';
 
 describe('useStore', () => {
   beforeEach(() => {

@@ -5,7 +5,7 @@
 
 
 import { create } from 'zustand';
-import { GameStatus, RUN_SPEED_BASE } from './types';
+import { GameStatus, RUN_SPEED_BASE } from '@/shared/types/types';
 
 interface GameState {
   status: GameStatus;
@@ -13,12 +13,12 @@ interface GameState {
   lives: number;
   maxLives: number;
   speed: number;
-  collectedLetters: number[]; 
+  collectedLetters: number[];
   level: number;
   laneCount: number;
   gemsCollected: number;
   distance: number;
-  
+
   // Inventory / Abilities
   hasDoubleJump: boolean;
   hasImmortality: boolean;
@@ -33,7 +33,7 @@ interface GameState {
   collectLetter: (index: number) => void;
   setStatus: (status: GameStatus) => void;
   setDistance: (dist: number) => void;
-  
+
   // Shop / Abilities
   buyItem: (type: 'DOUBLE_JUMP' | 'MAX_LIFE' | 'HEAL' | 'IMMORTAL', cost: number) => boolean;
   advanceLevel: () => void;
@@ -56,15 +56,15 @@ export const useStore = create<GameState>((set, get) => ({
   laneCount: 3,
   gemsCollected: 0,
   distance: 0,
-  
+
   hasDoubleJump: false,
   hasImmortality: false,
   isImmortalityActive: false,
 
-  startGame: () => set({ 
-    status: GameStatus.PLAYING, 
-    score: 0, 
-    lives: 3, 
+  startGame: () => set({
+    status: GameStatus.PLAYING,
+    score: 0,
+    lives: 3,
     maxLives: 3,
     speed: RUN_SPEED_BASE,
     collectedLetters: [],
@@ -77,10 +77,10 @@ export const useStore = create<GameState>((set, get) => ({
     isImmortalityActive: false
   }),
 
-  restartGame: () => set({ 
-    status: GameStatus.PLAYING, 
-    score: 0, 
-    lives: 3, 
+  restartGame: () => set({
+    status: GameStatus.PLAYING,
+    score: 0,
+    lives: 3,
     maxLives: 3,
     speed: RUN_SPEED_BASE,
     collectedLetters: [],
@@ -105,25 +105,25 @@ export const useStore = create<GameState>((set, get) => ({
   },
 
   addScore: (amount) => set((state) => ({ score: state.score + amount })),
-  
-  collectGem: (value) => set((state) => ({ 
-    score: state.score + value, 
-    gemsCollected: state.gemsCollected + 1 
+
+  collectGem: (value) => set((state) => ({
+    score: state.score + value,
+    gemsCollected: state.gemsCollected + 1
   })),
 
   setDistance: (dist) => set({ distance: dist }),
 
   collectLetter: (index) => {
     const { collectedLetters, level, speed } = get();
-    
+
     if (!collectedLetters.includes(index)) {
       const newLetters = [...collectedLetters, index];
-      
+
       // LINEAR SPEED INCREASE: Add slight speed per letter
       const speedIncrease = RUN_SPEED_BASE * 0.05;
       const nextSpeed = speed + speedIncrease;
 
-      set({ 
+      set({
         collectedLetters: newLetters,
         speed: nextSpeed
       });
@@ -147,7 +147,7 @@ export const useStore = create<GameState>((set, get) => ({
   advanceLevel: () => {
       const { level, laneCount, speed } = get();
       const nextLevel = level + 1;
-      
+
       const speedIncrease = RUN_SPEED_BASE * 0.30;
       const newSpeed = speed + speedIncrease;
 
@@ -161,15 +161,15 @@ export const useStore = create<GameState>((set, get) => ({
   },
 
   openShop: () => set({ status: GameStatus.SHOP }),
-  
+
   closeShop: () => set({ status: GameStatus.PLAYING }),
 
   buyItem: (type, cost) => {
       const { score, maxLives, lives } = get();
-      
+
       if (score >= cost) {
           set({ score: score - cost });
-          
+
           switch (type) {
               case 'DOUBLE_JUMP':
                   set({ hasDoubleJump: true });
@@ -193,7 +193,7 @@ export const useStore = create<GameState>((set, get) => ({
       const { hasImmortality, isImmortalityActive } = get();
       if (hasImmortality && !isImmortalityActive) {
           set({ isImmortalityActive: true });
-          
+
           // Lasts 5 seconds
           setTimeout(() => {
               set({ isImmortalityActive: false });

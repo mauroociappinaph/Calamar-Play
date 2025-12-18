@@ -9,9 +9,9 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Text3D, Center, Float } from '@react-three/drei';
 import { v4 as uuidv4 } from 'uuid';
-import { useStore } from '../../store';
-import { GameObject, ObjectType, LANE_WIDTH, SPAWN_DISTANCE, REMOVE_DISTANCE, GameStatus, GEMINI_COLORS } from '../../types';
-import { audio } from '../System/Audio';
+import { useStore } from '@/features/game/state/store';
+import { GameObject, ObjectType, LANE_WIDTH, SPAWN_DISTANCE, REMOVE_DISTANCE, GameStatus, GEMINI_COLORS } from '@/shared/types/types';
+import { audio } from '@/systems/audio/AudioEngine';
 
 // Geometry Constants
 const OBSTACLE_HEIGHT = 1.6;
@@ -34,11 +34,11 @@ const SHADOW_DEFAULT_GEO = new THREE.CircleGeometry(0.8, 6);
 
 // Shop Geometries (Tiki Hut style)
 const SHOP_FRAME_GEO = new THREE.BoxGeometry(1, 7, 1);
-const SHOP_BACK_GEO = new THREE.BoxGeometry(1, 5, 1.2); 
+const SHOP_BACK_GEO = new THREE.BoxGeometry(1, 5, 1.2);
 const SHOP_ROOF_GEO = new THREE.ConeGeometry(3.5, 2, 4); // Roof
 
 const PARTICLE_COUNT = 300;
-const BASE_LETTER_INTERVAL = 150; 
+const BASE_LETTER_INTERVAL = 150;
 
 const getLetterInterval = (level: number) => {
     return BASE_LETTER_INTERVAL * Math.pow(1.2, Math.max(0, level - 1)); // Slightly less scaling due to longer word
@@ -53,7 +53,7 @@ const FONT_URL = "https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_b
 const ParticleSystem: React.FC = () => {
     const mesh = useRef<THREE.InstancedMesh>(null);
     const dummy = useMemo(() => new THREE.Object3D(), []);
-    
+
     const particles = useMemo(() => new Array(PARTICLE_COUNT).fill(0).map(() => ({
         life: 0,
         pos: new THREE.Vector3(),
@@ -65,14 +65,14 @@ const ParticleSystem: React.FC = () => {
         const handleExplosion = (e: CustomEvent) => {
             const { position } = e.detail;
             let spawned = 0;
-            const burstAmount = 30; 
+            const burstAmount = 30;
 
             for(let i = 0; i < PARTICLE_COUNT; i++) {
                 const p = particles[i];
                 if (p.life <= 0) {
-                    p.life = 1.0 + Math.random(); 
+                    p.life = 1.0 + Math.random();
                     p.pos.set(position[0], position[1], position[2]);
-                    
+
                     p.vel.set(
                         (Math.random() - 0.5) * 5,
                         (Math.random() * 5),
@@ -84,7 +84,7 @@ const ParticleSystem: React.FC = () => {
                 }
             }
         };
-        
+
         window.addEventListener('particle-burst', handleExplosion as any);
         return () => window.removeEventListener('particle-burst', handleExplosion as any);
     }, [particles]);
@@ -99,12 +99,12 @@ const ParticleSystem: React.FC = () => {
                 p.pos.addScaledVector(p.vel, safeDelta);
                 p.vel.y += safeDelta * 2; // Bubbles float up
                 p.vel.multiplyScalar(0.95);
-                
+
                 dummy.position.copy(p.pos);
                 const s = p.life * p.scale;
                 dummy.scale.set(s, s, s);
                 dummy.updateMatrix();
-                
+
                 mesh.current!.setMatrixAt(i, dummy.matrix);
             } else {
                 dummy.scale.set(0,0,0);
@@ -112,7 +112,7 @@ const ParticleSystem: React.FC = () => {
                 mesh.current!.setMatrixAt(i, dummy.matrix);
             }
         });
-        
+
         mesh.current.instanceMatrix.needsUpdate = true;
     });
 
@@ -131,18 +131,18 @@ const getRandomLane = (laneCount: number) => {
 };
 
 export const LevelManager: React.FC = () => {
-  const { 
-    status, 
-    speed, 
-    collectGem, 
-    collectLetter, 
+  const {
+    status,
+    speed,
+    collectGem,
+    collectLetter,
     collectedLetters,
     laneCount,
     setDistance,
     openShop,
     level
   } = useStore();
-  
+
   const objectsRef = useRef<GameObject[]>([]);
   const [renderTrigger, setRenderTrigger] = useState(0);
   const prevStatus = useRef(status);
@@ -162,7 +162,7 @@ export const LevelManager: React.FC = () => {
     if (isMenuReset || isRestart || isVictoryReset) {
         objectsRef.current = [];
         setRenderTrigger(t => t + 1);
-        
+
         distanceTraveled.current = 0;
         nextLetterDistance.current = getLetterInterval(1);
 
@@ -172,17 +172,17 @@ export const LevelManager: React.FC = () => {
         objectsRef.current.push({
             id: uuidv4(),
             type: ObjectType.SHOP_PORTAL,
-            position: [0, 0, -100], 
+            position: [0, 0, -100],
             active: true,
         });
-        
+
         nextLetterDistance.current = distanceTraveled.current - SPAWN_DISTANCE + getLetterInterval(level);
         setRenderTrigger(t => t + 1);
-        
+
     } else if (status === GameStatus.GAME_OVER || status === GameStatus.VICTORY) {
         setDistance(Math.floor(distanceTraveled.current));
     }
-    
+
     prevStatus.current = status;
     prevLevel.current = level;
   }, [status, level, setDistance]);
@@ -199,14 +199,14 @@ export const LevelManager: React.FC = () => {
   useFrame((state, delta) => {
     if (status !== GameStatus.PLAYING) return;
 
-    const safeDelta = Math.min(delta, 0.05); 
+    const safeDelta = Math.min(delta, 0.05);
     const dist = speed * safeDelta;
-    
+
     distanceTraveled.current += dist;
 
     let hasChanges = false;
     let playerPos = new THREE.Vector3(0, 0, 0);
-    
+
     if (playerObjRef.current) {
         playerObjRef.current.getWorldPosition(playerPos);
     }
@@ -217,22 +217,22 @@ export const LevelManager: React.FC = () => {
 
     for (const obj of currentObjects) {
         let moveAmount = dist;
-        
+
         if (obj.type === ObjectType.MISSILE) {
             moveAmount += MISSILE_SPEED * safeDelta;
         }
 
         const prevZ = obj.position[2];
         obj.position[2] += moveAmount;
-        
+
         if (obj.type === ObjectType.ALIEN && obj.active && !obj.hasFired) {
              if (obj.position[2] > -90) {
                  obj.hasFired = true;
-                 
+
                  newSpawns.push({
                      id: uuidv4(),
                      type: ObjectType.MISSILE,
-                     position: [obj.position[0], 1.0, obj.position[2] + 2], 
+                     position: [obj.position[0], 1.0, obj.position[2] + 2],
                      active: true,
                      color: '#ffffff'
                  });
@@ -242,22 +242,22 @@ export const LevelManager: React.FC = () => {
 
         let keep = true;
         if (obj.active) {
-            const zThreshold = 2.0; 
+            const zThreshold = 2.0;
             const inZZone = (prevZ < playerPos.z + zThreshold) && (obj.position[2] > playerPos.z - zThreshold);
-            
+
             if (obj.type === ObjectType.SHOP_PORTAL) {
                 const dz = Math.abs(obj.position[2] - playerPos.z);
-                if (dz < 2) { 
+                if (dz < 2) {
                      openShop();
                      obj.active = false;
                      hasChanges = true;
-                     keep = false; 
+                     keep = false;
                 }
             } else if (inZZone) {
                 const dx = Math.abs(obj.position[0] - playerPos.x);
-                if (dx < 0.9) { 
+                if (dx < 0.9) {
                      const isDamageSource = obj.type === ObjectType.OBSTACLE || obj.type === ObjectType.ALIEN || obj.type === ObjectType.MISSILE;
-                     
+
                      if (isDamageSource) {
                          const playerBottom = playerPos.y;
                          const playerTop = playerPos.y + 1.2;
@@ -275,20 +275,20 @@ export const LevelManager: React.FC = () => {
 
                          const isHit = (playerBottom < objTop) && (playerTop > objBottom);
 
-                         if (isHit) { 
+                         if (isHit) {
                              window.dispatchEvent(new Event('player-hit'));
-                             obj.active = false; 
+                             obj.active = false;
                              hasChanges = true;
-                             
+
                              if (obj.type === ObjectType.MISSILE) {
-                                window.dispatchEvent(new CustomEvent('particle-burst', { 
-                                    detail: { position: obj.position, color: '#ffffff' } 
+                                window.dispatchEvent(new CustomEvent('particle-burst', {
+                                    detail: { position: obj.position, color: '#ffffff' }
                                 }));
                              }
                          }
                      } else {
                          const dy = Math.abs(obj.position[1] - playerPos.y);
-                         if (dy < 2.5) { 
+                         if (dy < 2.5) {
                             if (obj.type === ObjectType.GEM) {
                                 collectGem(obj.points || 50);
                                 audio.playGemCollect();
@@ -297,12 +297,12 @@ export const LevelManager: React.FC = () => {
                                 collectLetter(obj.targetIndex);
                                 audio.playLetterCollect();
                             }
-                            
-                            window.dispatchEvent(new CustomEvent('particle-burst', { 
-                                detail: { 
-                                    position: obj.position, 
-                                    color: obj.color || '#ffffff' 
-                                } 
+
+                            window.dispatchEvent(new CustomEvent('particle-burst', {
+                                detail: {
+                                    position: obj.position,
+                                    color: obj.color || '#ffffff'
+                                }
                             }));
 
                             obj.active = false;
@@ -329,7 +329,7 @@ export const LevelManager: React.FC = () => {
 
     let furthestZ = 0;
     const staticObjects = keptObjects.filter(o => o.type !== ObjectType.MISSILE);
-    
+
     if (staticObjects.length > 0) {
         furthestZ = Math.min(...staticObjects.map(o => o.position[2]));
     } else {
@@ -337,21 +337,21 @@ export const LevelManager: React.FC = () => {
     }
 
     if (furthestZ > -SPAWN_DISTANCE) {
-         const minGap = 12 + (speed * 0.4); 
+         const minGap = 12 + (speed * 0.4);
          const spawnZ = Math.min(furthestZ - minGap, -SPAWN_DISTANCE);
-         
+
          const isLetterDue = distanceTraveled.current >= nextLetterDistance.current;
 
          if (isLetterDue) {
              const lane = getRandomLane(laneCount);
              // CALAMARLOCO
              const target = ['C', 'A', 'L', 'A', 'M', 'A', 'R', 'L', 'O', 'C', 'O'];
-             
+
              // Simple sequential logic for multi-repeating letters
              const availableIndices = target.map((_, i) => i).filter(i => !collectedLetters.includes(i));
 
              if (availableIndices.length > 0) {
-                 // Prioritize earliest uncollected letter to help spelling "C-A-L..." naturally, 
+                 // Prioritize earliest uncollected letter to help spelling "C-A-L..." naturally,
                  // though random pickup is also fine. Let's do random.
                  const chosenIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
                  const val = target[chosenIndex];
@@ -360,13 +360,13 @@ export const LevelManager: React.FC = () => {
                  keptObjects.push({
                     id: uuidv4(),
                     type: ObjectType.LETTER,
-                    position: [lane * LANE_WIDTH, 1.0, spawnZ], 
+                    position: [lane * LANE_WIDTH, 1.0, spawnZ],
                     active: true,
                     color: color,
                     value: val,
                     targetIndex: chosenIndex
                  });
-                 
+
                  nextLetterDistance.current += getLetterInterval(level);
                  hasChanges = true;
              } else {
@@ -382,11 +382,11 @@ export const LevelManager: React.FC = () => {
              }
 
          } else if (Math.random() > 0.1) {
-            
+
             const isObstacle = Math.random() > 0.20;
 
             if (isObstacle) {
-                const spawnAlien = level >= 2 && Math.random() < 0.2; 
+                const spawnAlien = level >= 2 && Math.random() < 0.2;
 
                 if (spawnAlien) {
                     const availableLanes = [];
@@ -413,7 +413,7 @@ export const LevelManager: React.FC = () => {
                     const maxLane = Math.floor(laneCount / 2);
                     for (let i = -maxLane; i <= maxLane; i++) availableLanes.push(i);
                     availableLanes.sort(() => Math.random() - 0.5);
-                    
+
                     let countToSpawn = 1;
                     const p = Math.random();
 
@@ -426,7 +426,7 @@ export const LevelManager: React.FC = () => {
                     for (let i = 0; i < countToSpawn; i++) {
                         const lane = availableLanes[i];
                         const laneX = lane * LANE_WIDTH;
-                        
+
                         keptObjects.push({
                             id: uuidv4(),
                             type: ObjectType.OBSTACLE,
@@ -485,7 +485,7 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
     const visualRef = useRef<THREE.Group>(null);
     const shadowRef = useRef<THREE.Mesh>(null);
     const { laneCount } = useStore();
-    
+
     useFrame((state, delta) => {
         if (groupRef.current) {
             groupRef.current.position.set(data.position[0], 0, data.position[2]);
@@ -493,7 +493,7 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
 
         if (visualRef.current) {
             const baseHeight = data.position[1];
-            
+
             if (data.type === ObjectType.SHOP_PORTAL) {
                  visualRef.current.scale.setScalar(1 + Math.sin(state.clock.elapsedTime * 2) * 0.02);
             } else if (data.type === ObjectType.MISSILE) {
@@ -505,9 +505,9 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
                 visualRef.current.rotation.y += delta * 3;
                 const bobOffset = Math.sin(state.clock.elapsedTime * 4 + data.position[0]) * 0.1;
                 visualRef.current.position.y = baseHeight + bobOffset;
-                
+
                 if (shadowRef.current) {
-                    const shadowScale = 1 - bobOffset; 
+                    const shadowScale = 1 - bobOffset;
                     shadowRef.current.scale.setScalar(shadowScale);
                 }
             } else {
@@ -519,9 +519,9 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
     const shadowGeo = useMemo(() => {
         if (data.type === ObjectType.LETTER) return SHADOW_LETTER_GEO;
         if (data.type === ObjectType.GEM) return SHADOW_GEM_GEO;
-        if (data.type === ObjectType.SHOP_PORTAL) return null; 
+        if (data.type === ObjectType.SHOP_PORTAL) return null;
         if (data.type === ObjectType.ALIEN) return SHADOW_ALIEN_GEO;
-        return SHADOW_DEFAULT_GEO; 
+        return SHADOW_DEFAULT_GEO;
     }, [data.type]);
 
     return (
@@ -587,10 +587,10 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
                 {/* --- GEM (Pearl) --- */}
                 {data.type === ObjectType.GEM && (
                     <mesh castShadow geometry={GEMINI_TARGET_INDEX_GEO || GEM_GEOMETRY}>
-                        <meshStandardMaterial 
-                            color="#ffffff" 
-                            roughness={0.2} 
-                            metalness={0.8} 
+                        <meshStandardMaterial
+                            color="#ffffff"
+                            roughness={0.2}
+                            metalness={0.8}
                         />
                     </mesh>
                 )}
@@ -599,10 +599,10 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
                 {data.type === ObjectType.LETTER && (
                     <group scale={[1.5, 1.5, 1.5]}>
                          <Center>
-                             <Text3D 
-                                font={FONT_URL} 
-                                size={0.8} 
-                                height={0.2} 
+                             <Text3D
+                                font={FONT_URL}
+                                size={0.8}
+                                height={0.2}
                                 bevelEnabled
                                 bevelThickness={0.02}
                                 bevelSize={0.02}

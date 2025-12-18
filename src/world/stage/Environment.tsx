@@ -7,14 +7,14 @@
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useStore } from '../../store';
-import { LANE_WIDTH } from '../../types';
+import { useStore } from '@/features/game/state/store';
+import { LANE_WIDTH } from '@/shared/types/types';
 
 // --- ELEMENTOS DECORATIVOS: PALMERAS MEJORADAS ---
 const PalmTree: React.FC<{ position: [number, number, number], scale: number, rotationY: number }> = ({ position, scale, rotationY }) => {
     const trunkRef = useRef<THREE.Group>(null);
     const leavesRef = useRef<THREE.Group>(null);
-    
+
     useFrame((state) => {
         if (trunkRef.current) {
             trunkRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
@@ -46,13 +46,13 @@ const PalmTree: React.FC<{ position: [number, number, number], scale: number, ro
                 <cylinderGeometry args={[0.25, 0.4, 5, 10]} />
                 <meshStandardMaterial color="#5d3a1a" roughness={1} />
             </mesh>
-            
+
             {/* Corona de Hojas (Frondosa) */}
             <group position={[0, 5, 0]} ref={leavesRef}>
                 {leaves.map((leaf, i) => (
-                    <mesh 
-                        key={i} 
-                        rotation={leaf.rotation as any} 
+                    <mesh
+                        key={i}
+                        rotation={leaf.rotation as any}
                         position={leaf.position as any}
                         scale={leaf.scale as any}
                     >
@@ -82,7 +82,7 @@ const Seagulls: React.FC = () => {
         groupRef.current.children.forEach((bird, i) => {
             bird.position.z += (activeSpeed * 0.2 + i) * delta;
             if (bird.position.z > 20) bird.position.z = -180 - Math.random() * 50;
-            
+
             const wingL = bird.children[1] as THREE.Mesh;
             const wingR = bird.children[2] as THREE.Mesh;
             const flap = Math.sin(state.clock.elapsedTime * 10 + i) * 0.5;
@@ -120,10 +120,10 @@ const DistantIslands: React.FC = () => {
 
 const Clouds: React.FC = () => {
   const speed = useStore(state => state.speed);
-  const count = 10; 
+  const count = 10;
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  
+
   const particles = useMemo(() => {
       return new Array(count).fill(0).map(() => ({
           x: (Math.random() - 0.5) * 500,
@@ -177,7 +177,7 @@ const SandTracks: React.FC = () => {
             return { ...t, z: newZ };
         }));
     });
-    
+
     return (
         <group>
             {/* Arena Principal: Pista de nado elevada */}
@@ -188,9 +188,9 @@ const SandTracks: React.FC = () => {
 
             {/* Palmeras laterales: Más alejadas del centro para no interferir */}
             {trees.map((t, i) => (
-                <PalmTree 
-                    key={i} 
-                    position={[t.side * (laneCount * LANE_WIDTH / 2 + 12), -0.2, t.z]} 
+                <PalmTree
+                    key={i}
+                    position={[t.side * (laneCount * LANE_WIDTH / 2 + 12), -0.2, t.z]}
                     scale={t.scale}
                     rotationY={t.rot}
                 />
@@ -210,7 +210,7 @@ const Ocean: React.FC = () => {
 
     const uniforms = useMemo(() => ({
         uTime: { value: 0 },
-        uColor: { value: new THREE.Color('#0284c7') }, 
+        uColor: { value: new THREE.Color('#0284c7') },
         uFoamColor: { value: new THREE.Color('#e0f2fe') }
     }), []);
 
@@ -256,13 +256,13 @@ export const Environment: React.FC = () => {
     <>
       <color attach="background" args={['#bae6fd']} />
       <fog attach="fog" args={['#bae6fd', 80, 300]} />
-      
+
       <ambientLight intensity={1.0} />
-      <directionalLight 
-        position={[100, 150, 100]} 
-        intensity={1.5} 
-        color="#fffceb" 
-        castShadow 
+      <directionalLight
+        position={[100, 150, 100]}
+        intensity={1.5}
+        color="#fffceb"
+        castShadow
       />
 
       {/* Domo de cielo inmenso */}

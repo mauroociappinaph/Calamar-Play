@@ -6,9 +6,9 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useStore } from '../../store';
-import { LANE_WIDTH, GameStatus } from '../../types';
-import { audio } from '../System/Audio';
+import { useStore } from '@/features/game/state/store';
+import { LANE_WIDTH, GameStatus } from '@/shared/types/types';
+import { audio } from '@/systems/audio/AudioEngine';
 
 // --- GEOMETRÍAS PROCEDURALES (Estilo Toy Art) ---
 const BODY_GEO = new THREE.SphereGeometry(0.7, 32, 32);
