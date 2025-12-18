@@ -44,6 +44,11 @@ Contamos con una suite automatizada para garantizar que ningún código roto lle
 - Si los tests fallan, el commit será bloqueado.
 - Puedes ejecutar los tests manualmente con `npm run test` antes de commitear.
 
+- **Pre-push Hook:** Antes de cada `git push`, se ejecutará automáticamente `npm test && npm run build`.
+- Si los tests o el build fallan, el push será bloqueado.
+- Esto asegura que ningún código roto llegue al repositorio remoto.
+- **Forzar push (solo emergencias):** `git push --no-verify` (no recomendado, solo para casos críticos).
+
 ### 🚀 Integración Continua (GitHub Actions)
 - Cada **Push** o **Pull Request** a `main`, `develop` o ramas `feature/*` dispara un workflow de CI.
 - El build y los tests se validan en un entorno limpio (`ubuntu-latest`).
