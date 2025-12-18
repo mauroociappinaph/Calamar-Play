@@ -8,8 +8,10 @@ El objetivo de la **IA Ligera** en Calamar Loco no es reemplazar el diseño de j
 
 **Objetivos principales:**
 - Implementar un sistema adaptativo que mantenga al jugador en el "estado de flow".
-- Ejecutar modelos de inferencia en tiempo real en el navegador (latency-free).
-- Mantener un bundle size reducido (< 50KB adicionales para la lógica).
+- Ejecutar modelos de inferencia en tiempo real en el navegador (**sin latencia de red**).
+- **Control de Presupuesto (Bundle Size):**
+  - **Modo Heurístico:** Impacto despreciable (+0KB significativo).
+  - **Modo TF.js:** Implementación vía *lazy-load* (dynamic import) o build específico "AI Edition". Se estima un peso adicional de **~200–300KB gzipped** para el engine de TensorFlow.js; se mitiga cargando el módulo solo tras el primer nivel o mediante descarga bajo demanda para no afectar el TTI inicial.
 
 ---
 
@@ -28,8 +30,11 @@ Una red neuronal secuencial simple entrenada en el navegador.
 - **Inputs:**
   1. `player_score_normalized` (0-1)
   2. `avg_obstacle_distance` (0-1)
-  3. `reaction_time_ms` (normalizado)
-- **Output:** `difficulty_delta` (-0.2 a +0.2).
+  3. `reaction_time_ms` (normalizado vía TASK-020)
+- **Output:** `difficulty_delta` (valor normalizado).
+
+### C) Guardrails y Clamping
+Para evitar estados imposibles o triviales, el output final de dificultad se aplica sobre un multiplicador de base (ej. 1.0) con un **clamp estricto de [0.5 – 2.0]**.
 
 ---
 
@@ -38,7 +43,8 @@ Una red neuronal secuencial simple entrenada en el navegador.
 El entrenamiento se realiza de forma **online/incremental**:
 1. El juego recolecta datos de "éxito" (letras recogidas) y "fracaso" (daño).
 2. Cada 5 partidas, el modelo se re-entrena ligeramente con los nuevos datos para adaptarse al estilo del jugador.
-3. El modelo se guarda en `indexedDB` para persistir entre sesiones.
+3. **Persistencia:** El modelo se intenta guardar en `indexedDB` para persistir entre sesiones.
+   - *Fallback:* Si `indexedDB` no está disponible, la persistencia no aplica y el sistema utiliza el **modo heurístico** o mantiene el modelo solo en memoria durante la sesión actual.
 
 ---
 
@@ -55,5 +61,14 @@ Para transparencia técnica y "Vibe Coding", el HUD mostrará:
 - **Balance:** El 90% de los jugadores debería completar el Nivel 1 en menos de 5 intentos gracias al ajuste adaptativo.
 
 ---
-🔗 Referencia: [TASK.MD](./TASK.MD) | [README.md](../README.md)
-Última actualización: 17/12/2025
+
+## 6. Dependencias (alineadas con TASK.MD)
+El desarrollo de la IA no es una feature aislada y depende de la madurez de los siguientes sistemas:
+- **TASK-015 (Analytics/Telemetría):** Provee el pipeline de datos para los inputs del modelo (muertes, tiempos, recolección).
+- **TASK-020 (Fixed Timestep):** Garantiza que el `reaction_time_ms` y los timings de movimiento sean consistentes e independientes del framerate, permitiendo una inferencia justa.
+
+*Nota: Según el roadmap unificado en [TASK.MD](./TASK.MD), el módulo de AI se implementa de forma integral durante la **Fase 3**.*
+
+---
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
+Última sincronización automática: 2025-12-17
