@@ -1,4 +1,6 @@
-## 10. Plan de Refactor Arquitectónico (Alineado)
+## 10. Plan de Refactor Arquitectónico (Alineado con TASK.MD)
+
+Este plan es complementario y no modifica prioridades fuera del backlog oficial definido en `TASK.MD`. Sus acciones se aplicarán dentro de las tasks existentes.
 
 La refactorización de la arquitectura seguirá la estrategia de 3 fases para minimizar el riesgo y alinear el trabajo técnico con los objetivos del producto.
 
@@ -23,6 +25,8 @@ La refactorización de la arquitectura seguirá la estrategia de 3 fases para mi
   - **Refactorizar Store con Slices:** Dividir el "god store" de Zustand en `slices` más pequeños y manejables, uno por cada dominio (ej. `createPlayerSlice`, `createGameSlice`).
   - **Endurecer Boundaries:** Implementar reglas de ESLint para forzar la regla de dependencia y prevenir importaciones cíclicas.
 
+> 📘 Más contexto general: [README.md](../README.md)
+
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
 Última sincronización automática: 2025-12-17
