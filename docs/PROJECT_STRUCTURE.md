@@ -31,7 +31,7 @@ Actualmente, el proyecto presenta una estructura simplificada con lógica disper
 ### A) Single Responsibility Principle (SRP)
 Dividimos la lógica en tres capas claras:
 1.  **Sistemas (Logic):** Lógica pura (clases o funciones) que no depende de React/ThreeFiber (ej: Pooling, Physics).
-2.  **State (Data):** Almacén de datos (Zustand) dividido por dominios.
+2.  **State (Data):** El estado se organiza por dominio dentro de `features/*/state`; no se crea un `src/state` global.
 3.  **Features (UI/View):** Componentes visuales y hooks que consumen los sistemas y el estado.
 
 ### B) Don't Repeat Yourself (DRY)
@@ -40,9 +40,9 @@ Dividimos la lógica en tres capas claras:
 
 ### C) Barrel Files (index.ts) y Encapsulamiento
 Para evitar el "acoplamiento spaghetti" y asegurar una API limpia por módulo:
-- **Prohibido `export *`:** Usar exports explícitos para mayor seguridad y mejor soporte de IDE/Treeshaking.
-- **Patrón `public.ts`:** Cada feature/sistema debe tener un archivo `public.ts` que defina su API externa (qué funciones, tipos o componentes son visibles para el resto del app).
-- **`index.ts` estricto:** El archivo `index.ts` en la raíz de la carpeta SOLO debe re-exportar desde `public.ts`.
+- **Exports Explícitos:** Se prohíbe el uso de `export *` de forma indiscriminada. Se deben declarar explícitamente las funciones, tipos o componentes que forman parte de la API pública.
+- **Excepción para Barrels:** Se permite/recomienda `export * from './public'` únicamente desde el archivo `index.ts` principal de una carpeta, siempre que `public.ts` contenga los exports explícitos.
+- **Patrón `public.ts`:** Cada feature/sistema debe tener un archivo `public.ts` que defina su API externa.
 - **Boundaries:** Desde fuera de una feature, solo está permitido importar desde su `index.ts` (ej: `@/features/game`). Nunca realizar imports profundos (ej: `@/features/game/internal/utils`).
 
 ### D) Regla de Imports y Alias Único
@@ -64,7 +64,7 @@ Para evitar el "acoplamiento spaghetti" y asegurar una API limpia por módulo:
 
 ---
 
-## 4. Estructura Objetivo del Repositorio
+## 5. Estructura Objetivo del Repositorio
 
 ```text
 /
@@ -85,7 +85,7 @@ Para evitar el "acoplamiento spaghetti" y asegurar una API limpia por módulo:
 │   │   ├── constants/      # Precios, velocidades, IDs
 │   │   ├── hooks/          # Hooks genéricos
 │   │   ├── types/          # Definiciones de TS
-│   │   └── utils/          # Math, Randomgers
+│   │   └── utils/          # Math, Random, Time
 │   ├── systems/            # Lógica pura (Engine-like)
 │   │   ├── pooling/        # Object Pooling (TASK-001)
 │   │   ├── physics/        # Colisiones AABB / Physics puros
@@ -121,6 +121,7 @@ export type { GameStatus } from './state/types';
 
 `src/features/game/index.ts`:
 ```typescript
+// Excepción permitida: export wildcard solo desde public.ts local
 export * from './public';
 ```
 
@@ -141,16 +142,16 @@ Para evitar el "Architectural Drift", se recomiendan estas prácticas:
 
 ---
 
+## 9. Plan de Migración Incremental
+
 | Fase | Acción | Riesgo | Relación TASK |
 | :--- | :--- | :--- | :--- |
-| **1. Foundation** | Setup de `src/`, mover `types.ts` y `shared/constants`. Configurar Alias único `@/`. | Bajo | - |
+| **1. Foundation** | Setup de `src/`, mover `types.ts`/`constants`. Iniciar `.github/workflows` y `tools/`. | Bajo | TASK-016, TASK-011 |
 | **2. Systems Split** | Extraer lógica de Pooling y Timestep de `LevelManager` a `src/systems/`. | Medio | TASK-001, TASK-020 |
 | **3. Feature Folders** | Mover HUD a `features/ui`, crear `features/game/state` (FSM) y `public.ts` iniciales. | Bajo | TASK-022, TASK-018 |
 | **4. Entity Refactor** | Player y Environment migran a `src/world/entities` usando los nuevos sistemas. | Alto | TASK-005, TASK-006 |
 
----
-
-## 7. Mapping con TASK.MD (Fuente de Verdad)
+## 10. Mapping con TASK.MD (Fuente de Verdad)
 
 La arquitectura propuesta es el soporte físico para la ejecución de las tareas maestras:
 
