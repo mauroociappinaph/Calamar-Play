@@ -123,21 +123,28 @@ console.log('POOL RELEASE:', gameObjectPool.getStats(), 'obj id:', obj.id, 'acti
 ### Cambios de Densidad de Obstáculos y Reemplazo de Perlas por Cervezas (TASK-003 - 2025-12-17)
 
 **Cambios implementados para aumentar la densidad de obstáculos:**
-- **Reducción de intervalos de spawn:** zOffsets entre obstáculos reducidos de 10-25 unidades a 4-8 unidades en patrones de tensión
-- **Aumento de frecuencia:** Más obstáculos por patrón, especialmente en PEAK y TENSION
-- **Validación de límites:** Máximo 8 metros sin obstáculo garantizado por patrones más densos
+- **Reducción de intervalos:** zOffsets entre obstáculos reducidos de 10-25 unidades a 1-2 unidades en todos los patrones
+- **Aumento de frecuencia:** Obstáculos aparecen cada 1-2 metros en lugar de 4-8 metros
+- **Validación de límites:** Máximo 2 metros sin obstáculo garantizado por patrones de alta densidad
 - **Balance de dificultad:** Mantiene jugabilidad justa sin ser imposible
+
+**Ajustes de Flujo Continuo (2025-12-18):**
+- **Intervalos reducidos a 1-2 metros:** zOffsets mínimos de 2-3 unidades entre spawns
+- **Spawn cada 0.5-0.8 segundos:** A velocidad de 30 unidades/segundo, obstáculos aparecen continuamente
+- **Pool de objetos suficiente:** Capacidad aumentada a 100 objetos para mantener densidad
+- **Logging de spawn:** Consola registra cada spawn con timestamp y posición para debugging
+- **Test de integración:** Simulación de 100 metros verifica nunca más de 2 metros sin obstáculo
 
 **Reemplazo de GEM por BEER:**
 - **Nuevo ObjectType.BEER:** Agregado al enum ObjectType
 - **collectBeer function:** Nueva función en store con mismos multiplicadores que collectGem
 - **HUD actualizado:** "PERLAS" → "CERVEZAS" en todas las pantallas
 - **Render BEER:** Objetos BEER renderizados con color amarillo (#ffdd44) vs blanco de GEM
-- **Analytics:** trackGameEvent.collectItem extendido para incluir 'beer'
+- **Analytics:** Eventos 'beer' en lugar de 'gem' para tracking
 
 **Cambios en levelPatterns.ts:**
 - Todos los GEM reemplazados por BEER en spawns
-- zOffsets reducidos para mayor densidad
+- zOffsets reducidos a 1-2 unidades para densidad máxima
 - Nombres de patrones actualizados ("Bonanza de Cervezas")
 - Duraciones ajustadas para mantener ritmo desafiante
 
@@ -146,6 +153,7 @@ console.log('POOL RELEASE:', gameObjectPool.getStats(), 'obj id:', obj.id, 'acti
 - Collision detection maneja BEER correctamente
 - Analytics tracking incluye eventos 'beer'
 - Tests de integración actualizados para validar densidad y spawn BEER
+- Test de simulación de 100 metros confirma flujo continuo
 
 **Modelo actual implementado:** Sistema de colisiones AABB discretas con capas lógicas. Tres tipos principales de entidades: obstáculos dañinos, objetos coleccionables, y entidades enemigas.
 

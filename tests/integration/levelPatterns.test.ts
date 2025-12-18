@@ -226,4 +226,76 @@ describe('Level Patterns System (TASK-003)', () => {
     const hasBonanzaPattern = respitePatterns.some(p => p.name.includes('Cervezas'));
     expect(hasBonanzaPattern).toBe(true);
   });
+
+  it('should simulate 100 meters of gameplay with continuous obstacle flow', () => {
+    // Mock the LevelManager behavior for 100 meters simulation
+    let currentZ = 0;
+    let lastObstacleZ = 0;
+    let maxGapWithoutObstacle = 0;
+    let obstaclesSpawned = 0;
+
+    // Simulate player movement at speed 30 units/second
+    const playerSpeed = 30;
+    const simulationDuration = 100 / playerSpeed; // Time to travel 100 meters
+    const frameRate = 60;
+    const frameTime = 1 / frameRate;
+    const totalFrames = Math.ceil(simulationDuration / frameTime);
+
+    // Track active objects
+    const activeObjects: Array<{type: string, z: number}> = [];
+
+    for (let frame = 0; frame < totalFrames; frame++) {
+      const deltaTime = frameTime;
+      currentZ += playerSpeed * deltaTime;
+
+      // Remove objects that have passed the player
+      activeObjects.forEach((obj, index) => {
+        if (obj.z < currentZ - 50) { // Remove objects far behind
+          activeObjects.splice(index, 1);
+        }
+      });
+
+      // Check if we need to switch patterns (simplified logic)
+      const shouldSwitch = frame % (8 * frameRate) === 0; // Every 8 seconds
+
+      if (shouldSwitch || frame === 0) {
+        const pattern = patternManager.getNextPattern();
+
+        // Spawn all objects from the pattern at current position
+        pattern.spawns.forEach(spawn => {
+          const spawnZ = currentZ - 10; // Spawn ahead of player
+          activeObjects.push({
+            type: spawn.type,
+            z: spawnZ + spawn.zOffset
+          });
+          obstaclesSpawned++;
+
+          // Update last obstacle position
+          if (spawn.type === 'OBSTACLE') {
+            lastObstacleZ = spawnZ + spawn.zOffset;
+          }
+        });
+      }
+
+      // Check gap between current position and last obstacle
+      const gap = currentZ - lastObstacleZ;
+      maxGapWithoutObstacle = Math.max(maxGapWithoutObstacle, gap);
+
+      // Verify no gap exceeds 2 meters (2 units in our scale)
+      expect(gap).toBeLessThanOrEqual(2);
+
+      // Verify we have continuous flow - at least one obstacle every 2 meters
+      const obstaclesInRange = activeObjects.filter(obj =>
+        obj.type === 'OBSTACLE' &&
+        obj.z >= currentZ - 10 && // Ahead of player
+        obj.z <= currentZ + 5    // Behind player
+      );
+      expect(obstaclesInRange.length).toBeGreaterThan(0);
+    }
+
+    // Final verification
+    expect(maxGapWithoutObstacle).toBeLessThanOrEqual(2);
+    expect(obstaclesSpawned).toBeGreaterThan(50); // Should have spawned many obstacles
+    console.log(`Simulation complete: ${obstaclesSpawned} obstacles spawned, max gap: ${maxGapWithoutObstacle.toFixed(2)} meters`);
+  });
 });

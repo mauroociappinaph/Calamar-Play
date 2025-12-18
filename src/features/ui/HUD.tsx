@@ -5,7 +5,7 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { Heart, Zap, Trophy, MapPin, Diamond, Rocket, ArrowUpCircle, Shield, Activity, PlusCircle, Play, RotateCcw } from 'lucide-react';
+import { Heart, Zap, Trophy, MapPin, Diamond, Rocket, ArrowUpCircle, Shield, Activity, PlusCircle, Play, RotateCcw, Beer } from 'lucide-react';
 import { useStore } from '@/features/game/state/store';
 import { GameStatus, GEMINI_COLORS, ShopItem, RUN_SPEED_BASE } from '@/shared/types/types';
 import { audio } from '@/systems/audio/AudioEngine';
@@ -246,7 +246,8 @@ export const HUD: React.FC = () => {
                 <div className="text-2xl md:text-4xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)] font-cyber">
                     {score.toLocaleString()}
                 </div>
-                <div className="text-sm md:text-lg text-yellow-400 font-mono">
+                <div className="text-sm md:text-lg text-yellow-400 font-mono flex items-center">
+                    <Beer className="w-4 h-4 md:w-5 md:h-5 mr-1" fill="currentColor" />
                     CERVEZAS
                 </div>
             </div>

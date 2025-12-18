@@ -31,10 +31,16 @@ const ALIEN_EYE_GEO = new THREE.SphereGeometry(0.1);
 
 const MISSILE_CORE_GEO = new THREE.SphereGeometry(0.3, 8, 8); // Bubble missile
 
+// Beer Geometry - Simple bottle shape
+const BEER_BOTTLE_GEO = new THREE.CylinderGeometry(0.15, 0.15, 0.8, 8); // Bottle body
+const BEER_CAP_GEO = new THREE.CylinderGeometry(0.18, 0.18, 0.1, 8); // Bottle cap
+const BEER_LABEL_GEO = new THREE.PlaneGeometry(0.25, 0.4); // Label on bottle
+
 // Shadow Geometries
 const SHADOW_LETTER_GEO = new THREE.PlaneGeometry(2, 0.6);
 const SHADOW_GEM_GEO = new THREE.CircleGeometry(0.6, 32);
 const SHADOW_ALIEN_GEO = new THREE.CircleGeometry(0.8, 32);
+const SHADOW_BEER_GEO = new THREE.CircleGeometry(0.4, 32); // Smaller shadow for beer
 const SHADOW_DEFAULT_GEO = new THREE.CircleGeometry(0.8, 6);
 
 // Shop Geometries (Tiki Hut style)
@@ -377,6 +383,9 @@ export const LevelManager: React.FC = () => {
             }
 
             keptObjects.push(obj);
+
+            // Log spawn frequency for debugging continuous flow
+            console.log(`SPAWN [${newPattern.id}]: ${spawn.type} at lane ${spawn.lane}, z=${obj.position[2].toFixed(1)}, time=${Date.now()}`);
         }
 
         hasChanges = true;
@@ -568,7 +577,8 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
 
     const shadowGeo = useMemo(() => {
         if (data.type === ObjectType.LETTER) return SHADOW_LETTER_GEO;
-        if (data.type === ObjectType.GEM || data.type === ObjectType.BEER) return SHADOW_GEM_GEO;
+        if (data.type === ObjectType.GEM) return SHADOW_GEM_GEO;
+        if (data.type === ObjectType.BEER) return SHADOW_BEER_GEO;
         if (data.type === ObjectType.SHOP_PORTAL) return null;
         if (data.type === ObjectType.ALIEN) return SHADOW_ALIEN_GEO;
         return SHADOW_DEFAULT_GEO;
@@ -636,15 +646,36 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
                     </mesh>
                 )}
 
-                {/* --- BEER --- */}
+                {/* --- BEER (Bottle) --- */}
                 {data.type === ObjectType.BEER && (
-                    <mesh castShadow geometry={GEMINI_TARGET_INDEX_GEO || GEM_GEOMETRY}>
-                        <meshStandardMaterial
-                            color="#ffdd44"
-                            roughness={0.3}
-                            metalness={0.2}
-                        />
-                    </mesh>
+                    <group>
+                        {/* Bottle body */}
+                        <mesh castShadow geometry={BEER_BOTTLE_GEO} position={[0, 0, 0]}>
+                            <meshStandardMaterial
+                                color="#88ccff"
+                                roughness={0.1}
+                                metalness={0.1}
+                                transparent
+                                opacity={0.8}
+                            />
+                        </mesh>
+                        {/* Bottle cap */}
+                        <mesh castShadow geometry={BEER_CAP_GEO} position={[0, 0.45, 0]}>
+                            <meshStandardMaterial
+                                color="#333333"
+                                roughness={0.3}
+                                metalness={0.8}
+                            />
+                        </mesh>
+                        {/* Label */}
+                        <mesh geometry={BEER_LABEL_GEO} position={[0, 0, 0.151]}>
+                            <meshBasicMaterial
+                                color="#ffff00"
+                                transparent
+                                opacity={0.9}
+                            />
+                        </mesh>
+                    </group>
                 )}
 
                 {/* --- LETTER --- */}
