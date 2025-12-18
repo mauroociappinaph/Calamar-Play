@@ -227,13 +227,14 @@ describe('Level Patterns System (TASK-003)', () => {
     expect(hasBonanzaPattern).toBe(true);
   });
 
-  it('should simulate 100 meters of gameplay with balanced obstacle density and respite moments', () => {
-    // Mock the LevelManager behavior for 100 meters simulation with balanced density
+  it('should simulate 100 meters of gameplay with guaranteed free lanes and proper spacing', () => {
+    // Mock the LevelManager behavior for 100 meters simulation with guaranteed free lanes
     let currentZ = 0;
     let lastObstacleZ = -2; // Start with an obstacle close behind
     let maxNormalGap = 0; // Max gap during normal play (non-respite)
-    let obstaclesSpawned = 1; // Count initial obstacle
+    let obstaclesSpawned = 0; // Count obstacles spawned
     let respiteGaps: number[] = []; // Track respite moment gaps
+    let laneUsage: Record<number, number> = {}; // Track which lanes are used
 
     // Simulate player movement at speed 30 units/second
     const playerSpeed = 30;
@@ -241,6 +242,7 @@ describe('Level Patterns System (TASK-003)', () => {
     const frameRate = 60;
     const frameTime = 1 / frameRate;
     const totalFrames = Math.ceil(simulationDuration / frameTime);
+    const laneCount = 3; // Test with 3 lanes
 
     for (let frame = 0; frame < totalFrames; frame++) {
       const deltaTime = frameTime;
@@ -250,14 +252,27 @@ describe('Level Patterns System (TASK-003)', () => {
       const distanceTraveled = currentZ; // Simplified for test
       const isRespiteMoment = Math.floor(distanceTraveled / 12) % 2 === 1 && (distanceTraveled % 12) < 3.5;
 
-      // CONTINUOUS SPAWN FALLBACK: Check every frame if we need to spawn (balanced 1.2m spacing)
+      // CONTINUOUS SPAWN FALLBACK: Check every frame if we need to spawn (1.5-2m spacing)
       const distanceSinceLastObstacle = currentZ - lastObstacleZ;
-      if (distanceSinceLastObstacle > 1.2 && !isRespiteMoment) {
-        // Spawn obstacle at current position + 1.2 (ahead of player) with lane alternation
-        const spawnZ = currentZ + 1.2;
-        obstaclesSpawned++;
+      const targetSpacing = 1.5 + Math.random() * 0.5; // 1.5 to 2.0 meters
+
+      if (distanceSinceLastObstacle > targetSpacing && !isRespiteMoment) {
+        // Spawn obstacle at current position + target spacing (ahead of player) with guaranteed free lane
+        const spawnZ = currentZ + targetSpacing;
+
+        // Lane alternation: Always leave exactly one lane free (guaranteed path)
+        const allLanes = Array.from({ length: laneCount }, (_, i) => i);
+        const freeLane = allLanes[Math.floor(Math.random() * laneCount)];
+        const lanesToSpawn = allLanes.filter(lane => lane !== freeLane);
+
+        // Track lane usage for verification
+        lanesToSpawn.forEach(lane => {
+          laneUsage[lane] = (laneUsage[lane] || 0) + 1;
+        });
+
+        obstaclesSpawned += lanesToSpawn.length;
         lastObstacleZ = spawnZ;
-        console.log(`FALLBACK SPAWN: OBSTACLE at z=${spawnZ.toFixed(1)}, gap was ${distanceSinceLastObstacle.toFixed(1)}m, respite=${isRespiteMoment}, distance=${distanceTraveled.toFixed(1)}m`);
+        console.log(`FALLBACK SPAWN: OBSTACLES in lanes [${lanesToSpawn.join(',')}] (free: ${freeLane}), z=${spawnZ.toFixed(1)}, gap=${distanceSinceLastObstacle.toFixed(1)}m, spacing=${targetSpacing.toFixed(1)}m, distance=${distanceTraveled.toFixed(1)}m, respite=${isRespiteMoment}`);
       }
 
       // Check gap between current position and last obstacle
@@ -266,8 +281,8 @@ describe('Level Patterns System (TASK-003)', () => {
       // Track max gap only during normal play (not during respite moments)
       if (!isRespiteMoment) {
         maxNormalGap = Math.max(maxNormalGap, gap);
-        // Verify no gap exceeds 1.5 meters during normal play
-        expect(gap).toBeLessThanOrEqual(1.5);
+        // Verify no gap exceeds 2.5 meters during normal play (allowing for 1.5-2m spacing + some tolerance)
+        expect(gap).toBeLessThanOrEqual(2.5);
       }
 
       // Track respite gaps separately
@@ -277,14 +292,21 @@ describe('Level Patterns System (TASK-003)', () => {
     }
 
     // Final verification
-    expect(maxNormalGap).toBeLessThanOrEqual(1.5); // Max gap during normal play
-    expect(obstaclesSpawned).toBeGreaterThan(30); // Should have spawned balanced obstacles (accounting for respite moments)
-    expect(obstaclesSpawned).toBeLessThan(80); // Should not be ultra-dense
+    expect(maxNormalGap).toBeLessThanOrEqual(2.5); // Max gap during normal play
+    expect(obstaclesSpawned).toBeGreaterThan(30); // Should have spawned obstacles
+    expect(obstaclesSpawned).toBeLessThan(120); // Should not be excessive
 
-    // Check that respite moments exist (some gaps > 1.2m during respite)
-    const largeGaps = respiteGaps.filter(gap => gap > 1.2);
+    // Check that respite moments exist (some gaps > 2m during respite)
+    const largeGaps = respiteGaps.filter(gap => gap > 2);
     expect(largeGaps.length).toBeGreaterThan(0); // Should have respite moments
 
-    console.log(`Simulation complete: ${obstaclesSpawned} obstacles spawned, max normal gap: ${maxNormalGap.toFixed(2)} meters, respite moments: ${largeGaps.length}`);
+    // Check lane usage - should be relatively balanced
+    const totalLaneUsage = Object.values(laneUsage).reduce((sum, count) => sum + count, 0);
+    expect(totalLaneUsage).toBe(obstaclesSpawned); // All obstacles accounted for
+
+    // Each lane should have been used (no lane completely unused)
+    expect(Object.keys(laneUsage).length).toBe(laneCount); // All lanes used at least once
+
+    console.log(`Simulation complete: ${obstaclesSpawned} obstacles spawned, max normal gap: ${maxNormalGap.toFixed(2)} meters, respite moments: ${largeGaps.length}, lane usage: ${JSON.stringify(laneUsage)}`);
   });
 });

@@ -128,15 +128,15 @@ console.log('POOL RELEASE:', gameObjectPool.getStats(), 'obj id:', obj.id, 'acti
 - **Validación de límites:** Máximo 2 metros sin obstáculo garantizado por patrones de alta densidad
 - **Balance de dificultad:** Mantiene jugabilidad justa sin ser imposible
 
-**Ajustes de Densidad Balanceada (2025-12-18 - Lane Alternation + Respite):**
-- **Intervalos balanceados a 1.2 metros:** Obstáculos aparecen cada 1-1.5 metros para desafío jugable
-- **Spawn cada 0.04 segundos:** A velocidad de 30 unidades/segundo, ritmo desafiante pero justo
-- **Pool de objetos expandido:** Capacidad aumentada a 200 objetos para densidad balanceada
-- **Lane alternation:** Patrón [true, false, true] para 3 lanes, 60% probabilidad random para más lanes
-- **Momentos de respiro:** Cada 10-15 metros, 3-4 metros sin obstáculos para recuperación
-- **Validación de jugabilidad:** Nunca menos de 1 metro entre obstáculos, siempre al menos un lane libre
-- **Logging detallado:** Registra lanes spawneados, distancia recorrida y momentos de respiro
-- **Test de integración:** Simulación de 100 metros verifica balance entre desafío y jugabilidad
+**Ajustes de Lane Alternation + Guaranteed Free Lanes (2025-12-18 - Fair Challenge System):**
+- **Intervalos dinámicos 1.5-2 metros:** Obstáculos aparecen con espaciado variable para ritmo natural
+- **Spawn cada 0.05-0.067 segundos:** A velocidad de 30 unidades/segundo, espaciado respirable
+- **Pool de objetos expandido:** Capacidad aumentada a 200 objetos para densidad controlada
+- **Lane alternation garantizada:** Siempre exactamente un lane libre por fila (camino asegurado)
+- **Momentos de respiro:** Cada 10-15 metros, 3-4 metros completamente libres de obstáculos
+- **Validación de fairness:** Nunca muros completos, siempre al menos un lane navegable
+- **Logging detallado:** Registra lanes libres, espaciado variable y momentos de respiro
+- **Test de integración:** Simulación de 100 metros verifica lane balance y espaciado justo
 
 **Reemplazo de GEM por BEER:**
 - **Nuevo ObjectType.BEER:** Agregado al enum ObjectType

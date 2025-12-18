@@ -343,7 +343,7 @@ export const LevelManager: React.FC = () => {
         furthestZ = -100; // Initialize to trigger initial spawn
     }
 
-    // CONTINUOUS SPAWN FALLBACK - Balanced density: 1.2m spacing with lane alternation and respite moments
+    // CONTINUOUS SPAWN FALLBACK - Fair challenge: 1.5-2m spacing with guaranteed free lanes and respite moments
     const lastObstacleZ = staticObjects
         .filter(o => o.type === ObjectType.OBSTACLE)
         .reduce((maxZ, obj) => Math.max(maxZ, obj.position[2]), -1000);
@@ -353,29 +353,19 @@ export const LevelManager: React.FC = () => {
     // Check if we're in a "respite moment" (every 10-15 meters, no obstacles for 3-4 meters)
     const isRespiteMoment = Math.floor(distanceTraveled.current / 12) % 2 === 1 && (distanceTraveled.current % 12) < 3.5;
 
-    // If more than 1.2 meters since last obstacle AND not in respite, spawn with lane alternation
-    if (distanceSinceLastObstacle > 1.2 && !isRespiteMoment) {
+    // Dynamic spacing: 1.5-2 meters between obstacle rows
+    const targetSpacing = 1.5 + Math.random() * 0.5; // 1.5 to 2.0 meters
+
+    // If more than target spacing since last obstacle AND not in respite, spawn with guaranteed free lane
+    if (distanceSinceLastObstacle > targetSpacing && !isRespiteMoment) {
         const spawnZ = Math.min(furthestZ - 2, -SPAWN_DISTANCE);
 
-        // Lane alternation pattern: [true, false, true] for 3 lanes, or random 60% chance for more lanes
-        const lanesToSpawn: number[] = [];
-        if (laneCount === 3) {
-            // Fixed alternation pattern for 3 lanes: lanes 0 and 2 (skip middle)
-            lanesToSpawn.push(0, 2);
-        } else {
-            // For other lane counts, random with 60% chance per lane
-            for (let i = 0; i < laneCount; i++) {
-                if (Math.random() < 0.6) {
-                    lanesToSpawn.push(i);
-                }
-            }
-            // Ensure at least one lane is always free
-            if (lanesToSpawn.length === laneCount) {
-                lanesToSpawn.splice(Math.floor(Math.random() * laneCount), 1);
-            }
-        }
+        // Lane alternation: Always leave exactly one lane free (guaranteed path)
+        const allLanes = Array.from({ length: laneCount }, (_, i) => i);
+        const freeLane = allLanes[Math.floor(Math.random() * laneCount)];
+        const lanesToSpawn = allLanes.filter(lane => lane !== freeLane);
 
-        // Spawn obstacles in selected lanes
+        // Spawn obstacles in all lanes except the free one
         lanesToSpawn.forEach(lane => {
             const obj = gameObjectPool.acquire();
             obj.type = ObjectType.OBSTACLE;
@@ -388,10 +378,8 @@ export const LevelManager: React.FC = () => {
             keptObjects.push(obj);
         });
 
-        if (lanesToSpawn.length > 0) {
-            console.log(`SPAWN FALLBACK: OBSTACLES in lanes [${lanesToSpawn.join(',')}], z=${spawnZ.toFixed(1)}, gap=${distanceSinceLastObstacle.toFixed(1)}m, distance=${distanceTraveled.current.toFixed(1)}m, respite=${isRespiteMoment}, time=${Date.now()}`);
-            hasChanges = true;
-        }
+        console.log(`SPAWN FALLBACK: OBSTACLES in lanes [${lanesToSpawn.join(',')}] (free: ${freeLane}), z=${spawnZ.toFixed(1)}, gap=${distanceSinceLastObstacle.toFixed(1)}m, spacing=${targetSpacing.toFixed(1)}m, distance=${distanceTraveled.current.toFixed(1)}m, respite=${isRespiteMoment}, time=${Date.now()}`);
+        hasChanges = true;
     }
 
     // PATTERN-BASED SPAWNING (TASK-003)
