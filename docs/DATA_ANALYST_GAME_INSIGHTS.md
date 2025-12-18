@@ -1,5 +1,7 @@
 # DATA_ANALYST_GAME_INSIGHTS.md
 
+> 📈 Documento de Data & Game Insights – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 ## 1) Diagnóstico ejecutivo
 El estado actual de medición es bajo/no existente: no hay datos de analytics implementados, solo métricas básicas de performance en build. 3 riesgos críticos: sin datos de usuarios, métricas sesgadas por sample limitado, definiciones de sesión inconsistentes (no especificadas). 3 insights iniciales: SUPUESTO - D1 retención <50% por falta de engagement post-tutorial, score promedio <5000 por dificultad inicial, session length <2 min por burnout temprano. 3 quick wins de instrumentación/dashboards: integrar Plausible básico para DAU/MAU, evento session_start/end para duración, evento game_start para funnel onboarding.
 
@@ -137,7 +139,7 @@ Para cada evento:
 - Frecuencia esperada: session_start (1/sesión), collect_item (10-50/run)
 - Riesgos volumen: collect_item alto, sampling 10% para aggregates
 
-## 9. Plan de Acción de Análisis de Datos (Alineado)
+## 9. Plan de Acción de Análisis de Datos (Alineado con TASK.MD)
 
 El rol del Analista de Datos es transformar el comportamiento del jugador en insights accionables. El plan se alinea con las fases estratégicas del proyecto, priorizando la obtención de datos antes que el análisis profundo.
 
@@ -145,7 +147,7 @@ El rol del Analista de Datos es transformar el comportamiento del jugador en ins
 **Objetivo:** Construir la infraestructura de datos desde cero. Pasar de operar "a ciegas" a tener una visión clara del comportamiento del usuario.
 - **Acciones:**
   - **Definir el Diccionario de Datos (Prioridad Alta):** Formalizar las definiciones de todas las métricas (Usuario, Sesión, Retención) y eventos.
-  - **Liderar la Implementación de Analytics (TASK-015, Prioridad 🔴 Alta):** Trabajar con ingeniería para instrumentar el "Plan mínimo de eventos" (sección 8) en el código.
+  - **Liderar la Implementación de Analytics (TASK-015, Prioridad 🔴 Alta):** Instrumentar en el código base el "Plan mínimo de eventos" (sección 8).
   - **Crear Dashboards Fundamentales:** Configurar los dashboards de "Overview" y "Onboarding & Funnel" para monitorear la salud del producto y las primeras fugas de usuarios.
   - **Validar Calidad de Datos:** Realizar chequeos de consistencia para asegurar que los eventos se reciben correctamente y los IDs de usuario son únicos.
 
@@ -155,15 +157,17 @@ El rol del Analista de Datos es transformar el comportamiento del jugador en ins
   - **Analizar el Funnel de Retención:** Usar los datos de la Fase 1 para analizar en profundidad dónde y por qué los usuarios abandonan el juego después del primer día.
   - **Medir Impacto de Features de Retención:** Cuantificar cómo afectan los **Checkpoints (TASK-017)** y el **Balance de Dificultad (TASK-019)** a la duración de la sesión y la tasa de finalización de niveles.
   - **Crear Dashboard de Gameplay:** Desarrollar el dashboard "Gameplay & Difficulty" para visualizar las muertes por nivel, la distribución de scores y los puntos de fricción.
-  - **Soportar A/B Testing:** Preparar la infraestructura de análisis para medir los resultados de los A/B tests que el equipo de producto decida ejecutar.
+  - **Soportar A/B Testing:** Preparar la infraestructura de análisis para medir los resultados de los A/B tests que según decisiones de producto se decidan ejecutar.
 
 ### 🌟 FASE 3: EXPANSIÓN (Profundidad y Contenido)
 **Objetivo:** Analizar el engagement con el nuevo contenido y encontrar patrones en segmentos de jugadores a largo plazo.
 - **Acciones:**
   - **Medir Engagement de Nuevas Features:** Analizar el uso del **Sistema de Combate (TASK-021)** y otras features de expansión.
   - **Desarrollar Segmentación Avanzada:** Crear el dashboard de "Segments" para encontrar diferencias de comportamiento entre jugadores nuevos vs. recurrentes, móvil vs. desktop, etc.
-  - **Generar Informes de Insights:** Comenzar a generar los informes semanales con recomendaciones accionables para el equipo de producto y diseño.
+  - **Generar Informes de Insights:** Comenzar a generar los informes semanales con recomendaciones accionables para decisiones de producto y diseño.
+
+> 📘 Más contexto general: [README.md](../README.md)
 
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
 Última sincronización automática: 2025-12-17
