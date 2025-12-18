@@ -141,7 +141,7 @@ export const HUD: React.FC = () => {
 
                 <div className="flex flex-col justify-end items-center p-6 bg-white text-center z-10">
                     <button
-                        onClick={() => { audio.init(); startGame(); }}
+                        onClick={() => { audio.unlock(); startGame(); }}
                         className="w-full group relative px-6 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-black text-xl rounded-xl transition-all shadow-[0_4px_15px_rgba(255,100,0,0.4)] hover:scale-[1.02] overflow-hidden"
                     >
                         <span className="relative z-10 tracking-widest flex items-center justify-center">
@@ -190,14 +190,14 @@ export const HUD: React.FC = () => {
                 <div className="flex flex-col gap-4">
                   {hasCheckpoint() && (
                     <button
-                      onClick={() => { audio.init(); restartFromCheckpoint(); }}
+                      onClick={() => { audio.unlock(); restartFromCheckpoint(); }}
                       className="flex items-center justify-center px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-lg md:text-xl rounded-full hover:scale-105 transition-all shadow-[0_0_20px_rgba(34,197,94,0.4)]"
                     >
                         <RotateCcw className="mr-2 w-5 h-5" /> REINTENTAR DESDE CHECKPOINT
                     </button>
                   )}
                   <button
-                    onClick={() => { audio.init(); restartGame(); }}
+                    onClick={() => { audio.unlock(); restartGame(); }}
                     className="px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg md:text-xl rounded-full hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,255,255,0.4)]"
                   >
                       REINTENTAR DESDE EL INICIO
@@ -228,7 +228,7 @@ export const HUD: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={() => { audio.init(); restartGame(); }}
+                  onClick={() => { audio.unlock(); restartGame(); }}
                   className="px-8 md:px-12 py-4 md:py-5 bg-white text-pink-600 font-black text-lg md:text-xl rounded-full hover:scale-105 transition-all shadow-xl tracking-widest"
                 >
                     JUGAR DE NUEVO

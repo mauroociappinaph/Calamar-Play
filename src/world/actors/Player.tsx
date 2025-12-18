@@ -8,7 +8,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useStore } from '@/features/game/state/store';
 import { LANE_WIDTH, GameStatus } from '@/shared/types/types';
-import { audio } from '@/systems/audio/AudioEngine';
+import { audio, audioEvents } from '@/systems/audio/AudioEngine';
 
 export const Player: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null);
@@ -82,13 +82,13 @@ export const Player: React.FC = () => {
   const triggerJump = () => {
     const maxJumps = hasDoubleJump ? 2 : 1;
     if (!isJumping.current) {
-        audio.playJump(false);
+        audioEvents.playJump();
         isJumping.current = true;
         jumpsPerformed.current = 1;
         velocityY.current = 14;
     } else if (jumpsPerformed.current < maxJumps) {
-        audio.playJump(true);
-        jumpsPerformed.current += 1;
+        audioEvents.playJump();
+        jumpsPerformed.current = 1;
         velocityY.current = 14;
     }
   };
@@ -248,7 +248,7 @@ export const Player: React.FC = () => {
       takeDamage();
       isInvincible.current = true;
       lastDamageTime.current = Date.now();
-      audio.playDamage();
+      audioEvents.playDamage();
     };
     window.addEventListener('player-hit', onHit);
     return () => window.removeEventListener('player-hit', onHit);

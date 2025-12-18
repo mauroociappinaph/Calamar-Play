@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useStore } from '@/features/game/state/store';
 import { checkpointManager } from '@/features/game/state/checkpoints';
 import { GameObject, ObjectType, LANE_WIDTH, SPAWN_DISTANCE, REMOVE_DISTANCE, GameStatus, GEMINI_COLORS } from '@/shared/types/types';
-import { audio } from '@/systems/audio/AudioEngine';
+import { audio, audioEvents } from '@/systems/audio/AudioEngine';
 import { ObjectPool } from '@/systems/pooling/ObjectPool';
 import { FixedTimestepLoop, InputState } from '@/systems/core/FixedTimestepLoop';
 import { patternManager, LevelPattern, PatternType } from '@/features/game/levelPatterns';
@@ -285,11 +285,11 @@ export const LevelManager: React.FC = () => {
                          if (dy < 2.5) {
                             if (obj.type === ObjectType.GEM) {
                                 collectGem(obj.points || 50);
-                                audio.playGemCollect();
+                                audioEvents.playGemCollect();
                             }
                             if (obj.type === ObjectType.LETTER && obj.targetIndex !== undefined) {
                                 collectLetter(obj.targetIndex);
-                                audio.playLetterCollect();
+                                audioEvents.playLetterCollect();
                             }
 
                             window.dispatchEvent(new CustomEvent('particle-burst', {

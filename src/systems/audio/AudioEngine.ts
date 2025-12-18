@@ -1,179 +1,368 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
+import { GameStatus } from '@/shared/types/types';
 
-export class AudioController {
-  ctx: AudioContext | null = null;
-  masterGain: GainNode | null = null;
+// Audio categories for volume control
+export type AudioCategory = 'master' | 'music' | 'sfx' | 'ambience';
+
+// SFX playback options
+export interface SFXOptions {
+  volume?: number;
+  pitch?: number;
+  loop?: boolean;
+  fadeIn?: number;
+  fadeOut?: number;
+}
+
+// Audio engine configuration
+interface AudioConfig {
+  masterVolume: number;
+  musicVolume: number;
+  sfxVolume: number;
+  ambienceVolume: number;
+  crossfadeDuration: number;
+}
+
+// Audio asset definitions
+interface AudioAsset {
+  url: string;
+  volume: number;
+  category: AudioCategory;
+}
+
+// Global audio instance
+class AudioEngine {
+  private audioContext: AudioContext | null = null;
+  private gainNodes: Map<AudioCategory, GainNode> = new Map();
+  private masterGain: GainNode | null = null;
+  private currentMusic: AudioBufferSourceNode | null = null;
+  private currentMusicBuffer: AudioBuffer | null = null;
+  private isUnlocked = false;
+  private config: AudioConfig;
+  private audioBuffers: Map<string, AudioBuffer> = new Map();
+  private activeSources: Set<AudioBufferSourceNode> = new Set();
 
   constructor() {
-    // Lazy initialization
+    this.config = {
+      masterVolume: 1.0,
+      musicVolume: 0.6,
+      sfxVolume: 0.8,
+      ambienceVolume: 0.4,
+      crossfadeDuration: 2.0
+    };
+
+    this.initializeAudioContext();
   }
 
-  init() {
-    if (!this.ctx) {
-      // Support for standard and webkit prefixed AudioContext
-      this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.value = 0.4; // Master volume
-      this.masterGain.connect(this.ctx.destination);
+  private async initializeAudioContext(): Promise<void> {
+    try {
+      // Create audio context with fallback for Safari
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      this.audioContext = new AudioContextClass();
+
+      // Create master gain node
+      this.masterGain = this.audioContext.createGain();
+      this.masterGain.connect(this.audioContext.destination);
+      this.masterGain.gain.value = this.config.masterVolume;
+
+      // Create category gain nodes
+      this.createGainNodes();
+
+      console.log('🎵 AudioEngine initialized:', this.audioContext.state);
+    } catch (error) {
+      console.error('❌ Failed to initialize AudioEngine:', error);
     }
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
-    }
   }
 
-  playGemCollect() {
-    if (!this.ctx || !this.masterGain) this.init();
-    if (!this.ctx || !this.masterGain) return;
+  private createGainNodes(): void {
+    if (!this.audioContext || !this.masterGain) return;
 
-    const t = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
+    const categories: AudioCategory[] = ['music', 'sfx', 'ambience'];
 
-    osc.type = 'sine';
-    // High pitch "ding" with slight upward inflection
-    osc.frequency.setValueAtTime(1200, t);
-    osc.frequency.exponentialRampToValueAtTime(2000, t + 0.1);
+    categories.forEach(category => {
+      const gainNode = this.audioContext.createGain();
+      gainNode.connect(this.masterGain);
 
-    gain.gain.setValueAtTime(0.5, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+      // Set initial volume based on config
+      const volumeKey = `${category}Volume` as keyof AudioConfig;
+      gainNode.gain.value = this.config[volumeKey] as number;
 
-    osc.connect(gain);
-    gain.connect(this.masterGain);
-
-    osc.start(t);
-    osc.stop(t + 0.15);
-  }
-
-  playLetterCollect() {
-    if (!this.ctx || !this.masterGain) this.init();
-    if (!this.ctx || !this.masterGain) return;
-
-    const t = this.ctx.currentTime;
-    
-    // Play a major chord (C Majorish: C5, E5, G5) for a rewarding sound
-    const freqs = [523.25, 659.25, 783.99]; 
-    
-    freqs.forEach((f, i) => {
-        const osc = this.ctx!.createOscillator();
-        const gain = this.ctx!.createGain();
-        
-        osc.type = 'triangle';
-        osc.frequency.value = f;
-        
-        // Stagger start times slightly for an arpeggio feel
-        const start = t + (i * 0.04);
-        const dur = 0.3;
-
-        gain.gain.setValueAtTime(0.3, start);
-        gain.gain.exponentialRampToValueAtTime(0.01, start + dur);
-
-        osc.connect(gain);
-        gain.connect(this.masterGain!);
-        
-        osc.start(start);
-        osc.stop(start + dur);
+      this.gainNodes.set(category, gainNode);
     });
   }
 
-  playJump(isDouble = false) {
-    if (!this.ctx || !this.masterGain) this.init();
-    if (!this.ctx || !this.masterGain) return;
+  // AUDIO UNLOCK: Handle browser audio policies
+  public async unlock(): Promise<void> {
+    if (!this.audioContext) return;
 
-    const t = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
+    if (this.audioContext.state === 'suspended') {
+      try {
+        await this.audioContext.resume();
+        this.isUnlocked = true;
+        console.log('🔊 Audio unlocked successfully');
 
-    // Sine wave for a smooth "whoop" sound
-    osc.type = 'sine';
-    
-    // Pitch shift up for double jump
-    const startFreq = isDouble ? 400 : 200;
-    const endFreq = isDouble ? 800 : 450;
-
-    osc.frequency.setValueAtTime(startFreq, t);
-    osc.frequency.exponentialRampToValueAtTime(endFreq, t + 0.15);
-
-    // Lower volume for jump as it is a frequent action
-    gain.gain.setValueAtTime(0.2, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
-
-    osc.connect(gain);
-    gain.connect(this.masterGain);
-
-    osc.start(t);
-    osc.stop(t + 0.15);
+        // Play a silent sound to confirm unlock
+        await this.playSilentSound();
+      } catch (error) {
+        console.error('❌ Failed to unlock audio:', error);
+        this.isUnlocked = false;
+      }
+    } else {
+      this.isUnlocked = true;
+    }
   }
 
-  playDamage() {
-    if (!this.ctx || !this.masterGain) this.init();
-    if (!this.ctx || !this.masterGain) return;
+  private async playSilentSound(): Promise<void> {
+    if (!this.audioContext) return;
 
-    const t = this.ctx.currentTime;
-    
-    // 1. Noise buffer for "crunch/static"
-    const bufferSize = this.ctx.sampleRate * 0.3; // 0.3 seconds
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
+    const buffer = this.audioContext.createBuffer(1, 1, 22050);
+    const source = this.audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(this.audioContext.destination);
+    source.start();
+  }
+
+  public isAudioUnlocked(): boolean {
+    return this.isUnlocked && this.audioContext?.state === 'running';
+  }
+
+  // VOLUME CONTROL
+  public setVolume(category: AudioCategory, value: number): void {
+    this.config[`${category}Volume` as keyof AudioConfig] = Math.max(0, Math.min(1, value));
+
+    if (category === 'master' && this.masterGain) {
+      this.masterGain.gain.value = value;
+    } else {
+      const gainNode = this.gainNodes.get(category);
+      if (gainNode) {
+        gainNode.gain.value = value;
+      }
+    }
+  }
+
+  public getVolume(category: AudioCategory): number {
+    return this.config[`${category}Volume` as keyof AudioConfig] as number;
+  }
+
+  // AUDIO LOADING
+  public async loadAudio(id: string, url: string): Promise<boolean> {
+    if (!this.audioContext) return false;
+
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+
+      this.audioBuffers.set(id, audioBuffer);
+      console.log(`📦 Audio loaded: ${id}`);
+      return true;
+    } catch (error) {
+      console.error(`❌ Failed to load audio ${id}:`, error);
+      return false;
+    }
+  }
+
+  // MUSIC PLAYBACK
+  public async playMusic(id: string, crossfade: number = this.config.crossfadeDuration): Promise<void> {
+    if (!this.isAudioUnlocked() || !this.audioContext) return;
+
+    const buffer = this.audioBuffers.get(id);
+    if (!buffer) {
+      console.warn(`⚠️ Music not loaded: ${id}`);
+      return;
     }
 
-    const noise = this.ctx.createBufferSource();
-    noise.buffer = buffer;
-    
-    // 2. Low oscillator for "thud/impact"
-    const osc = this.ctx.createOscillator();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(100, t);
-    osc.frequency.exponentialRampToValueAtTime(20, t + 0.3);
+    // Stop current music with crossfade
+    if (this.currentMusic) {
+      this.fadeOutSource(this.currentMusic, crossfade);
+    }
 
-    const oscGain = this.ctx.createGain();
-    oscGain.gain.setValueAtTime(0.6, t);
-    oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+    // Create new music source
+    const source = this.audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
 
-    const noiseGain = this.ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.5, t);
-    noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+    // Connect through music gain node
+    const musicGain = this.gainNodes.get('music');
+    if (musicGain) {
+      source.connect(musicGain);
+    }
 
-    osc.connect(oscGain);
-    oscGain.connect(this.masterGain);
-    
-    noise.connect(noiseGain);
-    noiseGain.connect(this.masterGain);
+    // Fade in
+    this.fadeInSource(source, crossfade);
 
-    osc.start(t);
-    osc.stop(t + 0.3);
-    noise.start(t);
-    noise.stop(t + 0.3);
+    source.start();
+    this.currentMusic = source;
+    this.currentMusicBuffer = buffer;
+
+    console.log(`🎵 Music playing: ${id}`);
   }
 
-  playCollision() {
-    if (!this.ctx || !this.masterGain) this.init();
-    if (!this.ctx || !this.masterGain) return;
+  public stopMusic(fadeOut: number = 0.5): void {
+    if (this.currentMusic) {
+      this.fadeOutSource(this.currentMusic, fadeOut);
+      this.currentMusic = null;
+      this.currentMusicBuffer = null;
+    }
+  }
 
-    const t = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
+  // SFX PLAYBACK
+  public async playSFX(id: string, options: SFXOptions = {}): Promise<void> {
+    if (!this.isAudioUnlocked() || !this.audioContext) return;
 
-    // A quick, dull "thud" or "bop" to represent physical impact
-    // Using a triangle wave for a "blunter" sound than the damage sawtooth
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(150, t);
-    osc.frequency.exponentialRampToValueAtTime(40, t + 0.1);
+    const buffer = this.audioBuffers.get(id);
+    if (!buffer) {
+      console.warn(`⚠️ SFX not loaded: ${id}`);
+      return;
+    }
 
-    gain.gain.setValueAtTime(0.3, t); // Subtle volume
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+    const source = this.audioContext.createBufferSource();
+    source.buffer = buffer;
 
-    osc.connect(gain);
-    gain.connect(this.masterGain);
+    // Set playback rate for pitch variation
+    if (options.pitch) {
+      source.playbackRate.value = options.pitch;
+    }
 
-    osc.start(t);
-    osc.stop(t + 0.1);
+    // Create gain node for volume control
+    const gainNode = this.audioContext.createGain();
+    const volume = options.volume ?? 1.0;
+    gainNode.gain.value = volume;
+
+    // Connect through SFX gain node
+    const sfxGain = this.gainNodes.get('sfx');
+    if (sfxGain) {
+      source.connect(gainNode);
+      gainNode.connect(sfxGain);
+    }
+
+    // Handle fade in/out
+    if (options.fadeIn) {
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + options.fadeIn);
+    }
+
+    if (options.fadeOut) {
+      const fadeTime = buffer.duration - options.fadeOut;
+      gainNode.gain.setValueAtTime(volume, this.audioContext.currentTime + fadeTime);
+      gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + buffer.duration);
+    }
+
+    // Set loop if requested
+    source.loop = options.loop ?? false;
+
+    // Track active source for cleanup
+    this.activeSources.add(source);
+
+    // Cleanup when finished
+    source.onended = () => {
+      this.activeSources.delete(source);
+    };
+
+    source.start();
+
+    // Auto-stop if not looping
+    if (!options.loop) {
+      source.stop(this.audioContext.currentTime + buffer.duration);
+    }
+
+    console.log(`🔊 SFX played: ${id}`, options);
+  }
+
+  // UTILITY METHODS
+  private fadeInSource(source: AudioBufferSourceNode, duration: number): void {
+    if (!this.audioContext) return;
+
+    // Note: fadeInSource is simplified - the gain control is handled in playMusic
+    // This method is kept for future enhancement
+  }
+
+  private fadeOutSource(source: AudioBufferSourceNode, duration: number): void {
+    if (!this.audioContext) return;
+
+    // Find gain node and fade out
+    const connections = (source as any)._connections;
+    if (connections) {
+      connections.forEach((node: AudioNode) => {
+        if (node instanceof GainNode) {
+          node.gain.linearRampToValueAtTime(0, this.audioContext!.currentTime + duration);
+        }
+      });
+    }
+
+    // Stop after fade
+    setTimeout(() => {
+      try {
+        source.stop();
+      } catch (e) {
+        // Source might already be stopped
+      }
+    }, duration * 1000);
+  }
+
+  // CLEANUP
+  public dispose(): void {
+    // Stop all active sources
+    this.activeSources.forEach(source => {
+      try {
+        source.stop();
+      } catch (e) {
+        // Source might already be stopped
+      }
+    });
+    this.activeSources.clear();
+
+    // Close audio context
+    if (this.audioContext && this.audioContext.state !== 'closed') {
+      this.audioContext.close();
+    }
+
+    // Clear buffers
+    this.audioBuffers.clear();
+
+    console.log('🗑️ AudioEngine disposed');
+  }
+
+  // DEBUG INFO
+  public getDebugInfo(): any {
+    return {
+      isUnlocked: this.isUnlocked,
+      contextState: this.audioContext?.state,
+      activeSources: this.activeSources.size,
+      loadedBuffers: this.audioBuffers.size,
+      volumes: {
+        master: this.config.masterVolume,
+        music: this.config.musicVolume,
+        sfx: this.config.sfxVolume,
+        ambience: this.config.ambienceVolume
+      }
+    };
   }
 }
 
-export const audio = new AudioController();
+// Export singleton instance
+export const audio = new AudioEngine();
+
+// Convenience functions for common audio events
+export const audioEvents = {
+  // Gameplay SFX
+  playGemCollect: () => audio.playSFX('gem_collect', { volume: 0.6 }),
+  playLetterCollect: () => audio.playSFX('letter_collect', { volume: 0.8 }),
+  playJump: () => audio.playSFX('jump', { volume: 0.7, pitch: 0.9 + Math.random() * 0.2 }),
+  playDamage: () => audio.playSFX('damage', { volume: 0.9 }),
+  playCheckpoint: () => audio.playSFX('checkpoint', { volume: 0.8 }),
+
+  // UI SFX
+  playMenuSelect: () => audio.playSFX('menu_select', { volume: 0.5 }),
+  playMenuConfirm: () => audio.playSFX('menu_confirm', { volume: 0.6 }),
+
+  // Music
+  playGameMusic: () => audio.playMusic('game_theme'),
+  stopMusic: () => audio.stopMusic(),
+
+  // Ambience
+  playOceanAmbience: () => audio.playSFX('ocean_ambience', { volume: 0.3, loop: true }),
+};

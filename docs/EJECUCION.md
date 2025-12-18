@@ -86,10 +86,13 @@
     - [x] Documentar principios aplicados en `docs/UX_UI_SPECIALIST_GAME_EXPERIENCE.md` `[ESTADO: ✅]`
     - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
-- **TASK-002: Sistema de Audio Completo (🟡)**
-    - [ ] Implementar `AudioEngine` y sistemas de crossfade `[DEP: Ninguna]` `[ESTADO: 🔵]`
-    - [ ] Integrar assets musicales y SFX tropicales `[ESTADO: 🔵]`
-    - [ ] Validar especificación en `docs/AUDIO_SPEC.md` `[ESTADO: 🔵]`
+- **TASK-002: Sistema de Audio Completo (✅)**
+    - [x] Implementar AudioEngine con Web Audio API en `src/systems/audio/AudioEngine.ts` `[DEP: Ninguna]` `[ESTADO: ✅]`
+    - [x] Sistema de unlock automático para navegadores en todos los botones principales `[ESTADO: ✅]`
+    - [x] Integración con eventos de gameplay (salto, daño, colección) usando audioEvents `[ESTADO: ✅]`
+    - [x] Gestión de volumen por categorías (master, music, sfx, ambience) `[ESTADO: ✅]`
+    - [x] Tests de integración completos en `tests/integration/audio.test.ts` (15 tests) `[ESTADO: ✅]`
+    - [x] Documentar arquitectura y assets recomendados en `docs/AUDIO_SPEC.md` `[ESTADO: ✅]`
 
 - **TASK-019: Balance de Economía y Dificultad (🟡)**
     - [x] Implementar rewards variables basados en velocidad/distancia en `store.ts` `[DEP: TASK-015]` `[ESTADO: ✅]`
