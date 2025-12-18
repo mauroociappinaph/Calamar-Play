@@ -42,60 +42,38 @@ Gates:
 - bundle size: vite-bundle-analyzer (presupuesto 500KB)
 - smoke build: npm run build exit 0
 
-## 4) CI pipeline propuesto (con scripts)
-Pipeline GitHub Actions recomendado (.github/workflows/ci.yml):
+## 4. CI pipeline implementado (Fase 1)
+Pipeline GitHub Actions activo en `.github/workflows/ci.yml`:
 
 ```yaml
-name: CI/CD
+name: CI
+
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, feature/*]
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, feature/*]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version-file: '.nvmrc'
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run typecheck || echo "No typecheck script"
-    - run: npm run lint || echo "No lint script"
-    - run: npm test || echo "No test script"
-    - run: npm run build
-
-  deploy-preview:
-    if: github.event_name == 'pull_request'
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: amondnet/vercel-action@v25
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        working-directory: ./Calamar-Play
-        vercel-args: --prod=false
-
-  deploy-prod:
-    if: github.ref == 'refs/heads/main'
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: amondnet/vercel-action@v25
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        vercel-args: --prod
-        working-directory: ./Calamar-Play
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm run test
 ```
 
-Incluye caching deps, concurrency (cancel in-progress), artefactos build dist.
+### Automatización Local (Husky)
+Se ha configurado **Husky** para ejecutar los tests unitarios antes de cada commit.
+- **Hook:** `.husky/pre-commit`
+- **Comando:** `npm run test` (ejecuta `vitest run`)
+- **Impacto:** Si los tests fallan localmente, el commit se aborta, garantizando que el repositorio siempre contenga código válido.
 
 ## 5) Deploy a Vercel: preview, staging, production
 Estrategia de entornos:

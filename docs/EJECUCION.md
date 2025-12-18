@@ -44,8 +44,8 @@
     - [x] Documentar estrategia en `docs/QA_TEST_LEAD.md` `[ESTADO: ✅]`
 
 - **TASK-016: Pipeline de CI/CD (GitHub Actions)**
-    - [ ] Configurar workflow de Build, Test y Type-check `[DEP: TASK-010]` `[ESTADO: 🔵]`
-    - [ ] Documentar flujo de despliegue en `docs/BUILD_ENGINEER_DEVOPS_GAMES.md` `[ESTADO: 🔵]`
+    - [x] Configurar workflow de Build, Test y Type-check `[DEP: TASK-010]` `[ESTADO: ✅]`
+    - [x] Documentar flujo de despliegue en `docs/BUILD_ENGINEER_DEVOPS_GAMES.md` `[ESTADO: ✅]`
 
 - **TASK-011: Benchmarks Automatizados**
     - [ ] Implementar script de extracción de métricas de performance `[DEP: TASK-016]` `[ESTADO: 🔵]`

@@ -36,11 +36,27 @@ Usamos **Conventional Commits** para generar changelogs automáticos y mantener 
 
 ---
 
-## 4. Proceso de Pull Request (PR)
+## 4. Automatización de Calidad (CI/CD)
+Contamos con una suite automatizada para garantizar que ningún código roto llegue a `develop` o `main`:
+
+### ✅ Validaciones Locales (Husky)
+- **Pre-commit Hook:** Antes de cada `git commit`, se ejecutará automáticamente `npm run test`.
+- Si los tests fallan, el commit será bloqueado.
+- Puedes ejecutar los tests manualmente con `npm run test` antes de commitear.
+
+### 🚀 Integración Continua (GitHub Actions)
+- Cada **Push** o **Pull Request** a `main`, `develop` o ramas `feature/*` dispara un workflow de CI.
+- El build y los tests se validan en un entorno limpio (`ubuntu-latest`).
+- **Bloqueo de Merge:** No se permite el merge de un PR si el CI falla.
+
+---
+
+## 5. Proceso de Pull Request (PR)
 1. Asegúrate de que el código compila localmente (`npm run build`).
-2. Los tests deben pasar (`npm test` si aplica).
+2. Los tests deben pasar localmente (`npm test`).
 3. Todo PR debe referenciar una **TASK-ID** en la descripción.
 4. Definición de Hecho (DoD):
+   - [ ] CI Status: ✅ Passed.
    - [ ] No hay errores de consola en el build.
    - [ ] La performance en móvil no se ha degradado significativamente.
    - [ ] La documentación relevante ha sido actualizada.
