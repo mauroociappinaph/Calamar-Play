@@ -1,12 +1,14 @@
 # PRODUCT_MANAGER_PRODUCER.md
 
+> 📦 Documento de Product Management / Producción – alineado con [TASK.MD](./TASK.MD) (fuente de verdad del proyecto)
+
 ## 1. Diagnóstico ejecutivo en 10 líneas
 
 **Estado del producto:** Endless runner 3D funcional como MVP pero con problemas críticos de performance móvil y retención que impiden crecimiento sostenible.
 
 **3 riesgos principales de negocio:**
 1. **Retención D1 <40%:** Performance GC spikes causan stuttering, usuarios abandonan en primeros minutos (SUPUESTO basado en TASK-001)
-2. **Bundle size 250KB:** Sin optimización bloquea distribución web masiva, afecta TTI >3s
+2. **Bundle size:** objetivo <500KB (ideal ~250KB). Sin optimización puede exceder el presupuesto y empeorar TTI (>3s)
 3. **Monetización ausente:** Sin estrategia IAP/ads, solo shop local limita LTV potencial
 
 **3 cuellos de botella principales del backlog:**
@@ -62,7 +64,7 @@
 
 ## 4. Backlog Unificado por Fases Estratégicas
 
-El backlog ahora está alineado con la estrategia de 3 fases definida en `docs/TASK.MD`. La priorización ha sido actualizada para reflejar un enfoque en la estabilidad y la medición antes de la expansión de contenido.
+El backlog ahora está alineado con la estrategia de 3 fases definida en [TASK.MD](./TASK.MD). La priorización ha sido actualizada para reflejar un enfoque en la estabilidad y la medición antes de la expansión de contenido.
 
 **🔴 FASE 1: FUNDACIÓN (Estabilización y Medición)**
 - **Objetivo:** Lograr un juego estable, medible y con un proceso de desarrollo confiable.
@@ -85,7 +87,7 @@ El backlog ahora está alineado con la estrategia de 3 fases definida en `docs/T
 | **TASK-006** | Geometrías lejanas en GPU | +20% FPS móvil | FPS móvil, Battery life | M | Medio | TASK-005 | 🔴 Alta |
 | **TASK-010** | Sin red de seguridad para refactors | Detección temprana de regresiones | Tasa de bugs, Tiempo de dev | M | Bajo | Ninguna | 🔴 Alta |
 | **TASK-015** | Decisiones basadas en supuestos | Validación de hipótesis de producto | Todos los KPIs | S | Bajo | Ninguna | 🔴 Alta |
-| **TASK-016** | Deploys manuales y sin control | Releases más rápidos y seguros | Frecuencia de deploy, Errores | M | Bajo | TASK-010 | 🔴 Alta |
+| **TASK-016** | Deploys manuales y sin control | Releases más rápidos y seguros | Frecuencia de deploy, Errores | M | Bajo | Ninguna | 🔴 Alta |
 | **TASK-017** | Muerte punitiva causa frustración | +60% completion rate | Retención D1, Session length | M | Medio | TASK-018 | 🔴 Alta |
 | **TASK-018** | Bugs de estado por transiciones inválidas | -80% bugs de estado | Crash rate, Tasa de bugs | S | Bajo | Ninguna | 🔴 Alta |
 | **TASK-020** | Física inconsistente por `dt` variable | Gameplay predecible y justo | Game Feel, Retención D1 | L | Alto | TASK-001 | 🔴 Alta |
@@ -115,7 +117,9 @@ El backlog ahora está alineado con la estrategia de 3 fases definida en `docs/T
 
 ## 8. Roadmap Recomendado y Capacidad (Alineado)
 
-**Roadmap por Fases Estratégicas (equipo 1-2 devs):**
+## 8. Roadmap Recomendado y Capacidad (Alineado con TASK.MD)
+
+**Roadmap por Fases Estratégicas (desarrollo individual - 1 dev):**
 
 **🚀 FASE 1: FUNDACIÓN (Estabilización y Medición) - Semanas 1-4**
 - **Objetivo:** Lograr un juego estable, medible y con un proceso de desarrollo confiable.
@@ -145,7 +149,7 @@ El backlog ahora está alineado con la estrategia de 3 fases definida en `docs/T
 
 ## 10. Integración con TASK: Estado Actual de la Planificación
 
-**Estado:** El backlog ha sido unificado y re-priorizado en `docs/TASK.MD`. Todas las propuestas de los diferentes roles han sido integradas en un único plan de acción.
+**Estado:** El backlog ha sido unificado y re-priorizado en [TASK.MD](./TASK.MD). Todas las propuestas de los diferentes roles han sido integradas en un único plan de acción.
 
 **Acciones Realizadas:**
 - **Prioridades Alineadas:** Las tareas de performance, testing y analytics (TASK-001, 005, 010, 015, etc.) han sido elevadas a **🔴 Alta** prioridad como parte de la Fase 1.
@@ -153,10 +157,12 @@ El backlog ahora está alineado con la estrategia de 3 fases definida en `docs/T
 - **Dependencias Aclaradas:** Las dependencias son ahora explícitas en el roadmap (ej. las features de gameplay dependen de la estabilidad de la Fase 1).
 
 **Próximos Pasos:**
-1. **Ejecutar Fase 1:** El equipo de desarrollo debe enfocarse exclusivamente en las tareas de la Fase 1.
+1. **Ejecutar Fase 1:** El desarrollo debe enfocarse exclusivamente en las tareas de la Fase 1.
 2. **Validar con Datos:** Utilizar la infraestructura de analytics (TASK-015) para validar el impacto de los cambios de la Fase 2.
 3. **Comunicación Continua:** Mantener todos los documentos de análisis sincronizados con el progreso del `TASK.MD` unificado.
 
+> 📘 Más contexto general: [README.md](../README.md)
+
 ---
-🔗 Este documento está alineado con la fuente de verdad del proyecto (TASK.MD @beautifulMention).
+🔗 Este documento está alineado con la fuente de verdad del proyecto ([TASK.MD](./TASK.MD)).
 Última sincronización automática: 2025-12-17
