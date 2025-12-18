@@ -40,7 +40,17 @@ interface GameState {
   openShop: () => void;
   closeShop: () => void;
   activateImmortality: () => void;
+  _transitionTo: (status: GameStatus) => boolean;
 }
+
+// FSM Transition Matrix
+const VALID_TRANSITIONS: Record<GameStatus, GameStatus[]> = {
+  [GameStatus.MENU]: [GameStatus.PLAYING],
+  [GameStatus.PLAYING]: [GameStatus.SHOP, GameStatus.GAME_OVER, GameStatus.VICTORY, GameStatus.PLAYING],
+  [GameStatus.SHOP]: [GameStatus.PLAYING],
+  [GameStatus.GAME_OVER]: [GameStatus.PLAYING],
+  [GameStatus.VICTORY]: [GameStatus.PLAYING],
+};
 
 const GEMINI_TARGET = ['C', 'A', 'L', 'A', 'M', 'A', 'R', 'L', 'O', 'C', 'O'];
 const MAX_LEVEL = 3;
@@ -61,46 +71,66 @@ export const useStore = create<GameState>((set, get) => ({
   hasImmortality: false,
   isImmortalityActive: false,
 
-  startGame: () => set({
-    status: GameStatus.PLAYING,
-    score: 0,
-    lives: 3,
-    maxLives: 3,
-    speed: RUN_SPEED_BASE,
-    collectedLetters: [],
-    level: 1,
-    laneCount: 3,
-    gemsCollected: 0,
-    distance: 0,
-    hasDoubleJump: false,
-    hasImmortality: false,
-    isImmortalityActive: false
-  }),
+  // Helper for internal state transitions
+  _transitionTo: (nextStatus: GameStatus) => {
+    const { status } = get();
+    if (VALID_TRANSITIONS[status].includes(nextStatus)) {
+      set({ status: nextStatus });
+      return true;
+    }
+    console.warn(`[FSM] Invalid transition attempt: ${status} -> ${nextStatus}`);
+    return false;
+  },
 
-  restartGame: () => set({
-    status: GameStatus.PLAYING,
-    score: 0,
-    lives: 3,
-    maxLives: 3,
-    speed: RUN_SPEED_BASE,
-    collectedLetters: [],
-    level: 1,
-    laneCount: 3,
-    gemsCollected: 0,
-    distance: 0,
-    hasDoubleJump: false,
-    hasImmortality: false,
-    isImmortalityActive: false
-  }),
+  startGame: () => {
+    const { _transitionTo } = get();
+    if (_transitionTo(GameStatus.PLAYING)) {
+      set({
+        score: 0,
+        lives: 3,
+        maxLives: 3,
+        speed: RUN_SPEED_BASE,
+        collectedLetters: [],
+        level: 1,
+        laneCount: 3,
+        gemsCollected: 0,
+        distance: 0,
+        hasDoubleJump: false,
+        hasImmortality: false,
+        isImmortalityActive: false
+      });
+    }
+  },
+
+  restartGame: () => {
+    const { _transitionTo } = get();
+    if (_transitionTo(GameStatus.PLAYING)) {
+      set({
+        score: 0,
+        lives: 3,
+        maxLives: 3,
+        speed: RUN_SPEED_BASE,
+        collectedLetters: [],
+        level: 1,
+        laneCount: 3,
+        gemsCollected: 0,
+        distance: 0,
+        hasDoubleJump: false,
+        hasImmortality: false,
+        isImmortalityActive: false
+      });
+    }
+  },
 
   takeDamage: () => {
-    const { lives, isImmortalityActive } = get();
-    if (isImmortalityActive) return; // No damage if skill is active
+    const { lives, isImmortalityActive, _transitionTo } = get();
+    if (isImmortalityActive) return;
 
     if (lives > 1) {
       set({ lives: lives - 1 });
     } else {
-      set({ lives: 0, status: GameStatus.GAME_OVER, speed: 0 });
+      set({ lives: 0, speed: 0 });
+      _transitionTo(GameStatus.GAME_OVER);
     }
   },
 
@@ -135,10 +165,12 @@ export const useStore = create<GameState>((set, get) => ({
             get().advanceLevel();
         } else {
             // Victory Condition
-            set({
-                status: GameStatus.VICTORY,
+            const { _transitionTo } = get();
+            if (_transitionTo(GameStatus.VICTORY)) {
+              set({
                 score: get().score + 5000
-            });
+              });
+            }
         }
       }
     }
@@ -160,9 +192,9 @@ export const useStore = create<GameState>((set, get) => ({
       });
   },
 
-  openShop: () => set({ status: GameStatus.SHOP }),
+  openShop: () => get()._transitionTo(GameStatus.SHOP),
 
-  closeShop: () => set({ status: GameStatus.PLAYING }),
+  closeShop: () => get()._transitionTo(GameStatus.PLAYING),
 
   buyItem: (type, cost) => {
       const { score, maxLives, lives } = get();
@@ -201,6 +233,6 @@ export const useStore = create<GameState>((set, get) => ({
       }
   },
 
-  setStatus: (status) => set({ status }),
+  setStatus: (status) => get()._transitionTo(status),
   increaseLevel: () => set((state) => ({ level: state.level + 1 })),
 }));

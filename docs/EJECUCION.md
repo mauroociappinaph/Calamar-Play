@@ -15,9 +15,9 @@
 ### 🛠️ Core Engine & Performance (🔴 Alta Prioridad)
 
 - **TASK-018: Implementar Máquina de Estados (FSM)**
-    - [ ] Implementar lógica de `GameStatus` FSM en `store.ts` `[DEP: Ninguna]` `[ESTADO: 🔵]`
-    - [ ] Documentar estados y transiciones en `docs/STORE_API.md` `[ESTADO: 🔵]`
-    - [ ] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: 🔵]`
+    - [x] Implementar lógica de `GameStatus` FSM en `store.ts` `[DEP: Ninguna]` `[ESTADO: ✅]`
+    - [x] Documentar estados y transiciones en `docs/STORE_API.md` `[ESTADO: ✅]`
+    - [x] Actualizar matriz de cobertura en `docs/DOCS_AUDIT.md` `[ESTADO: ✅]`
 
 - **TASK-001: Implementar Object Pooling**
     - [ ] Crear sistema de Pool genérico en `src/shared/lib` `[DEP: Ninguna]` `[ESTADO: 🔵]`

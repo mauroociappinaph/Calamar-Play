@@ -28,31 +28,34 @@ El Store es el cerebro reactivo de Calamar Loco. Utiliza **Zustand** para gestio
 
 ---
 
-## 3. Máquina de Estados (FSM)
+## 3. Máquina de Estados (FSM) - [IMPLEMENTADO ✅]
 
-<!-- Diagrama FSM de GameStatus (ver TASK-018 y [TASK.MD](./TASK.MD)) -->
+El `GameStatus` se gestiona mediante una FSM estricta definida en `src/features/game/state/store.ts`. Las transiciones solo son posibles si están definidas en la `VALID_TRANSITIONS` matrix.
+
+### Matriz de Transiciones
+| Estado Actual | Evento / Acción | Estado Siguiente |
+| :--- | :--- | :--- |
+| `MENU` | `startGame()` | `PLAYING` |
+| `PLAYING` | `openShop()` (Portal) | `SHOP` |
+| `PLAYING` | `takeDamage()` (lives=0) | `GAME_OVER` |
+| `PLAYING` | `collectLetter()` (Final level) | `VICTORY` |
+| `PLAYING` | `restartGame()` (Reset) | `PLAYING` |
+| `SHOP` | `closeShop()` | `PLAYING` |
+| `GAME_OVER` | `restartGame()` | `PLAYING` |
+| `VICTORY` | `restartGame()` | `PLAYING` |
+
+### Diagrama de Estados
 ```mermaid
 stateDiagram-v2
     [*] --> MENU
-
     MENU --> PLAYING: START_GAME
-
-    PLAYING --> SHOP: ENTER_PORTAL (Level up)
+    PLAYING --> SHOP: ENTER_PORTAL
     SHOP --> PLAYING: EXIT_SHOP
-
-    PLAYING --> GAME_OVER: TAKE_DAMAGE (lives = 0)
-    GAME_OVER --> PLAYING: RETRY / RESTART
-
-    PLAYING --> VICTORY: COLLECT_LAST_LETTER (Full word)
-    VICTORY --> PLAYING: RETRY / RESTART
-
-    state PLAYING {
-        [*] --> RUNNING
-        RUNNING --> JUMPING: JUMP_INPUT
-        JUMPING --> RUNNING: LANDED
-        RUNNING --> DAMAGE_FLASH: TAKE_DAMAGE (lives > 0)
-        DAMAGE_FLASH --> RUNNING: FLASH_END
-    }
+    PLAYING --> GAME_OVER: DIE
+    PLAYING --> VICTORY: WIN
+    GAME_OVER --> PLAYING: RESTART
+    VICTORY --> PLAYING: RESTART
+    PLAYING --> PLAYING: RESET (Dev/Test)
 ```
 
 ---
