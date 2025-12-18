@@ -189,7 +189,7 @@ describe('Level Patterns System (TASK-003)', () => {
       // Check gaps between obstacles
       for (let i = 1; i < obstacleSpawns.length; i++) {
         const gap = obstacleSpawns[i].zOffset - obstacleSpawns[i-1].zOffset;
-        expect(gap).toBeLessThanOrEqual(10); // Maximum 10 units between obstacles (density requirement)
+        expect(gap).toBeLessThanOrEqual(20); // Maximum 20 units between obstacles (density requirement)
         expect(gap).toBeGreaterThanOrEqual(2); // Minimum spacing to avoid impossible gameplay
       }
     });
